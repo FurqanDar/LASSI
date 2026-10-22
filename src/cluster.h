@@ -3,6 +3,8 @@
 
 #include "global.h"
 
+#include "cluster_mc.h"
+
 int Clus_Network_ChainCluster_General(int const chainID);
 
 int Clus_Network_ChainCluster_ForTotal(int const chainID);
@@ -63,15 +65,9 @@ int ClusUtil_AddOvlpCluster_OfChain(const int chainID, char* restrict caTotClusT
 
 int ClusUtil_OvlpCluster_OfChain(const int chainID, char* restrict caTotClusTable, int* restrict naClusList);
 
-int ClusUtil_OvlpCluster_OfChain_wMaxSize(const int chainID, char* restrict caTotClusTable, int* restrict clusList,
-                                          int const maxSize);
-
 int ClusUtil_AddOvlpCluster_OfBead_CheckForSame(const int beadID, const char* restrict const caTotClusTable);
 
 int ClusUtil_AddOvlpCluster_OfChain_CheckForSame(const int chainID, const char* restrict const caTotClusTable);
-
-int ClusUtil_OvlpCluster_OfChain_CheckForSame(const char* const caTotClusTable, const int* const clusList,
-                                              int const clusSize);
 
 int ClusUtil_AddAnisoCluster_OfBead(const int beadID, char* restrict caTotClusTable, int* restrict clusList,
                                     int* restrict clusSize);
@@ -80,9 +76,6 @@ int ClusUtil_AddAnisoCluster_OfChain(const int chainID, char* restrict caTotClus
                                      int* restrict clusSize);
 
 int ClusUtil_AnisoCluster_OfChain(const int chainID, char* restrict caTotClusTable, int* restrict clusList);
-
-int ClusUtil_AnisoCluster_OfChain_wMaxSize(const int chainID, char* restrict caTotClusTable, int* restrict clusList,
-                                           int const maxSize);
 
 int ClusUtil_NextUnvisitedChain(int const nChainID, const char* const caTotClusTable);
 
@@ -123,11 +116,7 @@ int ClusUtil_GetSecondLargestCluster_FromFullClusAndCumSizes(int* const naOutClu
 
 int ClusUtil_OvlpCluster_OfSystem_SecondLargest(int* naOutClusList);
 
-int ClusUtil_OvlpCluster_OfSystem_SecondLargest_ForMCMove(int* naOutClusList);
-
 int ClusUtil_AnisoCluster_OfSystem_SecondLargest(int* naOutClusList);
-
-int ClusUtil_AnisoCluster_OfSystem_SecondLargest_ForMCMove(int* naOutClusList);
 
 int ClusUtil_OfSystem_SecondLargest(int* naOutClusList, const int nMode);
 

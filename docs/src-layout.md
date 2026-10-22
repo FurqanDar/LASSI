@@ -47,6 +47,7 @@ is implied by this split.
 |-------|------|
 | `energy.c` / `energy.h` | Energy evaluation |
 | `cluster.c` / `cluster.h` | Cluster analysis |
+| `cluster_mc.h` | Move-facing cluster queries (see architecture.md) |
 
 Build: `src/compile.sh` (also wired in top-level `Makefile` / `CMakeLists.txt`).
 Regression gate: `make characterization`.

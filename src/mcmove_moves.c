@@ -1,5 +1,5 @@
 #include "mcmove.h"
-#include "cluster.h"
+#include "cluster_mc.h"
 #include "energy.h"
 #include "structure.h"
 
