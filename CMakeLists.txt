@@ -13,6 +13,7 @@ add_executable(lassi
         src/energy.c
         src/energy.h
         src/global.h
+        src/globals.c
         src/initialize.c
         src/initialize.h
         src/main.c

@@ -76,127 +76,257 @@ typedef long lLong;
 typedef double lDub;
 typedef long double lLDub;
 
-// configurations and structural info
-
-lInt** bead_info_glb;
-lInt** old_bead_glb;
-lInt** chain_info_glb;
-lInt** topo_info_glb;
-lInt** linker_len_glb;
-
-int tot_beads_glb;
-int tot_chains_glb;
-int tot_chain_types_glb;
-lInt nAnnealing_Mode_glb, nTemp_inv_glb;
-lInt nBiasPotential_Mode_glb, RotBias_Mode_glb;
-lInt nBiasPotential_KeepON_glb, nBiasPotential_CoupledToTemp_glb;
-
-// system setup
-lInt naBoxSize_glb[POS_MAX];
-lInt naLocalArr_glb[MAX_ROTSTATES - 1][3]; // Used to quickly iterate over nearby points in an R-cube
-lInt naRot_IndArr_glb[MAX_ROTSTATES - 1];
-char bReadConf_glb;
-char bSystemHasTopo_glb;
-char bSystemHasCont_glb;
-char bSystemHasOvlp_glb;
-char bSystemHasFSol_glb;
-char bSystemHasSCSC_glb;
-
-// energy matrices for stickers
-lInt nBeadTypes_glb;
-float faEnergy_glb[MAX_AA][MAX_AA][MAX_E];
-float faEnRad_glb[MAX_AA][MAX_AA][MAX_E];
 #define LARGEST_RADIUS 3
-lInt naRotTrial_glb[MAX_VALENCY][MAX_ROTSTATES]; // Used in orientational-bias MC moves
-lLDub ldaBoltzFac_glb[MAX_ROTSTATES - 1];        // Used in orientational-bias
-lLDub ldaBoltzNorm_glb[MAX_VALENCY];
-lLDub ldaBoltzFacNorm_glb[MAX_AA][MAX_AA]; // For pre-calculating the factors.
-lLDub ldLogOfSmallestPossibleProb_glb;     // Smallest probability possible logl(1/RAND_MAX)
+#define LINKER_RSCALE  1.74f
 
-float faCurrEn_glb[MAX_E]; // Vector for current energy
+/*
+ * Phase 2.1: domain structs with a single process-wide instance each.
+ * Compatibility shims (#define …_glb) keep existing call sites working;
+ * later 2.2+ PRs migrate call sites to struct fields / accessors.
+ */
 
-// Arrays to track certain topology and interaction information
-lInt nBeadTypeIsSticker_glb[MAX_AA];         // Used to track if that beadType interacts via rotations.
-lInt nChainTypeIsLinear_glb[MAX_CHAINTYPES]; // Used to track if this chainType is linear.
-lInt nBeadTypeCanOvlp_glb[MAX_AA];           // Used to track if a certain beadType has an overlap cost.
-lInt nBeadTypeCanCont_glb[MAX_AA];           // Used to track if a certain beadType has contact interactions
-lInt nBeadTypeCanFSol_glb[MAX_AA];           // Used to track if a certain beadType has solvation energies
-lInt nBeadTypeCanTInd_glb[MAX_AA]; // Used to track if a certain beadType has temperature independent solvation
+/// Lattice configuration, topology flags, neighbor scratch, linker params.
+typedef struct SystemState
+{
+    // configurations and structural info
+    lInt** bead_info;
+    lInt** old_bead;
+    lInt** chain_info;
+    lInt** topo_info;
+    lInt** linker_len;
 
-float fLinkerLength_glb;
-float fLinkerSprCon_glb;
-float fLinkerEqLen_glb;
+    int tot_beads;
+    int tot_chains;
+    int tot_chain_types;
+    lInt nAnnealing_Mode, nTemp_inv;
+    lInt nBiasPotential_Mode, RotBias_Mode;
+    lInt nBiasPotential_KeepON, nBiasPotential_CoupledToTemp;
 
-// MC setup
-float fKT_glb, fPreKT_glb, fCuTemp_glb, fDeltaTemp_glb, fMC_TempRate_glb, fSquishRad_glb,
-    fSquishRad_Sq_glb, fSquish_Stiff_glb;
-float* faKT_Cycle_glb;
-lLong nMCStepsPerCycle_glb, nMCStepsForTherm_glb;
-float faMCFreq_glb[MAX_MV];
-lInt nTotCycleNum_glb;
+    // system setup
+    lInt naBoxSize[POS_MAX];
+    lInt naLocalArr[MAX_ROTSTATES - 1][3];
+    lInt naRot_IndArr[MAX_ROTSTATES - 1];
+    char bReadConf;
+    char bSystemHasTopo;
+    char bSystemHasCont;
+    char bSystemHasOvlp;
+    char bSystemHasFSol;
+    char bSystemHasSCSC;
 
-// random number generator nRNG_Seed_glb
-lInt nRNG_Seed_glb;
+    // topology / interaction capability flags
+    lInt nBeadTypeIsSticker[MAX_AA];
+    lInt nChainTypeIsLinear[MAX_CHAINTYPES];
+    lInt nBeadTypeCanOvlp[MAX_AA];
+    lInt nBeadTypeCanCont[MAX_AA];
+    lInt nBeadTypeCanFSol[MAX_AA];
+    lInt nBeadTypeCanTInd[MAX_AA];
 
-// report-related
-char strReportPrefix_glb[400];
-char strFileEnergy_glb[512];
-char strFileTraj_glb[512];
-char strFileMCMove_glb[512];
-char strFileSysProp_glb[512];
-char strRestartFile_glb[512];
-lLong naReportFreqs_glb[MAX_REPORT]; // Array to store report frequencies.
-lLong nTrajMode_glb;
-// Matrix to store acceptances and rejections 0: Rejected; 1: Accepted
-// TODO: Have a more extensive way to record also where/when a particular move fails -- not just if it fails.
-lLong naMCAccepMat_glb[2][MAX_MV];
+    float fLinkerLength;
+    float fLinkerSprCon;
+    float fLinkerEqLen;
 
-// Cluster analysis
-lInt nClusteringMode_glb;
-lInt** naClusterMatrix_glb;
-lInt* naList_glb;
-lLong* laClusHistList_glb;
-lInt* naChainCheckList_glb;
-lInt nTotClusCounter_glb;
-lLDub** ldaTOTCLUS_Arr_glb;
-lLDub* ldaMOLCLUS_Arr_glb;
-lLDub* ldaTOTMOLCLUS_Arr_glb;
-lInt naTempR_glb[POS_MAX];
-lInt nLargestClusterRightNow_glb;
-lInt nLimitedClusterSize_glb;
+    // neighbor-search scratch
+    lInt* naOldOvlpNeighs;
+    lInt* naNewOvlpNeighs;
+    lInt* naOldContNeighs;
+    lInt* naNewContNeighs;
 
-// Neighbor search
-lInt* naOldOvlpNeighs_glb;
-lInt* naNewOvlpNeighs_glb;
-lInt* naOldContNeighs_glb;
-lInt* naNewContNeighs_glb;
+    lInt naTempR[POS_MAX];
 
-// Radial Densities and PDFs
-lLDub* ldaTOTRDF_Arr_glb;
-lLDub* ldaTOTRadDen_Arr_glb;
-lLDub* ldaRDF_Arr_glb;
-lLDub* ldaRadDen_Arr_glb;
-lInt nRDF_TotComps_glb;
-lInt nTotRDFCounter_glb; // This counts how many times the RDF has been calculated for averaging at the end.
-lInt nRDF_TotBins_glb;
-lInt nRadDen_TotComps_glb;
-lInt nRadDen_CompShift_glb;
-lInt nTotRadDenCounter_glb; // This counts for the Radial Density histograms
+    // lattice
+    lInt* naTotLattice;
+} SystemState;
 
-// Gyration tensor
-float faGyrTensor_glb[7]; // Gyration tensor
-float faSysGyrRad_glb;    // Gyration radius of the system.
-lLDub** ldaTOTRg_Arr_glb;
-lInt nTotGyrRadCounter_glb; // Counter for total averaging
+/// Energy matrices, Boltzmann factors, current energy vector.
+typedef struct EnergyTables
+{
+    lInt nBeadTypes;
+    float faEnergy[MAX_AA][MAX_AA][MAX_E];
+    float faEnRad[MAX_AA][MAX_AA][MAX_E];
+    lInt naRotTrial[MAX_VALENCY][MAX_ROTSTATES];
+    lLDub ldaBoltzFac[MAX_ROTSTATES - 1];
+    lLDub ldaBoltzNorm[MAX_VALENCY];
+    lLDub ldaBoltzFacNorm[MAX_AA][MAX_AA];
+    lLDub ldLogOfSmallestPossibleProb;
+    float faCurrEn[MAX_E];
+} EnergyTables;
 
-// Trajectory Saving
-lInt* naTOTTRAJ_Arr_glb;
-lLong nTraj_FramesPerCycle_glb;
-lInt nTrajCurFrame_glb;
+/// MC temperatures, frequencies, step counts, acceptance matrix, RNG seed.
+typedef struct McControl
+{
+    float fKT, fPreKT, fCuTemp, fDeltaTemp, fMC_TempRate, fSquishRad, fSquishRad_Sq, fSquish_Stiff;
+    float* faKT_Cycle;
+    lLong nMCStepsPerCycle, nMCStepsForTherm;
+    float faMCFreq[MAX_MV];
+    lInt nTotCycleNum;
+    lInt nRNG_Seed;
+    lLong naMCAccepMat[2][MAX_MV];
+} McControl;
 
-// Lattice To Remember Things
-lInt* naTotLattice_glb;
+/// Report filenames / prefixes and trajectory buffers.
+typedef struct Reports
+{
+    char strReportPrefix[400];
+    char strFileEnergy[512];
+    char strFileTraj[512];
+    char strFileMCMove[512];
+    char strFileSysProp[512];
+    char strRestartFile[512];
+    lLong naReportFreqs[MAX_REPORT];
+    lLong nTrajMode;
+    lInt* naTOTTRAJ_Arr;
+    lLong nTraj_FramesPerCycle;
+    lInt nTrajCurFrame;
+} Reports;
 
-#define LINKER_RSCALE 1.74f
+/// Cluster, RDF / radial density, and gyration analysis state.
+typedef struct AnalysisState
+{
+    // cluster analysis
+    lInt nClusteringMode;
+    lInt** naClusterMatrix;
+    lInt* naList;
+    lLong* laClusHistList;
+    lInt* naChainCheckList;
+    lInt nTotClusCounter;
+    lLDub** ldaTOTCLUS_Arr;
+    lLDub* ldaMOLCLUS_Arr;
+    lLDub* ldaTOTMOLCLUS_Arr;
+    lInt nLargestClusterRightNow;
+    lInt nLimitedClusterSize;
+
+    // radial densities and PDFs
+    lLDub* ldaTOTRDF_Arr;
+    lLDub* ldaTOTRadDen_Arr;
+    lLDub* ldaRDF_Arr;
+    lLDub* ldaRadDen_Arr;
+    lInt nRDF_TotComps;
+    lInt nTotRDFCounter;
+    lInt nRDF_TotBins;
+    lInt nRadDen_TotComps;
+    lInt nRadDen_CompShift;
+    lInt nTotRadDenCounter;
+
+    // gyration tensor
+    float faGyrTensor[7];
+    float faSysGyrRad;
+    lLDub** ldaTOTRg_Arr;
+    lInt nTotGyrRadCounter;
+} AnalysisState;
+
+/* Single process-wide instances (defined in globals.c). */
+extern SystemState g_system;
+extern EnergyTables g_energy;
+extern McControl g_mc;
+extern Reports g_reports;
+extern AnalysisState g_analysis;
+
+/*
+ * Compatibility shims: existing *_glb names alias into the domain structs.
+ * Do not take the address of a shim macro expecting a distinct global object
+ * beyond the underlying struct field (same storage as before, now nested).
+ */
+#define bead_info_glb                      g_system.bead_info
+#define old_bead_glb                       g_system.old_bead
+#define chain_info_glb                     g_system.chain_info
+#define topo_info_glb                      g_system.topo_info
+#define linker_len_glb                     g_system.linker_len
+#define tot_beads_glb                      g_system.tot_beads
+#define tot_chains_glb                     g_system.tot_chains
+#define tot_chain_types_glb                g_system.tot_chain_types
+#define nAnnealing_Mode_glb                g_system.nAnnealing_Mode
+#define nTemp_inv_glb                      g_system.nTemp_inv
+#define nBiasPotential_Mode_glb            g_system.nBiasPotential_Mode
+#define RotBias_Mode_glb                   g_system.RotBias_Mode
+#define nBiasPotential_KeepON_glb          g_system.nBiasPotential_KeepON
+#define nBiasPotential_CoupledToTemp_glb   g_system.nBiasPotential_CoupledToTemp
+#define naBoxSize_glb                      g_system.naBoxSize
+#define naLocalArr_glb                     g_system.naLocalArr
+#define naRot_IndArr_glb                   g_system.naRot_IndArr
+#define bReadConf_glb                      g_system.bReadConf
+#define bSystemHasTopo_glb                 g_system.bSystemHasTopo
+#define bSystemHasCont_glb                 g_system.bSystemHasCont
+#define bSystemHasOvlp_glb                 g_system.bSystemHasOvlp
+#define bSystemHasFSol_glb                 g_system.bSystemHasFSol
+#define bSystemHasSCSC_glb                 g_system.bSystemHasSCSC
+#define nBeadTypeIsSticker_glb             g_system.nBeadTypeIsSticker
+#define nChainTypeIsLinear_glb             g_system.nChainTypeIsLinear
+#define nBeadTypeCanOvlp_glb               g_system.nBeadTypeCanOvlp
+#define nBeadTypeCanCont_glb               g_system.nBeadTypeCanCont
+#define nBeadTypeCanFSol_glb               g_system.nBeadTypeCanFSol
+#define nBeadTypeCanTInd_glb               g_system.nBeadTypeCanTInd
+#define fLinkerLength_glb                  g_system.fLinkerLength
+#define fLinkerSprCon_glb                  g_system.fLinkerSprCon
+#define fLinkerEqLen_glb                   g_system.fLinkerEqLen
+#define naOldOvlpNeighs_glb                g_system.naOldOvlpNeighs
+#define naNewOvlpNeighs_glb                g_system.naNewOvlpNeighs
+#define naOldContNeighs_glb                g_system.naOldContNeighs
+#define naNewContNeighs_glb                g_system.naNewContNeighs
+#define naTempR_glb                        g_system.naTempR
+#define naTotLattice_glb                   g_system.naTotLattice
+
+#define nBeadTypes_glb                     g_energy.nBeadTypes
+#define faEnergy_glb                       g_energy.faEnergy
+#define faEnRad_glb                        g_energy.faEnRad
+#define naRotTrial_glb                     g_energy.naRotTrial
+#define ldaBoltzFac_glb                    g_energy.ldaBoltzFac
+#define ldaBoltzNorm_glb                   g_energy.ldaBoltzNorm
+#define ldaBoltzFacNorm_glb                g_energy.ldaBoltzFacNorm
+#define ldLogOfSmallestPossibleProb_glb    g_energy.ldLogOfSmallestPossibleProb
+#define faCurrEn_glb                       g_energy.faCurrEn
+
+#define fKT_glb                            g_mc.fKT
+#define fPreKT_glb                         g_mc.fPreKT
+#define fCuTemp_glb                        g_mc.fCuTemp
+#define fDeltaTemp_glb                     g_mc.fDeltaTemp
+#define fMC_TempRate_glb                   g_mc.fMC_TempRate
+#define fSquishRad_glb                     g_mc.fSquishRad
+#define fSquishRad_Sq_glb                  g_mc.fSquishRad_Sq
+#define fSquish_Stiff_glb                  g_mc.fSquish_Stiff
+#define faKT_Cycle_glb                     g_mc.faKT_Cycle
+#define nMCStepsPerCycle_glb               g_mc.nMCStepsPerCycle
+#define nMCStepsForTherm_glb               g_mc.nMCStepsForTherm
+#define faMCFreq_glb                       g_mc.faMCFreq
+#define nTotCycleNum_glb                   g_mc.nTotCycleNum
+#define nRNG_Seed_glb                      g_mc.nRNG_Seed
+#define naMCAccepMat_glb                   g_mc.naMCAccepMat
+
+#define strReportPrefix_glb                g_reports.strReportPrefix
+#define strFileEnergy_glb                  g_reports.strFileEnergy
+#define strFileTraj_glb                    g_reports.strFileTraj
+#define strFileMCMove_glb                  g_reports.strFileMCMove
+#define strFileSysProp_glb                 g_reports.strFileSysProp
+#define strRestartFile_glb                 g_reports.strRestartFile
+#define naReportFreqs_glb                  g_reports.naReportFreqs
+#define nTrajMode_glb                      g_reports.nTrajMode
+#define naTOTTRAJ_Arr_glb                  g_reports.naTOTTRAJ_Arr
+#define nTraj_FramesPerCycle_glb           g_reports.nTraj_FramesPerCycle
+#define nTrajCurFrame_glb                  g_reports.nTrajCurFrame
+
+#define nClusteringMode_glb                g_analysis.nClusteringMode
+#define naClusterMatrix_glb                g_analysis.naClusterMatrix
+#define naList_glb                         g_analysis.naList
+#define laClusHistList_glb                 g_analysis.laClusHistList
+#define naChainCheckList_glb               g_analysis.naChainCheckList
+#define nTotClusCounter_glb                g_analysis.nTotClusCounter
+#define ldaTOTCLUS_Arr_glb                 g_analysis.ldaTOTCLUS_Arr
+#define ldaMOLCLUS_Arr_glb                 g_analysis.ldaMOLCLUS_Arr
+#define ldaTOTMOLCLUS_Arr_glb              g_analysis.ldaTOTMOLCLUS_Arr
+#define nLargestClusterRightNow_glb        g_analysis.nLargestClusterRightNow
+#define nLimitedClusterSize_glb            g_analysis.nLimitedClusterSize
+#define ldaTOTRDF_Arr_glb                  g_analysis.ldaTOTRDF_Arr
+#define ldaTOTRadDen_Arr_glb               g_analysis.ldaTOTRadDen_Arr
+#define ldaRDF_Arr_glb                     g_analysis.ldaRDF_Arr
+#define ldaRadDen_Arr_glb                  g_analysis.ldaRadDen_Arr
+#define nRDF_TotComps_glb                  g_analysis.nRDF_TotComps
+#define nTotRDFCounter_glb                 g_analysis.nTotRDFCounter
+#define nRDF_TotBins_glb                   g_analysis.nRDF_TotBins
+#define nRadDen_TotComps_glb               g_analysis.nRadDen_TotComps
+#define nRadDen_CompShift_glb              g_analysis.nRadDen_CompShift
+#define nTotRadDenCounter_glb              g_analysis.nTotRadDenCounter
+#define faGyrTensor_glb                    g_analysis.faGyrTensor
+#define faSysGyrRad_glb                    g_analysis.faSysGyrRad
+#define ldaTOTRg_Arr_glb                   g_analysis.ldaTOTRg_Arr
+#define nTotGyrRadCounter_glb              g_analysis.nTotGyrRadCounter
 
 #endif // _GLOBAL_H_
