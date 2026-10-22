@@ -3,21 +3,25 @@
 
 #include "global.h"
 
-void Memory_Initialization_AtStart(void);
+/* Phase 6.2: init entrypoints take const SimulationConfig* for keyfile-derived
+ * inputs (box, MC/report freqs, restart path, …). Runtime topology (beads /
+ * chains) still lives in g_system after structure parse. */
+
+void Memory_Initialization_AtStart(const SimulationConfig* cfg);
 
 void Memory_Allocate_NeighborLists(void);
 
 void Memory_VerifyMalloc(void);
 
-void Global_Array_Initialization_AtStart(void);
+void Global_Array_Initialization_AtStart(const SimulationConfig* cfg);
 
 void Reset_Counters(void);
 
 void Reset_Global_Arrays(void);
 
-void Initial_Conditions_Simple(void);
+void Initial_Conditions_Simple(const SimulationConfig* cfg);
 
-void Initial_Conditions_FromFile(void);
+void Initial_Conditions_FromFile(const SimulationConfig* cfg);
 
 void Initial_Conditions_BreakBonds(void);
 

@@ -41,19 +41,24 @@ int main(int argc, char* argv[])
 
     clock_t tStart = clock();
 
-    // Allocating memory and initializing all global arrays.
-    Memory_Initialization_AtStart();
-    Global_Array_Initialization_AtStart();
+    // Allocating memory and initializing all global arrays from g_config.
+    Memory_Initialization_AtStart(&g_config);
+    Global_Array_Initialization_AtStart(&g_config);
 
-    // Reading in the structure file, and figuring out initial conditions.
-    if (g_system.bReadConf == 0)
+    // Initial conditions from config (STRUCT_FILETYPE / restart path).
+    if (g_config.strStructFile[0] == '\0')
     {
-        Initial_Conditions_Simple();
+        printf("Wrong initial conditions condition given. Crashing!\n");
+        exit(1);
     }
-    else if (g_system.bReadConf == 1)
+    else if (g_config.nStructFiletype == 0)
     {
-        Initial_Conditions_FromFile();
-        if (g_mc.nMCStepsForTherm > 0)
+        Initial_Conditions_Simple(&g_config);
+    }
+    else if (g_config.nStructFiletype == 1)
+    {
+        Initial_Conditions_FromFile(&g_config);
+        if (g_config.nMCStepsForTherm > 0)
         { // Remember that all thermalizing variants of
           // MC moves cannot handle bonds.
             Initial_Conditions_BreakBonds();
