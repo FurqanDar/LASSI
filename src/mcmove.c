@@ -1,11 +1,10 @@
 #include "mcmove.h"
-#include "energy.h"
-#include "structure.h"
 
 /*
- * Phase 4.1: MV_* strategy tables. Each entry is a thin runner that preserves
- * the old switch's bead/chain selection and Move_* call. MC_Step /
- * MC_Step_Therm only pick a mode from faMCFreq and invoke the table.
+ * MV_* strategy tables. Each entry is a thin runner that preserves the old
+ * switch's bead/chain selection and Move_* call. MC_Step / MC_Step_Therm only
+ * pick a mode from faMCFreq and invoke the table. Moves that already match
+ * McMoveRunner (e.g. Move_Clus_Network) are registered directly.
  */
 
 typedef int (*McMoveRunner)(float fMCTemp);
@@ -128,11 +127,6 @@ static int McRun_PickChain_SmallClus_Proximity(float fMCTemp)
     return Move_SmallClus_Proximity(i, fMCTemp);
 }
 
-static int McRun_Clus_Network(float fMCTemp)
-{
-    return Move_Clus_Network(fMCTemp);
-}
-
 /* Old switch: case MV_PR_CLSTR called Move_Clus_Proximity then fell through to
  * default which set nAccept = 0. Preserve that accept accounting. */
 static int McRun_Clus_Proximity_ThenReject(float fMCTemp)
@@ -151,7 +145,7 @@ static const McMoveRunner s_mcMoves_Prod[MAX_MV] = {
     [MV_SNAKE]      = McRun_PickChain_Snake,
     [MV_TRANS]      = McRun_PickChain_Trans,
     [MV_SMCLSTR]    = McRun_PickChain_SmallClus_Network,
-    [MV_CLSTR]      = McRun_Clus_Network,
+    [MV_CLSTR]      = Move_Clus_Network,
     [MV_PIVOT]      = McRun_PickChain_Pivot,
     [MV_BRROT]      = McRun_PickChain_BranchedRot,
     [MV_DBPVT]      = McRun_PickBead_DbPvt,
