@@ -1,0 +1,2 @@
+#Steps, and Temp, are followed by (rej, acc) for each MC Move.
+#(nStep, T)             STROT                   LOCAL                   COLOCAL                 MTLOCAL                 SNAKE                   TRANS                   SM_CLST                 CLST                    PIVOT                   BRROT                   DBPVT                   PR_CLST                 

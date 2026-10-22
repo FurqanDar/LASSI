@@ -12,6 +12,14 @@ To install, run src/compile.sh in bash, and add the src/ folder to your `$PATH`
 
 To test if the code compiled, go to `/runs/Test_Simulation` and run `./lassi`
 
+For a short fixed-seed characterization / regression check (bit-identical
+trajectory baselines), from the repository root run:
+
+    make characterization
+
+See `tests/characterization/README.md` for decks, determinism notes, and
+baseline updates.
+
 ------------
 Introduction
 ------------
