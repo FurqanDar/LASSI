@@ -10,6 +10,7 @@ include_directories(.)
 add_executable(lassi
         src/cluster.c
         src/cluster.h
+        src/cluster_mc.h
         src/energy.c
         src/energy.h
         src/global.h
