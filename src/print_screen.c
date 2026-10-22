@@ -174,7 +174,7 @@ void ScreenIO_Print_KeyFile(void)
     printf("Number of MC Steps/Cycle       = %e\n", (float) g_mc.nMCStepsPerCycle);
     printf("Number of Thermalizing Steps   = %e\n", (float) g_mc.nMCStepsForTherm);
     printf("RNG Seed                       = %d\n", g_mc.nRNG_Seed);
-    printf("Clustering Mode                = %d\n", nClusteringMode_glb);
+    printf("Clustering Mode                = %d\n", g_analysis.nClusteringMode);
 
     PrintToScreen_MCMoveFreqs();
     printf("\n");
@@ -258,10 +258,10 @@ void ScreenIO_Print_Log_Thermalization(const long nGen)
     printf("Step     : %8.3e\n", (float) nGen);
     printf("MC Temp  : %8.3e\n", g_mc.fCuTemp);
 
-    if (nTotClusCounter_glb > 0)
+    if (g_analysis.nTotClusCounter > 0)
         {
             printf("Perc Phi : %8.3f\n",
-                   ((float) nLargestClusterRightNow_glb) / ((float) nTotClusCounter_glb) / (float) g_system.tot_chains);
+                   ((float) g_analysis.nLargestClusterRightNow) / ((float) g_analysis.nTotClusCounter) / (float) g_system.tot_chains);
         }
 
     ScreenIO_Print_SystemEnergy();
@@ -278,10 +278,10 @@ void ScreenIO_Print_Log_FullRun(const long nGen, const int run_cycle)
     printf("Step     : %8.3e\n", (float) nGen);
     printf("MC Temp  : %8.3e\n", g_mc.fCuTemp);
 
-    if (nTotClusCounter_glb > 0)
+    if (g_analysis.nTotClusCounter > 0)
         {
             printf("Perc Phi : %8.3f\n",
-                   ((float) nLargestClusterRightNow_glb) / ((float) nTotClusCounter_glb) / (float) g_system.tot_chains);
+                   ((float) g_analysis.nLargestClusterRightNow) / ((float) g_analysis.nTotClusCounter) / (float) g_system.tot_chains);
         }
 
     ScreenIO_Print_SystemEnergy();

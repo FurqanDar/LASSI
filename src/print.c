@@ -178,7 +178,7 @@ void DataAnalysis_DuringRunCycles(const long nGen, const int run_it)
         { // SysProp is printed outside of this function in main.c, lol
             if (nGen % g_reports.naReportFreqs[REPORT_NETWORK] == 0)
                 {
-                    ClusAnalysis_Perform_Analysis(nClusteringMode_glb);
+                    ClusAnalysis_Perform_Analysis(g_analysis.nClusteringMode);
                     // TODO: Update Gyration calculations
                     GyrTensor_GyrRad_Avg();
                 }

@@ -608,7 +608,7 @@ int Move_SmallClus_Network(int chainID, float MyTemp)
     char* oldHashTab = calloc(g_system.tot_chains, sizeof(char));
     int* clusList    = calloc(g_system.tot_chains, sizeof(int));
 
-    const int ClusSize = ClusUtil_AnisoCluster_OfChain_wMaxSize(chainID, oldHashTab, clusList, nLimitedClusterSize_glb);
+    const int ClusSize = ClusUtil_AnisoCluster_OfChain_wMaxSize(chainID, oldHashTab, clusList, g_analysis.nLimitedClusterSize);
     if ((ClusSize < 2))
         {
             bAccept = 0;
@@ -626,7 +626,7 @@ int Move_SmallClus_Network(int chainID, float MyTemp)
     LatPos_gen_rand_wRad(r_Disp, g_system.naBoxSize[0] / 2);
     for (i = 0; i < ClusSize; i++)
         {
-            // printf("%d\n", naList_glb[i]);
+            // printf("%d\n", g_analysis.naList[i]);
             yTemp = Check_ChainDisp(clusList[i], r_Disp); // Checking for steric clash
             if (yTemp == 0)
                 {
@@ -1537,7 +1537,7 @@ int Move_SmallClus_Proximity(const int chainID, const float myTemp)
     int* oldClusList = calloc(g_system.tot_chains, sizeof(int));
     char* oldHashTab = calloc(g_system.tot_chains, sizeof(char));
     const int ClusSize =
-        ClusUtil_OvlpCluster_OfChain_wMaxSize(chainID, oldHashTab, oldClusList, nLimitedClusterSize_glb);
+        ClusUtil_OvlpCluster_OfChain_wMaxSize(chainID, oldHashTab, oldClusList, g_analysis.nLimitedClusterSize);
 
     if (ClusSize < 2)
         {
