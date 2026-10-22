@@ -13,6 +13,7 @@ add_executable(lassi
         src/cluster_mc.h
         src/energy.c
         src/energy_iso.c
+        src/energy_aniso.c
         src/energy.h
         src/global.h
         src/globals.c

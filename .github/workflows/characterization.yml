@@ -21,5 +21,8 @@ jobs:
       - name: Run isotropic energy unit tests
         run: make unit-energy
 
+      - name: Run anisotropic SC-SC energy unit tests
+        run: make unit-energy-aniso
+
       - name: Run characterization harness
         run: make characterization
