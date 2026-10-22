@@ -38,7 +38,8 @@ int Check_MTLinkerConstraint_OLD(int beadID, int (*tmpR)[POS_MAX]);
 
 int Check_LinkerConstraints_ForBeadList(const int listSize, const int* beadList);
 
-int Check_BeadID_InList(const int thisBeadID, const int listSize, const int beadList[MAX_BONDS + 1]);
+int Check_BeadID_InList(const int thisBeadID, const int listSize,
+                        const int beadList[MAX_BONDS + 1]);
 
 void PerformRuntimeSanityChecks(long nGen, int run_cycle);
 
@@ -56,7 +57,8 @@ int MolClusArr_Index(const int run_cycle, const int chain_type, const int clus_s
 
 void Calc_SystemCenterOfMass(lDub* tmpR);
 
-void Calc_CenterOfMass_OfCluster(lDub* naCOM_out, const int cluster_size, const int* const restrict naClusList_in);
+void Calc_CenterOfMass_OfCluster(lDub* naCOM_out, const int cluster_size,
+                                 const int* const restrict naClusList_in);
 
 void Calc_CenterOfMass_OfSystem_OfMolType(lDub* tmpR, const int thisType);
 
@@ -76,14 +78,16 @@ void Calculate_Distances_For_Radius(float* thisList, const int nRad);
 
 int NeighborSearch_ForOvlp(int const beadID, const int* startVec, int* neighList);
 
-int NeighborSearch_ForCont(int const beadID, const int* startVec, int* contList, int* ovlpList, int* ovlpNum);
+int NeighborSearch_ForCont(int const beadID, const int* startVec, int* contList, int* ovlpList,
+                           int* ovlpNum);
 
 int NeighborSearch_SolSitesAround(const int* startVec);
 
-int NeighborSearch_AroundPoint_wRad_IgnBead(const int beadID, const int* startVec, const int nRad, int* neighList);
+int NeighborSearch_AroundPoint_wRad_IgnBead(const int beadID, const int* startVec, const int nRad,
+                                            int* neighList);
 
-int NeighborSearch_AroundPoint_wRad_wDists(const int beadID, const int* startVec, const int nRad, int* neighList,
-                                           float* distList);
+int NeighborSearch_AroundPoint_wRad_wDists(const int beadID, const int* startVec, const int nRad,
+                                           int* neighList, float* distList);
 
 int NeighborSearch_ForCluster_Ovlp(int const beadID, const int* startVec, int* neighList);
 
@@ -113,9 +117,11 @@ void BeadListOP_GetChainIDs(const int beadNum, const int* beadList, int* chainLi
 
 void BeadListOP_GetChainTypes(const int beadNum, const int* beadList, int* chainList);
 
-int BeadListOP_Filter_wrt_SecondList(const int beadNum, int* beadList, const int* propList, const int prop_val);
+int BeadListOP_Filter_wrt_SecondList(const int beadNum, int* beadList, const int* propList,
+                                     const int prop_val);
 
-int BeadListOP_InvFilter_wrt_SecondList(const int beadNum, int* beadList, const int* propList, const int prop_val);
+int BeadListOP_InvFilter_wrt_SecondList(const int beadNum, int* beadList, const int* propList,
+                                        const int prop_val);
 
 void BeadListOP_GetIntraChainID(const int beadNum, const int* beadList, int* chainList);
 
@@ -125,23 +131,26 @@ int BeadListOP_Filter_DbPvtLinkerConBck(const int beadNum, int* beadList, const 
 
 int ListOP_UniqueElementsOfSortedList_Int(const int size, int* sorted_list);
 
-int BeadList_AppendBeads(const int old_size, int* old_list, const int* app_list, const int app_size);
+int BeadList_AppendBeads(const int old_size, int* old_list, const int* app_list,
+                         const int app_size);
 
 int UtilFunc_CompareInts(const void* a, const void* b);
 
 int BeadList_CanTopoAngle(const int size, int* beadList);
 
-int ChainListOP_AddUniqueChains_wSize(const int clusSize, int* clusList, const int newChainNums, const int* chainList,
-                                      const int maxClus);
+int ChainListOP_AddUniqueChains_wSize(const int clusSize, int* clusList, const int newChainNums,
+                                      const int* chainList, const int maxClus);
 
 int ClusListOP_AddChainID(const int clusSize, int* clusList, const int chainID);
 
 int ClusListOP_AddIfUniqueChainID(const int clusSize, int* clusList, const int chainID);
 
-int ChainListOP_AddUniqueChains_wSize_Check(const int clusSize, int* clusList, const int newChainNums,
-                                            const int* chainList, const int maxClus, const int* oldList);
+int ChainListOP_AddUniqueChains_wSize_Check(const int clusSize, int* clusList,
+                                            const int newChainNums, const int* chainList,
+                                            const int maxClus, const int* oldList);
 
-void ChainListOP_GetChainTypes(int* const naTypesList, const int* const naChainIDs, const int nListSize);
+void ChainListOP_GetChainTypes(int* const naTypesList, const int* const naChainIDs,
+                               const int nListSize);
 
 void LatticeUtil_GetOvlpLattIndecies(const int* r_pos0, int* numList);
 
@@ -153,13 +162,14 @@ int LatticeUtil_GetNeighBeads_AtPos(const int* restrict r_pos0, int* restrict nB
 
 int ListOP_GetMaxVal_Int(const int nListSize, const int* const naList);
 
-int ListOP_IndicesForVal_Int(const int nVal, int* const naOutList, const int nListSize, const int* const naInputList);
+int ListOP_IndicesForVal_Int(const int nVal, int* const naOutList, const int nListSize,
+                             const int* const naInputList);
 
 int ListOP_GetRandomIndexForVal_Int(const int nVal, const int nListSize, const int* const naList);
 
 int ListOP_Get2ndLargestVal_Int(const int nListSize, const int* const naInputList);
 
-void ListOP_GenHistFromCounts_Int(int* const restrict naOutFreqHist, const int* const restrict naInputList,
-                                  const int nSize);
+void ListOP_GenHistFromCounts_Int(int* const restrict naOutFreqHist,
+                                  const int* const restrict naInputList, const int nSize);
 
 #endif // _STRUCTURE_H_

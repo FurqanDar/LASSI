@@ -1,0 +1,35 @@
+# LASSI C style — LLVM base with project-reasonable tweaks.
+# Enforced in CI only (see .github/workflows/format.yml). No pre-commit yet.
+BasedOnStyle: LLVM
+Language: Cpp
+
+IndentWidth: 4
+TabWidth: 4
+UseTab: Never
+ColumnLimit: 100
+
+# Match existing LASSI sources (char* / int* style).
+PointerAlignment: Left
+DerivePointerAlignment: false
+
+# Functions and control statements: brace on its own line (Allman).
+BreakBeforeBraces: Allman
+
+# Do not reorder #includes — C translation units can depend on include order.
+SortIncludes: Never
+IncludeBlocks: Preserve
+
+AllowShortFunctionsOnASingleLine: Empty
+AllowShortIfStatementsOnASingleLine: Never
+AllowShortLoopsOnASingleLine: false
+AllowShortBlocksOnASingleLine: Never
+AlwaysBreakAfterReturnType: None
+IndentCaseLabels: false
+SpaceBeforeParens: ControlStatements
+SpacesInParentheses: false
+SpaceAfterCStyleCast: false
+KeepEmptyLinesAtTheStartOfBlocks: false
+MaxEmptyLinesToKeep: 1
+ReflowComments: true
+InsertNewlineAtEOF: true
+LineEnding: LF

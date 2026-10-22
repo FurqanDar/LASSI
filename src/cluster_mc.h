@@ -11,14 +11,14 @@
  * See docs/architecture.md.
  */
 
-int ClusUtil_OvlpCluster_OfChain_wMaxSize(const int chainID, char* restrict caTotClusTable, int* restrict clusList,
-                                          int const maxSize);
+int ClusUtil_OvlpCluster_OfChain_wMaxSize(const int chainID, char* restrict caTotClusTable,
+                                          int* restrict clusList, int const maxSize);
 
-int ClusUtil_OvlpCluster_OfChain_CheckForSame(const char* const caTotClusTable, const int* const clusList,
-                                              int const clusSize);
+int ClusUtil_OvlpCluster_OfChain_CheckForSame(const char* const caTotClusTable,
+                                              const int* const clusList, int const clusSize);
 
-int ClusUtil_AnisoCluster_OfChain_wMaxSize(const int chainID, char* restrict caTotClusTable, int* restrict clusList,
-                                           int const maxSize);
+int ClusUtil_AnisoCluster_OfChain_wMaxSize(const int chainID, char* restrict caTotClusTable,
+                                           int* restrict clusList, int const maxSize);
 
 int ClusUtil_OvlpCluster_OfSystem_SecondLargest_ForMCMove(int* naOutClusList);
 

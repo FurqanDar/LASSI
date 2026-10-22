@@ -7,68 +7,68 @@
 #include <string.h>
 #include <time.h>
 
-#define MAX_AA         10
+#define MAX_AA 10
 #define MAX_CHAINTYPES 10
-#define MAX_CHAINLEN   1000
-#define MAX_BONDS      5
-#define MAX_VALENCY    500
+#define MAX_CHAINLEN 1000
+#define MAX_BONDS 5
+#define MAX_VALENCY 500
 
 // energy parameters
-#define E_TOT   0 // index zero must be assigned for total energy
-#define E_OVLP  1
-#define E_CONT  2
+#define E_TOT 0 // index zero must be assigned for total energy
+#define E_OVLP 1
+#define E_CONT 2
 #define E_SC_SC 3
 #define E_F_SOL 4
 #define E_T_IND 5
 #define E_STIFF 6
-#define E_BIAS  7
-#define MAX_E   8 // just for counting; must be the last number of this list
+#define E_BIAS 7
+#define MAX_E 8 // just for counting; must be the last number of this list
 
 // MC move parameters
-#define MV_NULL       0 // index zero indicates null move
-#define MV_STROT      1
-#define MV_LOCAL      2
-#define MV_COLOCAL    3
-#define MV_MTLOCAL    4
-#define MV_SNAKE      5
-#define MV_TRANS      6
-#define MV_SMCLSTR    7
-#define MV_CLSTR      8
-#define MV_PIVOT      9
-#define MV_BRROT      10
-#define MV_DBPVT      11
+#define MV_NULL 0 // index zero indicates null move
+#define MV_STROT 1
+#define MV_LOCAL 2
+#define MV_COLOCAL 3
+#define MV_MTLOCAL 4
+#define MV_SNAKE 5
+#define MV_TRANS 6
+#define MV_SMCLSTR 7
+#define MV_CLSTR 8
+#define MV_PIVOT 9
+#define MV_BRROT 10
+#define MV_DBPVT 11
 #define MV_PR_SMCLSTR 12
-#define MV_PR_CLSTR   13
-#define MAX_MV        14 // just for counting; must be the last number of this list
+#define MV_PR_CLSTR 13
+#define MAX_MV 14 // just for counting; must be the last number of this list
 
 // report parameters
-#define REPORT_NULL    0 // index zero
-#define REPORT_LOG     1
-#define REPORT_ENERGY  2
-#define REPORT_CONFIG  3
-#define REPORT_MCMOVE  4
+#define REPORT_NULL 0 // index zero
+#define REPORT_LOG 1
+#define REPORT_ENERGY 2
+#define REPORT_CONFIG 3
+#define REPORT_MCMOVE 4
 #define REPORT_NETWORK 5
-#define REPORT_RDFTOT  6
-#define REPORT_COMDEN  7
-#define MAX_REPORT     8 // just for counting; must be the last number of this list
+#define REPORT_RDFTOT 6
+#define REPORT_COMDEN 7
+#define MAX_REPORT 8 // just for counting; must be the last number of this list
 
 // auxiliary definitions
-#define POS_X   0
-#define POS_Y   1
-#define POS_Z   2
+#define POS_X 0
+#define POS_Y 1
+#define POS_Z 2
 #define POS_MAX 3
 
 #define BEAD_CHAINID 3
-#define BEAD_TYPE    4
-#define BEAD_FACE    5
+#define BEAD_TYPE 4
+#define BEAD_FACE 5
 #define BEADINFO_MAX 6
 
-#define CHAIN_TYPE    0
-#define CHAIN_LENGTH  1
-#define CHAIN_START   2
+#define CHAIN_TYPE 0
+#define CHAIN_LENGTH 1
+#define CHAIN_START 2
 #define CHAININFO_MAX 3
 
-#define MAX_ROTSTATES       27
+#define MAX_ROTSTATES 27
 #define CLUS_CONTACT_NEIGHS 27
 
 typedef int lInt;
@@ -77,7 +77,7 @@ typedef double lDub;
 typedef long double lLDub;
 
 #define LARGEST_RADIUS 3
-#define LINKER_RSCALE  1.74f
+#define LINKER_RSCALE 1.74f
 
 /*
  * Phase 2.1: domain structs with a single process-wide instance each.

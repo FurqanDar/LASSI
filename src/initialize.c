@@ -9,7 +9,8 @@ void Memory_Initialization_AtStart(void)
     char arr_name[100];
 
     strcpy(arr_name, "g_system.naTotLattice");
-    g_system.naTotLattice = Create1DInt(g_system.naBoxSize[0] * g_system.naBoxSize[1] * g_system.naBoxSize[2], arr_name);
+    g_system.naTotLattice = Create1DInt(
+        g_system.naBoxSize[0] * g_system.naBoxSize[1] * g_system.naBoxSize[2], arr_name);
 
     Memory_Allocate_NeighborLists();
 
@@ -26,58 +27,65 @@ void Memory_Initialization_AtStart(void)
     g_analysis.naList = Create1DInt(2 + g_system.tot_chains, arr_name);
 
     strcpy(arr_name, "g_analysis.naClusterMatrix");
-    g_analysis.naClusterMatrix = Create2DInt(g_system.tot_chains + 2, g_system.tot_chains + 2, arr_name);
+    g_analysis.naClusterMatrix =
+        Create2DInt(g_system.tot_chains + 2, g_system.tot_chains + 2, arr_name);
 
     if (g_reports.naReportFreqs[REPORT_NETWORK] != 0)
-        {
-            strcpy(arr_name, "ldTotClusArr");
-            g_analysis.ldaTOTCLUS_Arr = Create2DLongdouble(2 + g_system.tot_chains, g_mc.nTotCycleNum, arr_name);
+    {
+        strcpy(arr_name, "ldTotClusArr");
+        g_analysis.ldaTOTCLUS_Arr =
+            Create2DLongdouble(2 + g_system.tot_chains, g_mc.nTotCycleNum, arr_name);
 
-            strcpy(arr_name, "ldMolClusArr");
-            g_analysis.ldaMOLCLUS_Arr = Create1DLongdouble(((g_system.tot_chains + 1) * g_system.tot_chain_types), arr_name);
+        strcpy(arr_name, "ldMolClusArr");
+        g_analysis.ldaMOLCLUS_Arr =
+            Create1DLongdouble(((g_system.tot_chains + 1) * g_system.tot_chain_types), arr_name);
 
-            strcpy(arr_name, "ldTotMolClusArr");
-            g_analysis.ldaTOTMOLCLUS_Arr =
-                Create1DLongdouble((g_system.tot_chains * g_system.tot_chain_types * g_mc.nTotCycleNum), arr_name);
+        strcpy(arr_name, "ldTotMolClusArr");
+        g_analysis.ldaTOTMOLCLUS_Arr = Create1DLongdouble(
+            (g_system.tot_chains * g_system.tot_chain_types * g_mc.nTotCycleNum), arr_name);
 
-            strcpy(arr_name, "ldTotGyrRad");
-            g_analysis.ldaTOTRg_Arr = Create2DLongdouble(2, g_mc.nTotCycleNum, arr_name);
-        }
+        strcpy(arr_name, "ldTotGyrRad");
+        g_analysis.ldaTOTRg_Arr = Create2DLongdouble(2, g_mc.nTotCycleNum, arr_name);
+    }
     g_analysis.nRDF_TotComps = 2 + g_energy.nBeadTypes + g_energy.nBeadTypes * g_energy.nBeadTypes;
     g_analysis.nRDF_TotComps /= 2;
     if (g_reports.naReportFreqs[REPORT_RDFTOT] != 0)
-        {
+    {
+        strcpy(arr_name, "ldTotRDFArr");
+        g_analysis.ldaTOTRDF_Arr = Create1DLongdouble(
+            (g_mc.nTotCycleNum * g_analysis.nRDF_TotComps * g_analysis.nRDF_TotBins), arr_name);
 
-            strcpy(arr_name, "ldTotRDFArr");
-            g_analysis.ldaTOTRDF_Arr = Create1DLongdouble((g_mc.nTotCycleNum * g_analysis.nRDF_TotComps * g_analysis.nRDF_TotBins), arr_name);
-
-            strcpy(arr_name, "ldRDFArr");
-            g_analysis.ldaRDF_Arr = Create1DLongdouble((g_analysis.nRDF_TotComps * g_analysis.nRDF_TotBins), arr_name);
-        }
+        strcpy(arr_name, "ldRDFArr");
+        g_analysis.ldaRDF_Arr =
+            Create1DLongdouble((g_analysis.nRDF_TotComps * g_analysis.nRDF_TotBins), arr_name);
+    }
 
     if (g_reports.naReportFreqs[REPORT_COMDEN] != 0)
-        {
-            g_analysis.nRadDen_TotComps  = 2 * g_system.tot_chain_types * (g_system.tot_chain_types + 1);
-            g_analysis.nRadDen_CompShift = g_system.tot_chain_types * (g_system.tot_chain_types + 1);
+    {
+        g_analysis.nRadDen_TotComps = 2 * g_system.tot_chain_types * (g_system.tot_chain_types + 1);
+        g_analysis.nRadDen_CompShift = g_system.tot_chain_types * (g_system.tot_chain_types + 1);
 
-            strcpy(arr_name, "ldRadDenArr");
-            g_analysis.ldaRadDen_Arr = Create1DLongdouble(g_analysis.nRadDen_TotComps * g_analysis.nRDF_TotBins, arr_name);
+        strcpy(arr_name, "ldRadDenArr");
+        g_analysis.ldaRadDen_Arr =
+            Create1DLongdouble(g_analysis.nRadDen_TotComps * g_analysis.nRDF_TotBins, arr_name);
 
-            strcpy(arr_name, "ldTotRadDenArr");
-            g_analysis.ldaTOTRadDen_Arr =
-                Create1DLongdouble(g_analysis.nRadDen_TotComps * g_mc.nTotCycleNum * g_analysis.nRDF_TotBins, arr_name);
-        }
+        strcpy(arr_name, "ldTotRadDenArr");
+        g_analysis.ldaTOTRadDen_Arr = Create1DLongdouble(
+            g_analysis.nRadDen_TotComps * g_mc.nTotCycleNum * g_analysis.nRDF_TotBins, arr_name);
+    }
 
     if (g_reports.nTrajMode == -1)
-        {
-            g_reports.nTraj_FramesPerCycle = g_mc.nMCStepsPerCycle / g_reports.naReportFreqs[REPORT_CONFIG] + 1;
-            printf("\n***********************************************\n");
-            printf("This feature is still experimental!\n");
-            printf("\n***********************************************\n");
+    {
+        g_reports.nTraj_FramesPerCycle =
+            g_mc.nMCStepsPerCycle / g_reports.naReportFreqs[REPORT_CONFIG] + 1;
+        printf("\n***********************************************\n");
+        printf("This feature is still experimental!\n");
+        printf("\n***********************************************\n");
 
-            strcpy(arr_name, "nTotTrajArr");
-            g_reports.naTOTTRAJ_Arr = Create1DInt(g_reports.nTraj_FramesPerCycle * g_system.tot_beads * BEADINFO_MAX, arr_name);
-        }
+        strcpy(arr_name, "nTotTrajArr");
+        g_reports.naTOTTRAJ_Arr = Create1DInt(
+            g_reports.nTraj_FramesPerCycle * g_system.tot_beads * BEADINFO_MAX, arr_name);
+    }
 
     printf("Successfully allocated memory! Arrays initialized.\n");
 }
@@ -106,63 +114,64 @@ void Memory_Allocate_NeighborLists(void)
 void Memory_VerifyMalloc(void)
 {
     if (g_analysis.laClusHistList == NULL)
-        {
-            printf("g_analysis.laClusHistList malloc failed\n");
-            exit(1);
-        }
+    {
+        printf("g_analysis.laClusHistList malloc failed\n");
+        exit(1);
+    }
     if (g_analysis.naChainCheckList == NULL)
-        {
-            printf("g_analysis.naChainCheckList malloc failed\n");
-            exit(1);
-        }
+    {
+        printf("g_analysis.naChainCheckList malloc failed\n");
+        exit(1);
+    }
     if (g_analysis.ldaRDF_Arr == NULL && g_reports.naReportFreqs[REPORT_RDFTOT] != 0)
-        {
-            printf("g_analysis.ldaRDF_Arr malloc failed\n");
-            exit(1);
-        }
+    {
+        printf("g_analysis.ldaRDF_Arr malloc failed\n");
+        exit(1);
+    }
     if (g_analysis.ldaTOTRDF_Arr == NULL && g_reports.naReportFreqs[REPORT_RDFTOT] != 0)
-        {
-            printf("g_analysis.ldaTOTRDF_Arr malloc failed\n");
-            exit(1);
-        }
+    {
+        printf("g_analysis.ldaTOTRDF_Arr malloc failed\n");
+        exit(1);
+    }
     if (g_analysis.ldaRadDen_Arr == NULL && g_reports.naReportFreqs[REPORT_COMDEN] != 0)
-        {
-            printf("g_analysis.ldaRadDen_Arr malloc failed\n");
-            exit(1);
-        }
+    {
+        printf("g_analysis.ldaRadDen_Arr malloc failed\n");
+        exit(1);
+    }
     if (g_analysis.ldaTOTRadDen_Arr == NULL && g_reports.naReportFreqs[REPORT_COMDEN] != 0)
-        {
-            printf("g_analysis.ldaTOTRadDen_Arr malloc failed\n");
-            exit(1);
-        }
+    {
+        printf("g_analysis.ldaTOTRadDen_Arr malloc failed\n");
+        exit(1);
+    }
     if (g_analysis.ldaMOLCLUS_Arr == NULL && g_reports.naReportFreqs[REPORT_NETWORK] != 0)
-        {
-            printf("g_analysis.ldaMOLCLUS_Arr malloc failed\n");
-            exit(1);
-        }
+    {
+        printf("g_analysis.ldaMOLCLUS_Arr malloc failed\n");
+        exit(1);
+    }
     if (g_analysis.ldaTOTMOLCLUS_Arr == NULL && g_reports.naReportFreqs[REPORT_NETWORK] != 0)
-        {
-            printf("g_analysis.ldaTOTMOLCLUS_Arr malloc failed\n");
-            exit(1);
-        }
+    {
+        printf("g_analysis.ldaTOTMOLCLUS_Arr malloc failed\n");
+        exit(1);
+    }
     if ((g_reports.naTOTTRAJ_Arr == NULL) && (g_reports.nTrajMode == -1))
-        {
-            printf("g_reports.naTOTTRAJ_Arr malloc failed\n");
-            exit(1);
-        }
+    {
+        printf("g_reports.naTOTTRAJ_Arr malloc failed\n");
+        exit(1);
+    }
 }
 
 void Check_BeadTypewiseInteractions(void)
 {
     int i, j;
     for (i = 0; i < MAX_AA; i++)
-        {
-            g_system.nBeadTypeIsSticker[i] = 0; // Assume beads don't rotationally interact.
-            g_system.nBeadTypeCanOvlp[i]   = 0; // Assume beads don't have an overlap cost
-            g_system.nBeadTypeCanCont[i]   = 0; // Assume beads don't have contact costs.
-            g_system.nBeadTypeCanFSol[i]   = 0; // Assume beads have no stiffness
-            g_system.nBeadTypeCanTInd[i]   = 0; // Assume beads have no Temperature independent interactions
-        }
+    {
+        g_system.nBeadTypeIsSticker[i] = 0; // Assume beads don't rotationally interact.
+        g_system.nBeadTypeCanOvlp[i] = 0;   // Assume beads don't have an overlap cost
+        g_system.nBeadTypeCanCont[i] = 0;   // Assume beads don't have contact costs.
+        g_system.nBeadTypeCanFSol[i] = 0;   // Assume beads have no stiffness
+        g_system.nBeadTypeCanTInd[i] =
+            0; // Assume beads have no Temperature independent interactions
+    }
     // Assume system has no interactions
     g_system.bSystemHasSCSC = 0;
     g_system.bSystemHasOvlp = 0;
@@ -172,104 +181,104 @@ void Check_BeadTypewiseInteractions(void)
 
     // SC-SC Check
     for (i = 0; i < g_energy.nBeadTypes; i++)
+    {
+        for (j = 0; j < g_energy.nBeadTypes; j++)
         {
-            for (j = 0; j < g_energy.nBeadTypes; j++)
-                {
-                    if (g_energy.faEnergy[i][j][E_SC_SC])
-                        {
-                            g_system.nBeadTypeIsSticker[i] = 1;
-                        }
-                }
+            if (g_energy.faEnergy[i][j][E_SC_SC])
+            {
+                g_system.nBeadTypeIsSticker[i] = 1;
+            }
         }
+    }
 
     for (i = 0; i < g_energy.nBeadTypes; i++)
+    {
+        if (g_system.nBeadTypeIsSticker[i])
         {
-            if (g_system.nBeadTypeIsSticker[i])
-                {
-                    g_system.bSystemHasSCSC = 1;
-                }
+            g_system.bSystemHasSCSC = 1;
         }
+    }
 
     // OVLP Check
     for (i = 0; i < g_energy.nBeadTypes; i++)
+    {
+        for (j = 0; j < g_energy.nBeadTypes; j++)
         {
-            for (j = 0; j < g_energy.nBeadTypes; j++)
-                {
-                    if (g_energy.faEnergy[i][j][E_OVLP])
-                        {
-                            g_system.nBeadTypeCanOvlp[i] = 1;
-                        }
-                }
+            if (g_energy.faEnergy[i][j][E_OVLP])
+            {
+                g_system.nBeadTypeCanOvlp[i] = 1;
+            }
         }
+    }
     for (i = 0; i < g_energy.nBeadTypes; i++)
+    {
+        if (g_system.nBeadTypeCanOvlp[i])
         {
-            if (g_system.nBeadTypeCanOvlp[i])
-                {
-                    g_system.bSystemHasOvlp = 1;
-                }
+            g_system.bSystemHasOvlp = 1;
         }
+    }
 
     // CONT Check
     for (i = 0; i < g_energy.nBeadTypes; i++)
+    {
+        for (j = 0; j < g_energy.nBeadTypes; j++)
         {
-            for (j = 0; j < g_energy.nBeadTypes; j++)
-                {
-                    if (g_energy.faEnergy[i][j][E_CONT])
-                        {
-                            g_system.nBeadTypeCanCont[i] = 1;
-                        }
-                }
+            if (g_energy.faEnergy[i][j][E_CONT])
+            {
+                g_system.nBeadTypeCanCont[i] = 1;
+            }
         }
+    }
     for (i = 0; i < g_energy.nBeadTypes; i++)
+    {
+        if (g_system.nBeadTypeCanCont[i])
         {
-            if (g_system.nBeadTypeCanCont[i])
-                {
-                    g_system.bSystemHasCont = 1;
-                }
+            g_system.bSystemHasCont = 1;
         }
+    }
 
     // FSOL Check
     for (i = 0; i < g_energy.nBeadTypes; i++)
+    {
+        for (j = 0; j < g_energy.nBeadTypes; j++)
         {
-            for (j = 0; j < g_energy.nBeadTypes; j++)
-                {
-                    if (g_energy.faEnergy[i][j][E_F_SOL])
-                        {
-                            g_system.nBeadTypeCanFSol[i] = 1;
-                        }
-                }
+            if (g_energy.faEnergy[i][j][E_F_SOL])
+            {
+                g_system.nBeadTypeCanFSol[i] = 1;
+            }
         }
+    }
     for (i = 0; i < g_energy.nBeadTypes; i++)
+    {
+        if (g_system.nBeadTypeCanFSol[i])
         {
-            if (g_system.nBeadTypeCanFSol[i])
-                {
-                    g_system.bSystemHasFSol = 1;
-                }
+            g_system.bSystemHasFSol = 1;
         }
+    }
 
     // T_IND Check
     for (i = 0; i < g_energy.nBeadTypes; i++)
+    {
+        for (j = 0; j < g_energy.nBeadTypes; j++)
         {
-            for (j = 0; j < g_energy.nBeadTypes; j++)
-                {
-                    if (g_energy.faEnergy[i][j][E_T_IND])
-                        {
-                            g_system.nBeadTypeCanTInd[i] = 1;
-                        }
-                }
+            if (g_energy.faEnergy[i][j][E_T_IND])
+            {
+                g_system.nBeadTypeCanTInd[i] = 1;
+            }
         }
+    }
 
     // STIFF Check
     for (i = 0; i < g_energy.nBeadTypes; i++)
+    {
+        for (j = 0; j < g_energy.nBeadTypes; j++)
         {
-            for (j = 0; j < g_energy.nBeadTypes; j++)
-                {
-                    if (g_energy.faEnergy[i][j][E_STIFF])
-                        {
-                            g_system.bSystemHasTopo = 1;
-                        }
-                }
+            if (g_energy.faEnergy[i][j][E_STIFF])
+            {
+                g_system.bSystemHasTopo = 1;
+            }
         }
+    }
 }
 
 void Global_Array_Initialization_AtStart(void)
@@ -278,109 +287,109 @@ void Global_Array_Initialization_AtStart(void)
     int myCubeLen = 3;
 
     for (i = 0; i < g_system.naBoxSize[0] * g_system.naBoxSize[1] * g_system.naBoxSize[2]; i++)
-        {                             // Initializing the lattice
-            g_system.naTotLattice[i] = -1; // If -1, then there is no bead there.
-        }
+    {                                  // Initializing the lattice
+        g_system.naTotLattice[i] = -1; // If -1, then there is no bead there.
+    }
     i = 0;
     // Constructing the local array to search for bonding partners.
     for (xTemp = -myCubeLen; xTemp <= myCubeLen; xTemp++)
+    {
+        for (yTemp = -myCubeLen; yTemp <= myCubeLen; yTemp++)
         {
-            for (yTemp = -myCubeLen; yTemp <= myCubeLen; yTemp++)
+            for (zTemp = -myCubeLen; zTemp <= myCubeLen; zTemp++)
+            {
+                if ((xTemp != 0 || yTemp != 0 || zTemp != 0)
+                    //&& (xTemp*xTemp + yTemp*yTemp + zTemp*zTemp > 3)
+                    && (xTemp * xTemp + yTemp * yTemp + zTemp * zTemp <= 3))
                 {
-                    for (zTemp = -myCubeLen; zTemp <= myCubeLen; zTemp++)
-                        {
-                            if ((xTemp != 0 || yTemp != 0 || zTemp != 0)
-                                //&& (xTemp*xTemp + yTemp*yTemp + zTemp*zTemp > 3)
-                                && (xTemp * xTemp + yTemp * yTemp + zTemp * zTemp <= 3))
-                                {
-                                    g_system.naLocalArr[i][0] = xTemp;
-                                    g_system.naLocalArr[i][1] = yTemp;
-                                    g_system.naLocalArr[i][2] = zTemp;
-                                    i++;
-                                }
-                        }
+                    g_system.naLocalArr[i][0] = xTemp;
+                    g_system.naLocalArr[i][1] = yTemp;
+                    g_system.naLocalArr[i][2] = zTemp;
+                    i++;
                 }
+            }
         }
+    }
 
     // Initializing rotational orientational bias arrays.
     for (i = 0; i < MAX_VALENCY; i++)
+    {
+        for (j = 0; j < MAX_ROTSTATES; j++)
         {
-            for (j = 0; j < MAX_ROTSTATES; j++)
-                {
-                    g_energy.naRotTrial[i][j] = -1;
-                }
+            g_energy.naRotTrial[i][j] = -1;
         }
+    }
     for (i = 0; i < MAX_ROTSTATES - 1; i++)
-        {
-            g_system.naRot_IndArr[i] = i;
-        }
+    {
+        g_system.naRot_IndArr[i] = i;
+    }
     // Initializing arrays required for cluster analyses.
     for (i = 0; i <= g_system.tot_chains; i++)
+    {
+        g_analysis.naChainCheckList[i] = 0;
+        g_analysis.laClusHistList[i] = 0;
+        for (j = 0; j <= g_system.tot_chains; j++)
         {
-            g_analysis.naChainCheckList[i] = 0;
-            g_analysis.laClusHistList[i]   = 0;
-            for (j = 0; j <= g_system.tot_chains; j++)
-                {
-                    g_analysis.naClusterMatrix[i][j] = -1;
-                }
+            g_analysis.naClusterMatrix[i][j] = -1;
         }
+    }
 
     if (g_reports.naReportFreqs[REPORT_NETWORK] != 0)
-        {
-            for (i = 0; i < g_system.tot_chains; i++)
-                { // For MolWise Clus arrays
-                    for (j = 0; j < g_system.tot_chain_types; j++)
-                        {
-                            g_analysis.ldaMOLCLUS_Arr[MolClusArr_Index(0, j, i)] = 0.;
-                            for (k = 0; k < g_mc.nTotCycleNum; k++)
-                                {
-                                    g_analysis.ldaTOTMOLCLUS_Arr[MolClusArr_Index(k, j, i)] = 0.;
-                                }
-                        }
+    {
+        for (i = 0; i < g_system.tot_chains; i++)
+        { // For MolWise Clus arrays
+            for (j = 0; j < g_system.tot_chain_types; j++)
+            {
+                g_analysis.ldaMOLCLUS_Arr[MolClusArr_Index(0, j, i)] = 0.;
+                for (k = 0; k < g_mc.nTotCycleNum; k++)
+                {
+                    g_analysis.ldaTOTMOLCLUS_Arr[MolClusArr_Index(k, j, i)] = 0.;
                 }
-            for (k = 0; k < g_mc.nTotCycleNum; k++)
-                { // For GyrRad
-                    g_analysis.ldaTOTRg_Arr[k][0] = 0.;
-                    g_analysis.ldaTOTRg_Arr[k][1] = 0.;
-                }
-            for (k = 0; k < g_mc.nTotCycleNum; k++)
-                { // For ClusterDists
-                    for (i = 0; i <= g_system.tot_chains; i++)
-                        {
-                            g_analysis.ldaTOTCLUS_Arr[k][i] = 0.;
-                        }
-                }
+            }
         }
+        for (k = 0; k < g_mc.nTotCycleNum; k++)
+        { // For GyrRad
+            g_analysis.ldaTOTRg_Arr[k][0] = 0.;
+            g_analysis.ldaTOTRg_Arr[k][1] = 0.;
+        }
+        for (k = 0; k < g_mc.nTotCycleNum; k++)
+        { // For ClusterDists
+            for (i = 0; i <= g_system.tot_chains; i++)
+            {
+                g_analysis.ldaTOTCLUS_Arr[k][i] = 0.;
+            }
+        }
+    }
 
     if (g_reports.naReportFreqs[REPORT_RDFTOT] != 0)
-        {
-            for (i = 0; i < g_analysis.nRDF_TotBins; i++)
-                { // For Radial distributions
-                    for (j = 0; j < g_analysis.nRDF_TotComps; j++)
-                        { // For RDFs
-                            g_analysis.ldaTOTRDF_Arr[RDFArr_Index(0, j, i)] = 0.;
-                            for (k = 0; k < g_mc.nTotCycleNum; k++)
-                                {
-                                    g_analysis.ldaTOTRDF_Arr[RDFArr_Index(k, j, i)] = 0.;
-                                }
-                        }
+    {
+        for (i = 0; i < g_analysis.nRDF_TotBins; i++)
+        { // For Radial distributions
+            for (j = 0; j < g_analysis.nRDF_TotComps; j++)
+            { // For RDFs
+                g_analysis.ldaTOTRDF_Arr[RDFArr_Index(0, j, i)] = 0.;
+                for (k = 0; k < g_mc.nTotCycleNum; k++)
+                {
+                    g_analysis.ldaTOTRDF_Arr[RDFArr_Index(k, j, i)] = 0.;
                 }
+            }
         }
+    }
 
     if (g_reports.naReportFreqs[REPORT_COMDEN] != 0)
-        {
-            for (j = 0; j < g_analysis.nRadDen_TotComps; j++)
-                { // For Density Dists wrt COM
-                    for (i = 0; i < g_analysis.nRDF_TotBins; i++)
-                        { // For Radial distributions
-                            g_analysis.ldaRadDen_Arr[RadDenArr_Index(0, j, i)] = 0.;
-                            for (k = 0; k < g_mc.nTotCycleNum; k++)
-                                {
-                                    g_analysis.ldaTOTRadDen_Arr[RadDenArr_Index(k, j, i)] = 0.;
-                                }
-                        }
+    {
+        for (j = 0; j < g_analysis.nRadDen_TotComps; j++)
+        { // For Density Dists wrt COM
+            for (i = 0; i < g_analysis.nRDF_TotBins; i++)
+            { // For Radial distributions
+                g_analysis.ldaRadDen_Arr[RadDenArr_Index(0, j, i)] = 0.;
+                for (k = 0; k < g_mc.nTotCycleNum; k++)
+                {
+                    g_analysis.ldaTOTRadDen_Arr[RadDenArr_Index(k, j, i)] = 0.;
                 }
+            }
         }
+    }
 
     // Setting counters
     Reset_Counters();
@@ -390,44 +399,44 @@ void Global_Array_Initialization_AtStart(void)
     Check_BeadTypewiseInteractions();
 
     for (i = MV_NULL + 2; i < MAX_MV; i++)
-        {
-            g_mc.faMCFreq[i] += g_mc.faMCFreq[i - 1]; // Cumulative Frequencies
-        }
+    {
+        g_mc.faMCFreq[i] += g_mc.faMCFreq[i - 1]; // Cumulative Frequencies
+    }
     for (i = 0; i < MAX_MV; i++)
-        { // Zero out all the MCAccepts
-            g_mc.naMCAccepMat[0][i] = 0;
-            g_mc.naMCAccepMat[1][i] = 0;
-        }
+    { // Zero out all the MCAccepts
+        g_mc.naMCAccepMat[0][i] = 0;
+        g_mc.naMCAccepMat[1][i] = 0;
+    }
 
     for (i = 0; i < g_mc.nTotCycleNum; i++)
-        {
-            g_mc.faKT_Cycle[i] = g_mc.fKT + (float) i * g_mc.fDeltaTemp;
-        }
+    {
+        g_mc.faKT_Cycle[i] = g_mc.fKT + (float)i * g_mc.fDeltaTemp;
+    }
 
     if (g_system.nTemp_inv == 1)
+    {
+        for (i = 0; i < g_mc.nTotCycleNum; i++)
         {
-            for (i = 0; i < g_mc.nTotCycleNum; i++)
-                {
-                    g_mc.faKT_Cycle[i] = 1.f / g_mc.faKT_Cycle[i];
-                }
+            g_mc.faKT_Cycle[i] = 1.f / g_mc.faKT_Cycle[i];
         }
+    }
 
-    g_mc.fSquishRad_Sq               = g_mc.fSquishRad * g_mc.fSquishRad;
-    g_energy.ldLogOfSmallestPossibleProb = logl((lLDub) 1. / (lLDub) RAND_MAX);
-    g_analysis.nLimitedClusterSize         = (int) g_system.tot_chains / 2;
+    g_mc.fSquishRad_Sq = g_mc.fSquishRad * g_mc.fSquishRad;
+    g_energy.ldLogOfSmallestPossibleProb = logl((lLDub)1. / (lLDub)RAND_MAX);
+    g_analysis.nLimitedClusterSize = (int)g_system.tot_chains / 2;
 
     printf("All setup has been completed!\n");
 }
 
 void Reset_Counters(void)
 {
-    g_analysis.faSysGyrRad             = 0.f;
-    g_analysis.nTotGyrRadCounter       = 0;
-    g_analysis.nTotRDFCounter          = 0;
-    g_analysis.nTotRadDenCounter       = 0;
-    g_analysis.nTotClusCounter         = 0;
+    g_analysis.faSysGyrRad = 0.f;
+    g_analysis.nTotGyrRadCounter = 0;
+    g_analysis.nTotRDFCounter = 0;
+    g_analysis.nTotRadDenCounter = 0;
+    g_analysis.nTotClusCounter = 0;
     g_analysis.nLargestClusterRightNow = 0;
-    g_reports.nTrajCurFrame           = 0;
+    g_reports.nTrajCurFrame = 0;
 }
 
 /// Reset_Global_Arrays - resets the various global counters and arrays for
@@ -437,51 +446,51 @@ void Reset_Global_Arrays(void)
     // Zero-ing out all the arrays used for data tracking!
     int i, j;
     for (i = 0; i <= g_system.tot_chains; i++)
+    {
+        g_analysis.naChainCheckList[i] = -1;
+        g_analysis.laClusHistList[i] = 0;
+        for (j = 0; j <= g_system.tot_chains; j++)
         {
-            g_analysis.naChainCheckList[i] = -1;
-            g_analysis.laClusHistList[i]   = 0;
-            for (j = 0; j <= g_system.tot_chains; j++)
-                {
-                    g_analysis.naClusterMatrix[i][j] = -1;
-                }
-            if (g_reports.naReportFreqs[REPORT_NETWORK])
-                {
-                    for (j = 0; j < g_system.tot_chain_types; j++)
-                        {
-                            g_analysis.ldaMOLCLUS_Arr[MolClusArr_Index(0, j, i)] = 0.;
-                        }
-                }
+            g_analysis.naClusterMatrix[i][j] = -1;
         }
+        if (g_reports.naReportFreqs[REPORT_NETWORK])
+        {
+            for (j = 0; j < g_system.tot_chain_types; j++)
+            {
+                g_analysis.ldaMOLCLUS_Arr[MolClusArr_Index(0, j, i)] = 0.;
+            }
+        }
+    }
     // Initializing arrays for pair-distribution calculations
     if (g_reports.naReportFreqs[REPORT_RDFTOT])
+    {
+        for (j = 0; j < g_analysis.nRDF_TotComps; j++)
         {
-            for (j = 0; j < g_analysis.nRDF_TotComps; j++)
-                {
-                    for (i = 0; i < g_analysis.nRDF_TotBins; i++)
-                        {
-                            g_analysis.ldaRDF_Arr[RDFArr_Index(0, j, i)] = 0.;
-                        }
-                }
+            for (i = 0; i < g_analysis.nRDF_TotBins; i++)
+            {
+                g_analysis.ldaRDF_Arr[RDFArr_Index(0, j, i)] = 0.;
+            }
         }
+    }
     if (g_reports.naReportFreqs[REPORT_COMDEN])
+    {
+        // Initalizing for density histograms wrt to the COM
+        for (j = 0; j < g_analysis.nRadDen_TotComps; j++)
         {
-            // Initalizing for density histograms wrt to the COM
-            for (j = 0; j < g_analysis.nRadDen_TotComps; j++)
-                {
-                    for (i = 0; i < g_analysis.nRDF_TotBins; i++)
-                        {
-                            g_analysis.ldaRadDen_Arr[RadDenArr_Index(0, j, i)] = 0.;
-                        }
-                }
+            for (i = 0; i < g_analysis.nRDF_TotBins; i++)
+            {
+                g_analysis.ldaRadDen_Arr[RadDenArr_Index(0, j, i)] = 0.;
+            }
         }
+    }
     // Setting counters
     Reset_Counters();
     // MCAccept arrays.
     for (i = 0; i < MAX_MV; i++)
-        {
-            g_mc.naMCAccepMat[0][i] = 0;
-            g_mc.naMCAccepMat[1][i] = 0;
-        }
+    {
+        g_mc.naMCAccepMat[0][i] = 0;
+        g_mc.naMCAccepMat[1][i] = 0;
+    }
 }
 
 /// Initial_Conditions_Simple - randomly place all the molecules.
@@ -514,206 +523,208 @@ void Initial_Conditions_Simple(void)
     int list_it = 0;                   // Iterator specifically for temp_list.
 
     for (i = 0; i < MAX_CHAINLEN; i++)
+    { // initialize the list where -1 signifies emptiness.
+        temp_list[i] = -1;
+    }
+    for (j = 0; j < POS_MAX; j++)
+    { // Initialize the coordinate arrays to some numbers.
+        tmpR[j] = rand() % g_system.naBoxSize[j];
+        tmpR2[j] = tmpR[j];
+    }
+
+    for (k = 0; k < g_system.tot_chains; k++)
+    {
+        // This makes reading easier, honestly
+        fB = g_system.chain_info[k][CHAIN_START];
+        lB = fB + g_system.chain_info[k][CHAIN_LENGTH];
+
+        // Reset the temp_list for each chain, and the iterator!
+        for (i = 0; i < list_it; i++)
         { // initialize the list where -1 signifies emptiness.
             temp_list[i] = -1;
         }
-    for (j = 0; j < POS_MAX; j++)
-        { // Initialize the coordinate arrays to some numbers.
-            tmpR[j]  = rand() % g_system.naBoxSize[j];
-            tmpR2[j] = tmpR[j];
-        }
+        list_it = 0;
 
-    for (k = 0; k < g_system.tot_chains; k++)
-        {
-            // This makes reading easier, honestly
-            fB = g_system.chain_info[k][CHAIN_START];
-            lB = fB + g_system.chain_info[k][CHAIN_LENGTH];
-
-            // Reset the temp_list for each chain, and the iterator!
-            for (i = 0; i < list_it; i++)
-                { // initialize the list where -1 signifies emptiness.
-                    temp_list[i] = -1;
+        for (i = fB; i < lB; i++)
+        { // Going bead-bead in this chain.
+            // Checking if the bead has already been placed.
+            for (idy = 0; idy < list_it; idy++)
+            {
+                if (i == temp_list[idy])
+                { // This means this bead has already
+                  // been placed.
+                    goto SproutForth;
                 }
-            list_it = 0;
+            }
+            // If we have reached here, this bead has not been placed before.
+            idx = 0;
+            bondPart = g_system.topo_info[i][idx]; // Re-initialize these two.
+            // Let's go through the bonded partners for this bead and see if one
+            // can be used as an anchor.
+            while (g_system.topo_info[i][idx] != -1 && idx < MAX_BONDS)
+            { // Again, -1 signifies that no bonded
+              // bead exists.
+                bondPart = g_system.topo_info[i][idx];
+                // Checking if thisBead has been placed already, and can be used
+                // as anchor.
+                for (idy = 0; idy < list_it; idy++)
+                {
+                    if (bondPart == temp_list[idy])
+                    {                     // Using bondPart as an anchor
+                        goto FoundAnchor; // This is just so we don't keep going
+                                          // over the list needlessly and just
+                                          // pick the first one.
+                    }
+                }
+                idx++;
+                // If we got here, this means no bonded partner has already been
+                // placed, so no anchor.
+                bondPart = -1;
+            }
 
-            for (i = fB; i < lB; i++)
-                { // Going bead-bead in this chain.
-                    // Checking if the bead has already been placed.
-                    for (idy = 0; idy < list_it; idy++)
-                        {
-                            if (i == temp_list[idy])
-                                { // This means this bead has already
-                                  // been placed.
-                                    goto SproutForth;
-                                }
-                        }
-                    // If we have reached here, this bead has not been placed before.
-                    idx      = 0;
-                    bondPart = g_system.topo_info[i][idx]; // Re-initialize these two.
-                    // Let's go through the bonded partners for this bead and see if one
-                    // can be used as an anchor.
-                    while (g_system.topo_info[i][idx] != -1 && idx < MAX_BONDS)
-                        { // Again, -1 signifies that no bonded
-                          // bead exists.
-                            bondPart = g_system.topo_info[i][idx];
-                            // Checking if thisBead has been placed already, and can be used
-                            // as anchor.
-                            for (idy = 0; idy < list_it; idy++)
-                                {
-                                    if (bondPart == temp_list[idy])
-                                        {                     // Using bondPart as an anchor
-                                            goto FoundAnchor; // This is just so we don't keep going
-                                                              // over the list needlessly and just
-                                                              // pick the first one.
-                                        }
-                                }
-                            idx++;
-                            // If we got here, this means no bonded partner has already been
-                            // placed, so no anchor.
-                            bondPart = -1;
-                        }
-
-                FoundAnchor:
-                    if (bondPart != -1)
-                        { // We found an anchor.
-                            radUp  = 2 * g_system.linker_len[i][idx] + 1;
-                            radLow = g_system.linker_len[i][idx];
-                            for (j = 0; j < POS_MAX; j++)
-                                { // Using thisBead as anchor
-                                    tmpR[j]  = g_system.bead_info[bondPart][j];
-                                    tmpR2[j] = tmpR[j];
-                                }
-                            TlCnt = 0; // Reset this counter.
-                            while (g_system.naTotLattice[Lat_Ind_FromVec(tmpR2)] != -1 && TlCnt < 5000000)
-                                {
-                                    for (j = 0; j < POS_MAX; j++)
-                                        {
-                                            tmpR2[j] = (rand() % radUp) - radLow;
-                                            tmpR2[j] = (tmpR[j] + tmpR2[j] + g_system.naBoxSize[j]) % g_system.naBoxSize[j];
-                                        }
-                                    TlCnt++;
-                                }
-                            if (TlCnt == 5000000)
-                                {
-                                    printf("Not enough space in the lattice. Crashing. Maybe "
-                                           "try increasing max trials, "
-                                           "or make the box bigger!\t\n");
-                                    exit(1);
-                                }
-                            for (j = 0; j < POS_MAX; j++)
-                                {
-                                    g_system.bead_info[i][j] = tmpR2[j];
-                                }                                         // Placing bead
-                            g_system.naTotLattice[Lat_Ind_FromVec(tmpR2)] = i; // Putting on lattice
-                            temp_list[list_it]                       = i;
-                            list_it++; // Remembering in hash list.
-                            // The bead has been placed around an appropriate anchor.
-                        }
-                    else
-                        { // There was no appropriate anchor. So we can put this bead
-                          // wherever.
-                            for (j = 0; j < POS_MAX; j++)
-                                {
-                                    tmpR[j] = rand() % g_system.naBoxSize[j];
-                                }
-                            // This usually means this is the first bead in the chain.
-                            TlCnt = 0;
-                            while (g_system.naTotLattice[Lat_Ind_FromVec(tmpR)] != -1 && TlCnt < 5000000)
-                                { // Keep looping till we find
-                                  // an empty lattice site.
-                                    TlCnt++;
-                                    for (j = 0; j < POS_MAX; j++)
-                                        { // Generate a random point in the lattice.
-                                            tmpR[j] = rand() % g_system.naBoxSize[j];
-                                        }
-                                }
-                            if (TlCnt == 5000000)
-                                {
-                                    printf("\n\nNot enough space in the lattice for first "
-                                           "bead, bruh. Maybe try increasing max trials, "
-                                           "or make the box bigger!\n\n");
-                                    exit(1);
-                                }
-                            // Placing this bead wherever there is space, and using it as
-                            // anchor. Also updating the lattice, and temp_list
-                            for (j = 0; j < POS_MAX; j++)
-                                {
-                                    g_system.bead_info[i][j] = tmpR[j];
-                                }
-                            g_system.naTotLattice[Lat_Ind_FromVec(tmpR)] = i; // Placing on lattice!
-                            temp_list[list_it]                      = i;
-                            list_it++; // Remembering that this bead has been placed.
-                        }
-                SproutForth:
-                    // Now going over the list of bondParts for i and sprouting them
+        FoundAnchor:
+            if (bondPart != -1)
+            { // We found an anchor.
+                radUp = 2 * g_system.linker_len[i][idx] + 1;
+                radLow = g_system.linker_len[i][idx];
+                for (j = 0; j < POS_MAX; j++)
+                { // Using thisBead as anchor
+                    tmpR[j] = g_system.bead_info[bondPart][j];
+                    tmpR2[j] = tmpR[j];
+                }
+                TlCnt = 0; // Reset this counter.
+                while (g_system.naTotLattice[Lat_Ind_FromVec(tmpR2)] != -1 && TlCnt < 5000000)
+                {
                     for (j = 0; j < POS_MAX; j++)
-                        { // Making the current bead an anchor.
-                            tmpR[j] = g_system.bead_info[i][j];
-                        }
-                    idx      = 0;                     // Resets things!
-                    bondPart = g_system.topo_info[i][idx]; // Resets things!
-                    while (g_system.topo_info[i][idx] != -1 && idx < MAX_BONDS)
-                        { // Again, -1 signifies that no bonded
-                          // bead exists.
-                            bondPart = g_system.topo_info[i][idx];
-                            // If the bead has already been dealt with, move on to next
-                            // potential bondPartner
-                            for (idy = 0; idy < list_it; idy++)
-                                {
-                                    if (bondPart == temp_list[idy])
-                                        {
-                                            goto SkipThisPartner; // Just so we don't keep looking
-                                                                  // further.
-                                        }
-                                }
-                            // Get the radii for placing this bead around bead i
-                            radUp  = 2 * g_system.linker_len[i][idx] + 1;
-                            radLow = g_system.linker_len[i][idx];
-                            // Initializing new vector to be where bead i is.
-                            for (j = 0; j < POS_MAX; j++)
-                                {
-                                    tmpR2[j] = tmpR[j];
-                                }
-                            TlCnt = 0; // Reset this counter.
-                            while (g_system.naTotLattice[Lat_Ind_FromVec(tmpR2)] != -1 && TlCnt < 5000000)
-                                {
-                                    for (j = 0; j < POS_MAX; j++)
-                                        {
-                                            tmpR2[j] = (rand() % radUp) - radLow;
-                                            tmpR2[j] = (tmpR[j] + tmpR2[j] + g_system.naBoxSize[j]) % g_system.naBoxSize[j];
-                                        }
-                                    // printf("%d %d %d\n", tmpR2[0], tmpR2[1], tmpR2[2]);
-                                    TlCnt++;
-                                }
-                            if (TlCnt == 5000000)
-                                {
-                                    printf("\n\nNot enough space in the lattice. Crashing. "
-                                           "Maybe try increasing max trials, "
-                                           "or make the box bigger!\t %d\t%d %d\n\n",
-                                           TlCnt, i, g_system.naTotLattice[Lat_Ind_FromVec(tmpR2)]);
-                                    exit(1);
-                                }
-                            for (j = 0; j < POS_MAX; j++)
-                                { // Placing bead
-                                    g_system.bead_info[bondPart][j] = tmpR2[j];
-                                }
-
-                            g_system.naTotLattice[Lat_Ind_FromVec(tmpR2)] = bondPart; // Putting on lattice
-                            temp_list[list_it]                       = bondPart;
-                            list_it++; // Remembering in hash list.
-                        SkipThisPartner:
-                            idx++;
-                            bondPart = -1;
-                        }
-                    // Moving on to bead i+1
+                    {
+                        tmpR2[j] = (rand() % radUp) - radLow;
+                        tmpR2[j] =
+                            (tmpR[j] + tmpR2[j] + g_system.naBoxSize[j]) % g_system.naBoxSize[j];
+                    }
+                    TlCnt++;
                 }
-            // Moving on to the next molecule!
+                if (TlCnt == 5000000)
+                {
+                    printf("Not enough space in the lattice. Crashing. Maybe "
+                           "try increasing max trials, "
+                           "or make the box bigger!\t\n");
+                    exit(1);
+                }
+                for (j = 0; j < POS_MAX; j++)
+                {
+                    g_system.bead_info[i][j] = tmpR2[j];
+                } // Placing bead
+                g_system.naTotLattice[Lat_Ind_FromVec(tmpR2)] = i; // Putting on lattice
+                temp_list[list_it] = i;
+                list_it++; // Remembering in hash list.
+                // The bead has been placed around an appropriate anchor.
+            }
+            else
+            { // There was no appropriate anchor. So we can put this bead
+              // wherever.
+                for (j = 0; j < POS_MAX; j++)
+                {
+                    tmpR[j] = rand() % g_system.naBoxSize[j];
+                }
+                // This usually means this is the first bead in the chain.
+                TlCnt = 0;
+                while (g_system.naTotLattice[Lat_Ind_FromVec(tmpR)] != -1 && TlCnt < 5000000)
+                { // Keep looping till we find
+                  // an empty lattice site.
+                    TlCnt++;
+                    for (j = 0; j < POS_MAX; j++)
+                    { // Generate a random point in the lattice.
+                        tmpR[j] = rand() % g_system.naBoxSize[j];
+                    }
+                }
+                if (TlCnt == 5000000)
+                {
+                    printf("\n\nNot enough space in the lattice for first "
+                           "bead, bruh. Maybe try increasing max trials, "
+                           "or make the box bigger!\n\n");
+                    exit(1);
+                }
+                // Placing this bead wherever there is space, and using it as
+                // anchor. Also updating the lattice, and temp_list
+                for (j = 0; j < POS_MAX; j++)
+                {
+                    g_system.bead_info[i][j] = tmpR[j];
+                }
+                g_system.naTotLattice[Lat_Ind_FromVec(tmpR)] = i; // Placing on lattice!
+                temp_list[list_it] = i;
+                list_it++; // Remembering that this bead has been placed.
+            }
+        SproutForth:
+            // Now going over the list of bondParts for i and sprouting them
+            for (j = 0; j < POS_MAX; j++)
+            { // Making the current bead an anchor.
+                tmpR[j] = g_system.bead_info[i][j];
+            }
+            idx = 0;                               // Resets things!
+            bondPart = g_system.topo_info[i][idx]; // Resets things!
+            while (g_system.topo_info[i][idx] != -1 && idx < MAX_BONDS)
+            { // Again, -1 signifies that no bonded
+              // bead exists.
+                bondPart = g_system.topo_info[i][idx];
+                // If the bead has already been dealt with, move on to next
+                // potential bondPartner
+                for (idy = 0; idy < list_it; idy++)
+                {
+                    if (bondPart == temp_list[idy])
+                    {
+                        goto SkipThisPartner; // Just so we don't keep looking
+                                              // further.
+                    }
+                }
+                // Get the radii for placing this bead around bead i
+                radUp = 2 * g_system.linker_len[i][idx] + 1;
+                radLow = g_system.linker_len[i][idx];
+                // Initializing new vector to be where bead i is.
+                for (j = 0; j < POS_MAX; j++)
+                {
+                    tmpR2[j] = tmpR[j];
+                }
+                TlCnt = 0; // Reset this counter.
+                while (g_system.naTotLattice[Lat_Ind_FromVec(tmpR2)] != -1 && TlCnt < 5000000)
+                {
+                    for (j = 0; j < POS_MAX; j++)
+                    {
+                        tmpR2[j] = (rand() % radUp) - radLow;
+                        tmpR2[j] =
+                            (tmpR[j] + tmpR2[j] + g_system.naBoxSize[j]) % g_system.naBoxSize[j];
+                    }
+                    // printf("%d %d %d\n", tmpR2[0], tmpR2[1], tmpR2[2]);
+                    TlCnt++;
+                }
+                if (TlCnt == 5000000)
+                {
+                    printf("\n\nNot enough space in the lattice. Crashing. "
+                           "Maybe try increasing max trials, "
+                           "or make the box bigger!\t %d\t%d %d\n\n",
+                           TlCnt, i, g_system.naTotLattice[Lat_Ind_FromVec(tmpR2)]);
+                    exit(1);
+                }
+                for (j = 0; j < POS_MAX; j++)
+                { // Placing bead
+                    g_system.bead_info[bondPart][j] = tmpR2[j];
+                }
+
+                g_system.naTotLattice[Lat_Ind_FromVec(tmpR2)] = bondPart; // Putting on lattice
+                temp_list[list_it] = bondPart;
+                list_it++; // Remembering in hash list.
+            SkipThisPartner:
+                idx++;
+                bondPart = -1;
+            }
+            // Moving on to bead i+1
         }
+        // Moving on to the next molecule!
+    }
     // Initializing all beads with no physical bonds.
     for (i = 0; i < g_system.tot_beads; i++)
-        {
-            g_system.bead_info[i][BEAD_FACE] = -1;
-        }
+    {
+        g_system.bead_info[i][BEAD_FACE] = -1;
+    }
 }
 
 /// Initial_Conditions_FromFile - reads the restart file and sets the initial
@@ -725,39 +736,40 @@ void Initial_Conditions_FromFile(void)
     int i, j;
     int tmp_beadinfo[BEADINFO_MAX];
     FILE* infile;
-    infile       = fopen(g_reports.strRestartFile, "r");
+    infile = fopen(g_reports.strRestartFile, "r");
     int tmpBeads = 0;
     while (fgets(strLine, sizeof(strLine), infile) != NULL)
+    {
+        tmpBeads++;
+        if (strcmp(strLine, "ITEM: ATOMS id type mol x y z bP\n") == 0)
         {
-            tmpBeads++;
-            if (strcmp(strLine, "ITEM: ATOMS id type mol x y z bP\n") == 0)
-                {
-                    break;
-                }
+            break;
         }
+    }
     tmpBeads = 0;
     while (fgets(strLine, sizeof(strLine), infile) != NULL)
+    {
+        sscanf(strLine, "%d %d %d %d %d %d %d", &i, &tmp_beadinfo[BEAD_TYPE],
+               &tmp_beadinfo[BEAD_CHAINID], &tmp_beadinfo[POS_X], &tmp_beadinfo[POS_Y],
+               &tmp_beadinfo[POS_Z], &tmp_beadinfo[BEAD_FACE]);
+        tmpBeads++;
+        for (j = 0; j < BEADINFO_MAX; j++)
         {
-            sscanf(strLine, "%d %d %d %d %d %d %d", &i, &tmp_beadinfo[BEAD_TYPE], &tmp_beadinfo[BEAD_CHAINID],
-                   &tmp_beadinfo[POS_X], &tmp_beadinfo[POS_Y], &tmp_beadinfo[POS_Z], &tmp_beadinfo[BEAD_FACE]);
-            tmpBeads++;
-            for (j = 0; j < BEADINFO_MAX; j++)
-                {
-                    g_system.bead_info[i][j] = tmp_beadinfo[j];
-                }
+            g_system.bead_info[i][j] = tmp_beadinfo[j];
         }
+    }
     fclose(infile);
     if (tmpBeads != g_system.tot_beads)
-        {
-            printf("Given restart file does not have the same number of beads as "
-                   "the provided structure.");
-            printf("Crashing!\n");
-            exit(1);
-        }
+    {
+        printf("Given restart file does not have the same number of beads as "
+               "the provided structure.");
+        printf("Crashing!\n");
+        exit(1);
+    }
     for (i = 0; i < g_system.tot_beads; i++)
-        {
-            g_system.naTotLattice[Lat_Ind_OfBead(i)] = i;
-        }
+    {
+        g_system.naTotLattice[Lat_Ind_OfBead(i)] = i;
+    }
     printf("File read successfully and initial configuration set.\n");
 }
 
@@ -767,9 +779,9 @@ void Initial_Conditions_BreakBonds(void)
 {
     int i;
     for (i = 0; i < g_system.tot_beads; i++)
-        {
-            g_system.bead_info[i][BEAD_FACE] = -1;
-        }
+    {
+        g_system.bead_info[i][BEAD_FACE] = -1;
+    }
     printf("Since system has thermalization cycle, deleting all physical "
            "bonds!\n");
 }
@@ -778,70 +790,65 @@ void Initial_Conditions_BreakBonds(void)
 /// at the beginning so that we have a look-up table. \param CurrentTemp
 void Calculate_Rot_Bias(const float CurrentTemp)
 {
-
     int i, j;
     for (i = 0; i < MAX_AA; i++)
+    {
+        for (j = 0; j < MAX_AA; j++)
         {
-            for (j = 0; j < MAX_AA; j++)
-                {
-                    g_energy.ldaBoltzFacNorm[i][j] =
-                        (lLDub) expl(-(lLDub) g_energy.faEnergy[i][j][E_SC_SC] / (lLDub) CurrentTemp);
-                    // printf("%LE; ", g_energy.ldaBoltzFacNorm[i][j]);
-                }
-            // printf("\n");
+            g_energy.ldaBoltzFacNorm[i][j] =
+                (lLDub)expl(-(lLDub)g_energy.faEnergy[i][j][E_SC_SC] / (lLDub)CurrentTemp);
+            // printf("%LE; ", g_energy.ldaBoltzFacNorm[i][j]);
         }
+        // printf("\n");
+    }
 }
 
-/// Temperature_Function - used to calculate what g_mc.fCuTemp should (current temperature) based on how long the
-/// run has been going.
-/// \param mode - which
-/// of the four functions to use. Note that the various modes are described
-/// below where $F(t)$ is the returned value, and t == nGen.
-/// \param nGen - basically 'time' or how
-/// many MC Steps have been done.
-/// \return end_val - the current temperature.
+/// Temperature_Function - used to calculate what g_mc.fCuTemp should (current temperature) based on
+/// how long the run has been going. \param mode - which of the four functions to use. Note that the
+/// various modes are described below where $F(t)$ is the returned value, and t == nGen. \param nGen
+/// - basically 'time' or how many MC Steps have been done. \return end_val - the current
+/// temperature.
 float Temperature_Function(const int mode, const long nGen)
 {
-
     float x_val;
     float end_val;
 
     switch (mode)
-        {
-            case 1:
-                x_val   = -(float) (nGen);
-                x_val   = 4.f * x_val;
-                x_val   = x_val / (float) (g_mc.nMCStepsForTherm);
-                end_val = g_mc.fKT + g_mc.fPreKT * expf(x_val);
+    {
+    case 1:
+        x_val = -(float)(nGen);
+        x_val = 4.f * x_val;
+        x_val = x_val / (float)(g_mc.nMCStepsForTherm);
+        end_val = g_mc.fKT + g_mc.fPreKT * expf(x_val);
 
-                break;
+        break;
 
-            case 2:
-                x_val   = -(float) (nGen);
-                x_val   = g_mc.fMC_TempRate * x_val;
-                x_val   = x_val / (float) (g_mc.nMCStepsForTherm);
-                end_val = g_mc.fKT + expf(x_val);
+    case 2:
+        x_val = -(float)(nGen);
+        x_val = g_mc.fMC_TempRate * x_val;
+        x_val = x_val / (float)(g_mc.nMCStepsForTherm);
+        end_val = g_mc.fKT + expf(x_val);
 
-                break;
+        break;
 
-            default:
+    default:
 
-                end_val = g_mc.fKT;
-                break;
-        }
+        end_val = g_mc.fKT;
+        break;
+    }
 
     if (end_val - g_mc.fKT < 0.005)
-        {
-            puts("\n\n******************************\n");
-            puts("Annealing Is Being Turned Off");
-            puts("\n******************************\n\n");
-            g_system.nAnnealing_Mode = -1;
+    {
+        puts("\n\n******************************\n");
+        puts("Annealing Is Being Turned Off");
+        puts("\n******************************\n\n");
+        g_system.nAnnealing_Mode = -1;
 
-            if (g_system.nBiasPotential_CoupledToTemp)
-                {
-                    BiasPotential_TurnOFF();
-                }
+        if (g_system.nBiasPotential_CoupledToTemp)
+        {
+            BiasPotential_TurnOFF();
         }
+    }
 
     return end_val;
 }
@@ -864,13 +871,13 @@ int* Create1DInt(const size_t xDim, const char* ArrName)
 #if DEBUG_BUILD
     printf("%s is being allocated ... ", ArrName);
 #endif
-    dumPtr = (int*) malloc(xDim * sizeof(int));
+    dumPtr = (int*)malloc(xDim * sizeof(int));
 
     if (dumPtr == NULL)
-        {
-            printf("Not enough memory!\n%s\nCrashing!\n", ArrName);
-            exit(1);
-        }
+    {
+        printf("Not enough memory!\n%s\nCrashing!\n", ArrName);
+        exit(1);
+    }
 #if DEBUG_BUILD
     printf(" ... and allocated!\n");
 #endif
@@ -887,13 +894,13 @@ long* Create1DLong(const size_t xDim, const char* ArrName)
 #if DEBUG_BUILD
     printf("%s is being allocated ... ", ArrName);
 #endif
-    dumPtr = (long*) malloc(xDim * sizeof(long));
+    dumPtr = (long*)malloc(xDim * sizeof(long));
 
     if (dumPtr == NULL)
-        {
-            printf("Not enough memory!\n%s\nCrashing!\n", ArrName);
-            exit(1);
-        }
+    {
+        printf("Not enough memory!\n%s\nCrashing!\n", ArrName);
+        exit(1);
+    }
 #if DEBUG_BUILD
     printf(" ... and allocated!\n");
 #endif
@@ -910,13 +917,13 @@ float* Create1DFloat(const size_t xDim, const char* ArrName)
 #if DEBUG_BUILD
     printf("%s is being allocated ... ", ArrName);
 #endif
-    dumPtr = (float*) malloc(xDim * sizeof(float));
+    dumPtr = (float*)malloc(xDim * sizeof(float));
 
     if (dumPtr == NULL)
-        {
-            printf("Not enough memory!\n%s\nCrashing!\n", ArrName);
-            exit(1);
-        }
+    {
+        printf("Not enough memory!\n%s\nCrashing!\n", ArrName);
+        exit(1);
+    }
 #if DEBUG_BUILD
     printf(" ... and allocated!\n");
 #endif
@@ -933,13 +940,13 @@ long double* Create1DLongdouble(const size_t xDim, const char* ArrName)
 #if DEBUG_BUILD
     printf("%s is being allocated ... ", ArrName);
 #endif
-    dumPtr = (long double*) malloc(xDim * sizeof(long double));
+    dumPtr = (long double*)malloc(xDim * sizeof(long double));
 
     if (dumPtr == NULL)
-        {
-            printf("Not enough memory!\n%s\nCrashing!\n", ArrName);
-            exit(1);
-        }
+    {
+        printf("Not enough memory!\n%s\nCrashing!\n", ArrName);
+        exit(1);
+    }
 #if DEBUG_BUILD
     printf(" ... and allocated!\n");
 #endif
@@ -960,25 +967,25 @@ int** Create2DInt(const size_t xDim, const size_t yDim, const char* ArrName)
     printf("%s is being allocated ... ", ArrName);
 #endif
     int** dumPtr;
-    dumPtr = (int**) malloc(yDim * sizeof(int*));
+    dumPtr = (int**)malloc(yDim * sizeof(int*));
     if (dumPtr == NULL)
-        {
-            printf("Not enough memory!\n%s\nCrashing!\n", ArrName);
-            exit(1);
-        }
+    {
+        printf("Not enough memory!\n%s\nCrashing!\n", ArrName);
+        exit(1);
+    }
 
-    dumPtr[0] = (int*) malloc(xDim * yDim * sizeof(int));
+    dumPtr[0] = (int*)malloc(xDim * yDim * sizeof(int));
     if (dumPtr[0] == NULL)
-        {
-            printf("Not enough memory!\n%s\nCrashing!\n", ArrName);
-            exit(1);
-        }
+    {
+        printf("Not enough memory!\n%s\nCrashing!\n", ArrName);
+        exit(1);
+    }
 
     size_t i;
     for (i = 1; i < yDim; i++)
-        {
-            dumPtr[i] = &dumPtr[0][i * xDim];
-        }
+    {
+        dumPtr[i] = &dumPtr[0][i * xDim];
+    }
 #if DEBUG_BUILD
     printf(" ... and allocated!\n");
 #endif
@@ -999,25 +1006,25 @@ long double** Create2DLongdouble(const size_t xDim, const size_t yDim, const cha
     printf("%s is being allocated ... ", ArrName);
 #endif
     long double** dumPtr;
-    dumPtr = (long double**) malloc(yDim * sizeof(long double*));
+    dumPtr = (long double**)malloc(yDim * sizeof(long double*));
     if (dumPtr == NULL)
-        {
-            printf("Not enough memory!\n%s\nCrashing!\n", ArrName);
-            exit(1);
-        }
+    {
+        printf("Not enough memory!\n%s\nCrashing!\n", ArrName);
+        exit(1);
+    }
 
-    dumPtr[0] = (long double*) malloc(xDim * yDim * sizeof(long double));
+    dumPtr[0] = (long double*)malloc(xDim * yDim * sizeof(long double));
     if (dumPtr[0] == NULL)
-        {
-            printf("Not enough memory!\n%s\nCrashing!\n", ArrName);
-            exit(1);
-        }
+    {
+        printf("Not enough memory!\n%s\nCrashing!\n", ArrName);
+        exit(1);
+    }
 
     size_t i;
     for (i = 1; i < yDim; i++)
-        {
-            dumPtr[i] = &dumPtr[0][i * xDim];
-        }
+    {
+        dumPtr[i] = &dumPtr[0][i * xDim];
+    }
 #if DEBUG_BUILD
     printf(" ... and allocated!\n");
 #endif

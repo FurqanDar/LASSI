@@ -42,40 +42,38 @@ int Lat_Ind_OfBead(const int beadID)
 
 /// Dist_PointToPoint_Box - euclidean min-image distance between integer points with explicit box.
 /// Pure: no globals. Same arithmetic as Dist_PointToPoint.
-float Dist_PointToPoint_Box(const int* const restrict f1, const int* const restrict f2, const int* const restrict box)
+float Dist_PointToPoint_Box(const int* const restrict f1, const int* const restrict f2,
+                            const int* const restrict box)
 {
     int d[POS_MAX];
     int i;
     for (i = 0; i < POS_MAX; i++)
-        {
-            d[i] = abs(f1[i] - f2[i]);
-            d[i] = d[i] > box[i] / 2 ? box[i] - d[i] : d[i];
-        }
+    {
+        d[i] = abs(f1[i] - f2[i]);
+        d[i] = d[i] > box[i] / 2 ? box[i] - d[i] : d[i];
+    }
 
-    return sqrtf((float) (d[POS_X] * d[POS_X] + d[POS_Y] * d[POS_Y] + d[POS_Z] * d[POS_Z]));
+    return sqrtf((float)(d[POS_X] * d[POS_X] + d[POS_Y] * d[POS_Y] + d[POS_Z] * d[POS_Z]));
 }
 
-/// Dist_PointTotPoint_Float - euclidean distance between the vectors (arrays) f1 and f2 where f1 and f2 are floats.
-/// \param f1
-/// \param f2
-/// \return
+/// Dist_PointTotPoint_Float - euclidean distance between the vectors (arrays) f1 and f2 where f1
+/// and f2 are floats. \param f1 \param f2 \return
 float Dist_PointToPoint_Float(const float* f1, const float* f2)
 {
     float d[POS_MAX];
     int i;
     for (i = 0; i < POS_MAX; i++)
-        {
-            d[i] = fabsf(f1[i] - f2[i]);
-            d[i] = d[i] > (float) g_system.naBoxSize[i] / 2. ? (float) g_system.naBoxSize[i] - d[i] : d[i];
-        }
+    {
+        d[i] = fabsf(f1[i] - f2[i]);
+        d[i] =
+            d[i] > (float)g_system.naBoxSize[i] / 2. ? (float)g_system.naBoxSize[i] - d[i] : d[i];
+    }
 
     return sqrtf(d[POS_X] * d[POS_X] + d[POS_Y] * d[POS_Y] + d[POS_Z] * d[POS_Z]);
 }
 
-/// Dist_PointToPoint - euclidean distance between the vectors (arrays) f1 and f2 where f1 and f2 are integer points.
-/// \param f1
-/// \param f2
-/// \return
+/// Dist_PointToPoint - euclidean distance between the vectors (arrays) f1 and f2 where f1 and f2
+/// are integer points. \param f1 \param f2 \return
 float Dist_PointToPoint(const int* const restrict f1, const int* const restrict f2)
 {
     return Dist_PointToPoint_Box(f1, f2, g_system.naBoxSize);
@@ -99,11 +97,11 @@ float Dist_BeadToPoint_Double(const int beadID, const lDub* f1)
     lDub d[POS_MAX];
     int i;
     for (i = 0; i < POS_MAX; i++)
-        {
-            d[i] = fabs((lDub) g_system.bead_info[beadID][i] - f1[i]);
-            d[i] = d[i] > (lDub) g_system.naBoxSize[i] / 2. ? (lDub) g_system.naBoxSize[i] - d[i] : d[i];
-        }
-    return sqrtf((float) (d[POS_X] * d[POS_X] + d[POS_Y] * d[POS_Y] + d[POS_Z] * d[POS_Z]));
+    {
+        d[i] = fabs((lDub)g_system.bead_info[beadID][i] - f1[i]);
+        d[i] = d[i] > (lDub)g_system.naBoxSize[i] / 2. ? (lDub)g_system.naBoxSize[i] - d[i] : d[i];
+    }
+    return sqrtf((float)(d[POS_X] * d[POS_X] + d[POS_Y] * d[POS_Y] + d[POS_Z] * d[POS_Z]));
 }
 
 /// Dist_BeadToPoint_Float - euclidean distance between beadID and the float array f1.
@@ -115,10 +113,11 @@ float Dist_BeadToPoint_Float(const int beadID, const float* f1)
     float d[POS_MAX];
     int i;
     for (i = 0; i < POS_MAX; i++)
-        {
-            d[i] = fabsf((float) g_system.bead_info[beadID][i] - f1[i]);
-            d[i] = d[i] > (float) g_system.naBoxSize[i] / 2. ? (float) g_system.naBoxSize[i] - d[i] : d[i];
-        }
+    {
+        d[i] = fabsf((float)g_system.bead_info[beadID][i] - f1[i]);
+        d[i] =
+            d[i] > (float)g_system.naBoxSize[i] / 2. ? (float)g_system.naBoxSize[i] - d[i] : d[i];
+    }
     return sqrtf((d[POS_X] * d[POS_X] + d[POS_Y] * d[POS_Y] + d[POS_Z] * d[POS_Z]));
 }
 
@@ -136,7 +135,7 @@ float Dist_BeadToBead(const int n1, const int n2)
 /// \return
 float Dist_Vec3n(const int* const f1)
 { // Outputs the magnitude of the vector
-    return sqrtf((float) (f1[0] * f1[0] + f1[1] * f1[1] + f1[2] * f1[2]));
+    return sqrtf((float)(f1[0] * f1[0] + f1[1] * f1[1] + f1[2] * f1[2]));
 }
 
 /// Dist_VecMagSq - non periodic boundary euclidean magnitude of vector
@@ -154,15 +153,15 @@ void Calculate_Distances_For_Radius(float* thisList, const int nRad)
     int dum_iter = 0;
 
     for (r_disp[0] = -nRad; r_disp[0] <= nRad; r_disp[0]++)
+    {
+        for (r_disp[1] = -nRad; r_disp[1] <= nRad; r_disp[1]++)
         {
-            for (r_disp[1] = -nRad; r_disp[1] <= nRad; r_disp[1]++)
-                {
-                    for (r_disp[2] = -nRad; r_disp[2] <= nRad; r_disp[2]++)
-                        {
-                            thisList[dum_iter++] = Dist_Vec3n(r_disp);
-                        }
-                }
+            for (r_disp[2] = -nRad; r_disp[2] <= nRad; r_disp[2]++)
+            {
+                thisList[dum_iter++] = Dist_Vec3n(r_disp);
+            }
         }
+    }
 }
 
 /// LatPos_copy: Copies the position elements to copy_vec.
@@ -175,97 +174,91 @@ void LatPos_copy(int* copy_vec, const int* in_vec)
     copy_vec[2] = in_vec[2];
 }
 
-/// LatPos_gen_rand_wRad. Given a radius, we generate a random set of coordinates between -Radius and Radius
-/// for each dimension. The result is stored in outVec
-/// \param outVec
-/// \param nRadius
+/// LatPos_gen_rand_wRad. Given a radius, we generate a random set of coordinates between -Radius
+/// and Radius for each dimension. The result is stored in outVec \param outVec \param nRadius
 void LatPos_gen_rand_wRad(int outVec[POS_MAX], const int nRadius)
 {
     int j;
     int radUp = 2 * nRadius + 1;
     for (j = 0; j < POS_MAX; j++)
-        {
-            outVec[j] = rand() % radUp;
-        }
+    {
+        outVec[j] = rand() % radUp;
+    }
     for (j = 0; j < POS_MAX; j++)
-        {
-            outVec[j] -= nRadius;
-        }
+    {
+        outVec[j] -= nRadius;
+    }
 }
 
-/// LatPos_add_wPBC: Given firVec and secVec, we add the two vectors, and take care of PBCs, storing in outVec.
-/// The implementation assumes that the sum of any coordinate can not be larger than twice the lattice-size,
-/// because there is no explicit modulo operation.
-/// \param outVec
-/// \param firVec
-/// \param secVec
+/// LatPos_add_wPBC: Given firVec and secVec, we add the two vectors, and take care of PBCs, storing
+/// in outVec. The implementation assumes that the sum of any coordinate can not be larger than
+/// twice the lattice-size, because there is no explicit modulo operation. \param outVec \param
+/// firVec \param secVec
 void LatPos_add_wPBC(int* outVec, const int* firVec, const int* secVec)
 {
     short j;
     for (j = 0; j < POS_MAX; j++)
-        {
-            outVec[j] = firVec[j] + secVec[j];
-        }
+    {
+        outVec[j] = firVec[j] + secVec[j];
+    }
     for (j = 0; j < POS_MAX; j++)
-        {
-            outVec[j] = outVec[j] < 0 ? outVec[j] + g_system.naBoxSize[j] : outVec[j];
-        }
+    {
+        outVec[j] = outVec[j] < 0 ? outVec[j] + g_system.naBoxSize[j] : outVec[j];
+    }
     for (j = 0; j < POS_MAX; j++)
-        {
-            outVec[j] = outVec[j] >= g_system.naBoxSize[j] ? outVec[j] - g_system.naBoxSize[j] : outVec[j];
-        }
+    {
+        outVec[j] =
+            outVec[j] >= g_system.naBoxSize[j] ? outVec[j] - g_system.naBoxSize[j] : outVec[j];
+    }
 }
 
-/// LatPos_add_wPBC_ofComp: Given firVec and secVec, we add the compNum component of the two vectors,
-/// and take care of PBCs, storing in outVec.
-/// The implementation assumes that the sum of any coordinate can not be larger than twice the lattice-size,
-/// because there is no explicit modulo operation.
-/// \param outVec
-/// \param firVec
-/// \param secVec
+/// LatPos_add_wPBC_ofComp: Given firVec and secVec, we add the compNum component of the two
+/// vectors, and take care of PBCs, storing in outVec. The implementation assumes that the sum of
+/// any coordinate can not be larger than twice the lattice-size, because there is no explicit
+/// modulo operation. \param outVec \param firVec \param secVec
 void LatPos_add_wPBC_ofComp(int* outVec, const int* firVec, const int* secVec, const int compNum)
 {
     outVec[compNum] = firVec[compNum] + secVec[compNum];
-    outVec[compNum] = outVec[compNum] < 0 ? outVec[compNum] + g_system.naBoxSize[compNum] : outVec[compNum];
     outVec[compNum] =
-        outVec[compNum] >= g_system.naBoxSize[compNum] ? outVec[compNum] - g_system.naBoxSize[compNum] : outVec[compNum];
+        outVec[compNum] < 0 ? outVec[compNum] + g_system.naBoxSize[compNum] : outVec[compNum];
+    outVec[compNum] = outVec[compNum] >= g_system.naBoxSize[compNum]
+                          ? outVec[compNum] - g_system.naBoxSize[compNum]
+                          : outVec[compNum];
 }
 
-/// LatPos_add_noPBC: Given the two arrays firVec and secVec, we store the sum of the two arrays in outVec.
-/// \param outVec
-/// \param firVec
-/// \param secVec
+/// LatPos_add_noPBC: Given the two arrays firVec and secVec, we store the sum of the two arrays in
+/// outVec. \param outVec \param firVec \param secVec
 void LatPos_add_noPBC(int* outVec, const int* firVec, const int* secVec)
 {
     short j;
     for (j = 0; j < POS_MAX; j++)
-        {
-            outVec[j] = firVec[j] + secVec[j];
-        }
+    {
+        outVec[j] = firVec[j] + secVec[j];
+    }
 }
 
-/// BeadPos_sub_wPBC: Given firVec and secVec, we subtract second from first, and take care of PBCs, storing in outVec.
-/// The implementation assumes that the sum of any coordinate can not be larger than the lattice size
-/// because there is no explicit modulo operation.
-/// This version is specifically for bead-positions, or for inter-bead calculations.
-/// \param outVec
-/// \param firVec
+/// BeadPos_sub_wPBC: Given firVec and secVec, we subtract second from first, and take care of PBCs,
+/// storing in outVec. The implementation assumes that the sum of any coordinate can not be larger
+/// than the lattice size because there is no explicit modulo operation. This version is
+/// specifically for bead-positions, or for inter-bead calculations. \param outVec \param firVec
 /// \param secVec
 void BeadPos_sub_wPBC(int* outVec, const int* firVec, const int* secVec)
 {
     short j;
     for (j = 0; j < POS_MAX; j++)
-        {
-            outVec[j] = firVec[j] - secVec[j];
-        }
+    {
+        outVec[j] = firVec[j] - secVec[j];
+    }
     for (j = 0; j < POS_MAX; j++)
-        {
-            outVec[j] = outVec[j] < -g_system.naBoxSize[j] / 2.f ? outVec[j] + g_system.naBoxSize[j] : outVec[j]; // pht
-        }
+    {
+        outVec[j] = outVec[j] < -g_system.naBoxSize[j] / 2.f ? outVec[j] + g_system.naBoxSize[j]
+                                                             : outVec[j]; // pht
+    }
     for (j = 0; j < POS_MAX; j++)
-        {
-            outVec[j] = outVec[j] >= g_system.naBoxSize[j] / 2.f ? outVec[j] - g_system.naBoxSize[j] : outVec[j]; // pht
-        }
+    {
+        outVec[j] = outVec[j] >= g_system.naBoxSize[j] / 2.f ? outVec[j] - g_system.naBoxSize[j]
+                                                             : outVec[j]; // pht
+    }
 }
 
 int Vec3n_DotProd(const int* vec_1, const int* vec_2)
@@ -280,18 +273,17 @@ int Vec3n_DotProd(const int* vec_1, const int* vec_2)
 /// \return
 float Vec3n_CosTheta(const int* v1, const int* v2)
 {
-    const int dotProd       = Vec3n_DotProd(v1, v2);
-    const int vec1MagSq     = Vec3n_DotProd(v1, v1);
-    const int vec2MagSq     = Vec3n_DotProd(v2, v2);
-    const float dumDenom    = (float) vec1MagSq * (float) vec2MagSq;
-    const float dumCosTheta = (float) dotProd / sqrtf(dumDenom);
+    const int dotProd = Vec3n_DotProd(v1, v2);
+    const int vec1MagSq = Vec3n_DotProd(v1, v1);
+    const int vec2MagSq = Vec3n_DotProd(v2, v2);
+    const float dumDenom = (float)vec1MagSq * (float)vec2MagSq;
+    const float dumCosTheta = (float)dotProd / sqrtf(dumDenom);
 
     return dumCosTheta;
 }
 
 float Vec3n_AngleBetweenVecs(const int* vec_1, const int* vec_2)
 {
-
     const float dumAng = Vec3n_CosTheta(vec_1, vec_2);
     return acosf(dumAng);
 }

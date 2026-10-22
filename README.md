@@ -18,6 +18,23 @@ Please address all questions to [Furqan](http://pappulab.wustl.edu/people.html#g
 After Phase 1 file splits, modules under `src/` are grouped by concern
 (moves, structure, I/O). See [`docs/src-layout.md`](docs/src-layout.md).
 
+## Code formatting
+
+C/H sources under `src/` and `tests/` are formatted with
+[clang-format](https://clang.llvm.org/docs/ClangFormat.html) using the root
+[`.clang-format`](.clang-format) (LLVM-based). CI runs a dry-run check on every
+push and pull request to `master` / `main` (see
+[`.github/workflows/format.yml`](.github/workflows/format.yml)). Local
+pre-commit hooks are optional later; not required today.
+
+```bash
+# Reformat project C/H (same scope as CI)
+find src tests -type f \( -name '*.c' -o -name '*.h' \) -print0 | xargs -0 clang-format -i
+
+# Check without writing (CI equivalent)
+find src tests -type f \( -name '*.c' -o -name '*.h' \) -print0 | xargs -0 clang-format --dry-run --Werror
+```
+
 ## Characterization / regression harness
 
 Pinned-seed smoke decks under `tests/characterization/`. One command from the

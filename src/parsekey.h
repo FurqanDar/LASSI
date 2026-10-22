@@ -3,8 +3,8 @@
 
 #include "global.h"
 
-//#include <stdio.h>
-//#include <string.h>
+// #include <stdio.h>
+// #include <string.h>
 
 int Parse_Keyfile(char* filename);
 
