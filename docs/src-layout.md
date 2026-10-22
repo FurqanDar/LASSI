@@ -1,16 +1,17 @@
-#Source layout(after Phase 1 splits)
+# Source layout (after Phase 1 splits)
 
-Brief map of where C modules live under `src /`.Public APIs stay in the existing
-                                                  headers(`mcmove.h`, `structure.h`, `print.h`, …)
-                                                      .No behavior change is implied by this split.
+Brief map of where C modules live under `src/`. Public APIs stay in the
+existing headers (`mcmove.h`, `structure.h`, `print.h`, …). No behavior change
+is implied by this split.
 
-                                              ##Entry
-        / config
+## Entry / config
 
-    | Files | Role | | -- -- -- - | -- -- -- | | `main.c` | Program entry and run loop |
-    | `parsekey.c` / `parsekey.h` | Keyfile parsing → `SimulationConfig` (`g_config`);
-`Config_ApplyToRuntime` shims into domain globals | | `initialize.c` / `initialize.h` | System setup; AtStart / initial-conditions entrypoints take `const SimulationConfig*` |
-| `global.h` / `globals.c` | Shared globals, domain structs, `SimulationConfig` |
+| Files | Role |
+|-------|------|
+| `main.c` | Program entry and run loop |
+| `parsekey.c` / `parsekey.h` | Keyfile parsing → `SimulationConfig` (`g_config`); `Config_ApplyToRuntime` shims into domain globals |
+| `initialize.c` / `initialize.h` | System setup; AtStart / initial-conditions entrypoints take `const SimulationConfig*` |
+| `global.h` / `globals.c` | Shared globals, domain structs, `SimulationConfig` (scratch vs durable tags — see below) |
 
 ## Monte Carlo moves (`mcmove.h`)
 
@@ -48,12 +49,17 @@ Brief map of where C modules live under `src /`.Public APIs stay in the existing
 
 | Files | Role |
 |-------|------|
-| `energy.c` / `energy.h` | Energy evaluation (system/chain totals, Iso For* move deltas, topo) |
-| `energy_iso.c` | Isotropic OVLP/CONT/fSol pair kernels + empty-site solvation (pure FromCoupling + wrappers) |
-| `energy_aniso.c` | Anisotropic SC-SC bond kernels (pure FromCoupling + bead-facing wrappers) |
+| `energy.c` / `energy.h` | Energy evaluation (system/chain totals, Iso For* move deltas) |
+| `energy_iso.c` | Isotropic OVLP/CONT/fSol pair kernels + empty-site solvation |
+| `energy_aniso.c` | Anisotropic SC-SC bond kernels |
 
 Build: `src/compile.sh` (also wired in top-level `Makefile` / `CMakeLists.txt`).
 Regression gate: `make characterization`.
+
+## Scratch vs durable
+
+See [`docs/scratch-vs-durable.md`](scratch-vs-durable.md) (Phase 7.1 inventory).
+Tagged in `src/global.h` domain structs.
 
 ## Dependency direction
 

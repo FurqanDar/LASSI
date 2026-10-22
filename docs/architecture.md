@@ -19,6 +19,8 @@ In practice:
 **Must not:** a lower layer `#include` a higher-layer header (e.g. structure must not include `print.h` / `mcmove.h` / `energy.h`; energy must not include `mcmove.h` / `print.h`; moves should not include `print.h` / `initialize.h`).
 
 `global.h` / `globals.c` are process-wide state shared by all layers (not a dependency edge in the sense above).
+Scratch vs durable ownership within those structs is inventoried in
+[`docs/scratch-vs-durable.md`](scratch-vs-durable.md) (Phase 7.1).
 
 ## Move-facing cluster API
 
