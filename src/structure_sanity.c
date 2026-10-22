@@ -1,9 +1,14 @@
 #include "structure.h"
-#include "cluster.h"
-#include "energy.h"
-#include "mcmove.h"
-#include "print.h"
 
+/* print.h is I/O-layer; forward-declare only the crash/sanity printers we call
+ * so structure does not take a hard include edge upward into I/O (Phase 3.1). */
+void ScreenIO_Print_SanityCheckFailurePreamble(long nGen, int run_cycle);
+void ScreenIO_Print_SanityFail_BeadPosAndLattPos(int badBead);
+void ScreenIO_Print_SanityFail_MolecularStructure(int badBead);
+void ScreenIO_Print_SanityFail_SelfBond(int badBead);
+void ScreenIO_Print_SanityFail_BeadBondSymmetry(int badBead);
+void ScreenIO_Print_SanityFail_BeadBondDistance(int badBead);
+void FileIO_PrintCrashSnapshot(void);
 
 /// CheckSystemUtil_BeadPosAndLattPosOK. Loop over all beads and make sure that the bead's internal position
 /// matches the beadID that is placed at that location.

@@ -1,9 +1,4 @@
 #include "structure.h"
-#include "cluster.h"
-#include "energy.h"
-#include "mcmove.h"
-#include "print.h"
-
 
 /// BeadIDListOP_GetChainIDs: Given beadList of size beadNum, we record the chainIDs of every bead into chainList.
 /// Make sure chainList is as big as beadList.

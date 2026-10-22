@@ -1,9 +1,7 @@
 #include "print.h"
-#include "initialize.h"
 #include "cluster.h"
 #include "energy.h"
 #include "structure.h"
-
 
 /// ForPrinting_GetReportState. Calculates if the current step is a multiple of the reporting frequency
 /// for this particular report.
