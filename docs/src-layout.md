@@ -17,7 +17,7 @@ is implied by this split.
 
 | Files | Role |
 |-------|------|
-| `mcmove.c` | Dispatch: `MC_Step`, `MC_Step_Therm` |
+| `mcmove.c` | Thin `MC_Step` / `MC_Step_Therm` over `MV_*` runner tables |
 | `mcmove_moves.c` | Production `Move_*` |
 | `mcmove_moves_equil.c` | Thermalization `Move_*_Equil` |
 | `mcmove_ops.c` | `OP_*` lattice/bead helpers, Rosenbluth, MH |
