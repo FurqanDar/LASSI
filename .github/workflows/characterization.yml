@@ -12,5 +12,8 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Run lattice unit tests
+        run: make unit-lattice
+
       - name: Run characterization harness
         run: make characterization
