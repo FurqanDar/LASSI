@@ -15,5 +15,11 @@ jobs:
       - name: Run lattice unit tests
         run: make unit-lattice
 
+      - name: Run linker legality unit tests
+        run: make unit-legal
+
+      - name: Run isotropic energy unit tests
+        run: make unit-energy
+
       - name: Run characterization harness
         run: make characterization

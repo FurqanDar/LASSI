@@ -2,3 +2,4 @@
 tests/characterization/.work/
 tests/unit/test_lattice_index
 tests/unit/test_linker_legal
+tests/unit/test_energy_iso

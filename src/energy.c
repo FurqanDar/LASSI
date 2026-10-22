@@ -263,35 +263,6 @@ float Energy_Anisotropic_For_List(const int beadID, const int listSize, const in
     }
 }
 
-/// Energy_Iso_Ovlp - calculate the OVLP interaction between two beads of types
-/// beadType1 and beadType2, respectively. \param beadType1: Type of first bead.
-/// \param beadType2: Type of second bead.
-/// \param xDis: Distance between the two beads.
-/// \return g_energy.faEnergy[beadType1][beadType2][E_OVLP].
-float Energy_Iso_Ovlp(int const beadType1, int const beadType2, float const xDis)
-{
-    return g_energy.faEnergy[beadType1][beadType2][E_OVLP];
-}
-
-/// Energy_Iso_Cont - calculate the CONT interaction between two beads of types
-/// beadType1 and beadType2, respectively. \param beadType1: Type of first bead.
-/// \param beadType2: Type of second bead.
-/// \param xDis: Distance between the two beads.
-/// \return g_energy.faEnergy[beadType1][beadType2][E_CONT]/xDis.
-float Energy_Iso_Cont(int const beadType1, int const beadType2, float const xDis)
-{
-    return g_energy.faEnergy[beadType1][beadType2][E_CONT] / xDis;
-}
-
-/// Energy_Iso_fSol: Returns the solvation energy of this bead.
-/// \param beadType
-/// \param xDis
-/// \return
-inline float Energy_Iso_fSol(int const beadType)
-{
-    return g_energy.faEnergy[beadType][beadType][E_F_SOL];
-}
-
 float Energy_Topo_Angle(int const beadID)
 {
     const int resi = g_system.bead_info[beadID][BEAD_TYPE];
@@ -435,8 +406,7 @@ float Energy_ofPairs_wNeighList(int const beadID, const int* neighList, int cons
         tmpID = neighList[i];
         resj = g_system.bead_info[tmpID][BEAD_TYPE];
         xDis = Dist_BeadToBead(beadID, tmpID);
-        totEn += Energy_Iso_Ovlp(resi, resj, xDis);
-        totEn += Energy_Iso_Cont(resi, resj, xDis);
+        totEn += Energy_Iso_PairDelta(resi, resj, xDis);
     }
 
     return totEn;
@@ -1180,7 +1150,7 @@ void Energy_Total_System(void)
         {
             ovlp_num = NeighborSearch_ForOvlp(i, g_system.bead_info[i], g_system.naOldOvlpNeighs);
             g_energy.faCurrEn[E_OVLP] += Energy_OfOvlp_wNeighList(i, g_system.naOldOvlpNeighs, ovlp_num);
-            g_energy.faCurrEn[E_F_SOL] += (float)(26 - ovlp_num) * g_energy.faEnergy[resi][resi][E_F_SOL];
+            g_energy.faCurrEn[E_F_SOL] += Energy_Iso_EmptySiteSol(resi, 26 - ovlp_num);
         }
     }
 
@@ -1302,7 +1272,7 @@ void Energy_Iso_ForLocal(
 
     if (g_system.nBeadTypeCanFSol[resi])
     { // Solvation energy.
-        *oldEn = *oldEn + (float)(26 - *ovlp_num) * g_energy.faEnergy[resi][resi][E_F_SOL];
+        *oldEn = *oldEn + Energy_Iso_EmptySiteSol(resi, 26 - *ovlp_num);
         *newEn = *newEn + Energy_ofSol_wNeighList(ovlp_neighs, *ovlp_num);
     }
 }
@@ -1342,7 +1312,7 @@ void Energy_Iso_ForLocalEquil(
 
     if (g_system.nBeadTypeCanFSol[resi])
     { // Solvation energy.
-        *oldEn = *oldEn + (float)(26 - *ovlp_num) * g_energy.faEnergy[resi][resi][E_F_SOL];
+        *oldEn = *oldEn + Energy_Iso_EmptySiteSol(resi, 26 - *ovlp_num);
         *newEn = *newEn + Energy_ofSol_wNeighList(ovlp_neighs, *ovlp_num);
     }
 }
@@ -1385,7 +1355,7 @@ void Energy_Iso_ForChains(
 
     if (g_system.nBeadTypeCanFSol[resi])
     { // Solvation energy.
-        *oldEn = *oldEn + (float)(26 - *ovlp_num) * g_energy.faEnergy[resi][resi][E_F_SOL];
+        *oldEn = *oldEn + Energy_Iso_EmptySiteSol(resi, 26 - *ovlp_num);
         *newEn = *newEn + Energy_ofSol_wNeighList(ovlp_neighs, *ovlp_num);
     }
 }
@@ -1428,7 +1398,7 @@ void Energy_Iso_ForChainsEquil(
 
     if (g_system.nBeadTypeCanFSol[resi])
     { // Solvation energy.
-        *oldEn = *oldEn + (float)(26 - *ovlp_num) * g_energy.faEnergy[resi][resi][E_F_SOL];
+        *oldEn = *oldEn + Energy_Iso_EmptySiteSol(resi, 26 - *ovlp_num);
         *newEn = *newEn + Energy_ofSol_wNeighList(ovlp_neighs, *ovlp_num);
     }
 }
@@ -1471,7 +1441,7 @@ void Energy_Iso_ForCoLocal(
 
     if (g_system.nBeadTypeCanFSol[resi])
     { // Solvation energy.
-        *oldEn = *oldEn + (float)(26 - *ovlp_num) * g_energy.faEnergy[resi][resi][E_F_SOL];
+        *oldEn = *oldEn + Energy_Iso_EmptySiteSol(resi, 26 - *ovlp_num);
         *newEn = *newEn + Energy_ofSol_wNeighList(ovlp_neighs, *ovlp_num);
     }
 }
@@ -1506,7 +1476,7 @@ void Energy_Iso_ForLists(
 
     if (g_system.nBeadTypeCanFSol[resi])
     { // Solvation energy.
-        *oldEn = *oldEn + (float)(26 - *ovlp_num) * g_energy.faEnergy[resi][resi][E_F_SOL];
+        *oldEn = *oldEn + Energy_Iso_EmptySiteSol(resi, 26 - *ovlp_num);
         *newEn = *newEn + Energy_ofSol_wNeighList(ovlp_neighs, *ovlp_num);
     }
 
@@ -1563,7 +1533,7 @@ void Energy_Iso_ForRange(
 
     if (g_system.nBeadTypeCanFSol[resi])
     { // Solvation energy.
-        *oldEn = *oldEn + (float)(26 - *ovlp_num) * g_energy.faEnergy[resi][resi][E_F_SOL];
+        *oldEn = *oldEn + Energy_Iso_EmptySiteSol(resi, 26 - *ovlp_num);
         *newEn = *newEn + Energy_ofSol_wNeighList(ovlp_neighs, *ovlp_num);
     }
 }
@@ -1610,7 +1580,7 @@ void Energy_Iso_ForRangeEquil(
 
     if (g_system.nBeadTypeCanFSol[resi])
     { // Solvation energy.
-        *oldEn = *oldEn + (float)(26 - *ovlp_num) * g_energy.faEnergy[resi][resi][E_F_SOL];
+        *oldEn = *oldEn + Energy_Iso_EmptySiteSol(resi, 26 - *ovlp_num);
         *newEn = *newEn + Energy_ofSol_wNeighList(ovlp_neighs, *ovlp_num);
     }
 }
