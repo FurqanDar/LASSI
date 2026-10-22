@@ -25,6 +25,8 @@ add_executable(lassi
         src/parsekey.c
         src/parsekey.h
         src/print.c
+        src/print_screen.c
+        src/print_fileio.c
         src/print.h
         src/structure.c
         src/structure_sanity.c
