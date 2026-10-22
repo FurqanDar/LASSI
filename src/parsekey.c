@@ -5,6 +5,53 @@
 
 int str2farr(char* strRaw, float fArray[MAX_AA]);
 
+/// Config_ApplyToRuntime - copy keyfile-parsed SimulationConfig into the process-wide
+/// runtime domains. Phase 6.1 shim: init and MC still read g_mc / g_system / …;
+/// Phase 6.2 can consume cfg explicitly.
+void Config_ApplyToRuntime(const SimulationConfig* cfg)
+{
+    int i;
+
+    for (i = 0; i < POS_MAX; i++)
+    {
+        g_system.naBoxSize[i] = cfg->naBoxSize[i];
+    }
+    g_system.nAnnealing_Mode = cfg->nAnnealing_Mode;
+    g_system.nTemp_inv = cfg->nTemp_inv;
+    g_system.nBiasPotential_Mode = cfg->nBiasPotential_Mode;
+    g_system.nBiasPotential_KeepON = cfg->nBiasPotential_KeepON;
+    g_system.nBiasPotential_CoupledToTemp = cfg->nBiasPotential_CoupledToTemp;
+
+    g_mc.fKT = cfg->fKT;
+    g_mc.fPreKT = cfg->fPreKT;
+    g_mc.fMC_TempRate = cfg->fMC_TempRate;
+    g_mc.fDeltaTemp = cfg->fDeltaTemp;
+    g_mc.fSquishRad = cfg->fSquishRad;
+    g_mc.fSquish_Stiff = cfg->fSquish_Stiff;
+    g_mc.nMCStepsPerCycle = cfg->nMCStepsPerCycle;
+    g_mc.nMCStepsForTherm = cfg->nMCStepsForTherm;
+    g_mc.nTotCycleNum = cfg->nTotCycleNum;
+    g_mc.nRNG_Seed = cfg->nRNG_Seed;
+    for (i = 0; i < MAX_MV; i++)
+    {
+        g_mc.faMCFreq[i] = cfg->faMCFreq[i];
+    }
+
+    strncpy(g_reports.strRestartFile, cfg->strRestartFile, sizeof(g_reports.strRestartFile) - 1);
+    g_reports.strRestartFile[sizeof(g_reports.strRestartFile) - 1] = '\0';
+    strncpy(g_reports.strReportPrefix, cfg->strReportPrefix, sizeof(g_reports.strReportPrefix) - 1);
+    g_reports.strReportPrefix[sizeof(g_reports.strReportPrefix) - 1] = '\0';
+    for (i = 0; i < MAX_REPORT; i++)
+    {
+        g_reports.naReportFreqs[i] = cfg->naReportFreqs[i];
+    }
+    g_reports.nTrajMode = cfg->nTrajMode;
+
+    g_analysis.nClusteringMode = cfg->nClusteringMode;
+    /* Same derivation as former inline BOX_SIZE handling. */
+    g_analysis.nRDF_TotBins = cfg->naBoxSize[0] * 4;
+}
+
 /// Parse_KeyFile - reads the parameter keyfile. I recommend using the Python
 /// scripts to generate key files that are used in actual runs. Have to
 /// painstakingly go through every different keyword that exists in the keyfile.
@@ -20,12 +67,12 @@ int Parse_Keyfile(char* filename)
     char strLine[1000];
     char strKeyword[1000];
     char strTemp[1000];
-    char strEnergyFile[1000];
-    char strStructFile[1000];
-    int nStructFiletype = 0;
     char strTempArr[3][1000];
-    strEnergyFile[0] = '\0';
-    strStructFile[0] = '\0';
+    strncpy(g_config.strKeyfile, filename, sizeof(g_config.strKeyfile) - 1);
+    g_config.strKeyfile[sizeof(g_config.strKeyfile) - 1] = '\0';
+    g_config.strEnergyFile[0] = '\0';
+    g_config.strStructFile[0] = '\0';
+    g_config.nStructFiletype = 0;
 
     int nLine = 0;
 
@@ -33,10 +80,10 @@ int Parse_Keyfile(char* filename)
 
     for (i = 0; i < MAX_MV; i++)
     {
-        g_mc.faMCFreq[i] = 0.0f; // initialization; to be normalized
+        g_config.faMCFreq[i] = 0.0f; // initialization; to be normalized
     }
-    g_system.nBiasPotential_Mode = 0;
-    g_system.nAnnealing_Mode = -1;
+    g_config.nBiasPotential_Mode = 0;
+    g_config.nAnnealing_Mode = -1;
     while (fgets(strLine, sizeof(strLine), infile) != NULL)
     {
         nLine++;
@@ -64,195 +111,194 @@ int Parse_Keyfile(char* filename)
                 sscanf(strLine, "%*s %s %s %s", strTempArr[0], strTempArr[1], strTempArr[2]);
                 if (strTempArr[1][0] < '0' || strTempArr[1][0] > '9')
                 {
-                    g_system.naBoxSize[0] = atoi(strTempArr[0]);
-                    g_system.naBoxSize[1] = g_system.naBoxSize[0];
-                    g_system.naBoxSize[2] = g_system.naBoxSize[0];
+                    g_config.naBoxSize[0] = atoi(strTempArr[0]);
+                    g_config.naBoxSize[1] = g_config.naBoxSize[0];
+                    g_config.naBoxSize[2] = g_config.naBoxSize[0];
                 }
                 else
                 {
                     if (strTempArr[2][0] < '0' || strTempArr[2][0] > '9')
                     {
-                        g_system.naBoxSize[0] = atoi(strTempArr[0]);
-                        g_system.naBoxSize[1] = atoi(strTempArr[1]);
-                        g_system.naBoxSize[2] = 0; // error handling required
+                        g_config.naBoxSize[0] = atoi(strTempArr[0]);
+                        g_config.naBoxSize[1] = atoi(strTempArr[1]);
+                        g_config.naBoxSize[2] = 0; // error handling required
                     }
                     else
                     {
-                        g_system.naBoxSize[0] = atoi(strTempArr[0]);
-                        g_system.naBoxSize[1] = atoi(strTempArr[1]);
-                        g_system.naBoxSize[2] = atoi(strTempArr[2]);
+                        g_config.naBoxSize[0] = atoi(strTempArr[0]);
+                        g_config.naBoxSize[1] = atoi(strTempArr[1]);
+                        g_config.naBoxSize[2] = atoi(strTempArr[2]);
                     }
                 }
-                g_analysis.nRDF_TotBins = g_system.naBoxSize[0] * 4;
             }
             else if (strcmp(strKeyword, "MC_TEMP") == 0)
             {
-                sscanf(strLine, "%*s %f", &g_mc.fKT);
+                sscanf(strLine, "%*s %f", &g_config.fKT);
             }
             else if (strcmp(strKeyword, "N_STEPS") == 0)
             {
-                sscanf(strLine, "%*s %ld", &g_mc.nMCStepsPerCycle);
+                sscanf(strLine, "%*s %ld", &g_config.nMCStepsPerCycle);
             }
             else if (strcmp(strKeyword, "PREEQ_STEPS") == 0)
             {
-                sscanf(strLine, "%*s %ld", &g_mc.nMCStepsForTherm);
+                sscanf(strLine, "%*s %ld", &g_config.nMCStepsForTherm);
             }
             else if (strcmp(strKeyword, "PREEQ_TEMP") == 0)
             {
-                sscanf(strLine, "%*s %f", &g_mc.fPreKT);
+                sscanf(strLine, "%*s %f", &g_config.fPreKT);
             }
             else if (strcmp(strKeyword, "MC_TEMP_RATE") == 0)
             {
-                sscanf(strLine, "%*s %f", &g_mc.fMC_TempRate);
+                sscanf(strLine, "%*s %f", &g_config.fMC_TempRate);
             }
             else if (strcmp(strKeyword, "MC_TEMP_MODE") == 0)
             {
-                sscanf(strLine, "%*s %d", &g_system.nAnnealing_Mode);
+                sscanf(strLine, "%*s %d", &g_config.nAnnealing_Mode);
             }
             else if (strcmp(strKeyword, "MC_DELTA_TEMP") == 0)
             {
-                sscanf(strLine, "%*s %f", &g_mc.fDeltaTemp);
+                sscanf(strLine, "%*s %f", &g_config.fDeltaTemp);
             }
             else if (strcmp(strKeyword, "MC_INVERT_TEMP") == 0)
             {
-                sscanf(strLine, "%*s %d", &g_system.nTemp_inv);
+                sscanf(strLine, "%*s %d", &g_config.nTemp_inv);
             }
             else if (strcmp(strKeyword, "MC_CYCLE_NUM") == 0)
             {
-                sscanf(strLine, "%*s %d", &g_mc.nTotCycleNum);
+                sscanf(strLine, "%*s %d", &g_config.nTotCycleNum);
             }
             else if (strcmp(strKeyword, "MC_INDENT_MODE") == 0)
             {
-                sscanf(strLine, "%*s %d", &g_system.nBiasPotential_Mode);
+                sscanf(strLine, "%*s %d", &g_config.nBiasPotential_Mode);
             }
             else if (strcmp(strKeyword, "MV_TRANS_FREQ") == 0)
             {
-                sscanf(strLine, "%*s %f", &g_mc.faMCFreq[MV_TRANS]);
+                sscanf(strLine, "%*s %f", &g_config.faMCFreq[MV_TRANS]);
             }
             else if (strcmp(strKeyword, "MV_CLSTR_FREQ") == 0)
             {
-                sscanf(strLine, "%*s %f", &g_mc.faMCFreq[MV_CLSTR]);
+                sscanf(strLine, "%*s %f", &g_config.faMCFreq[MV_CLSTR]);
             }
             else if (strcmp(strKeyword, "MV_SMCLSTR_FREQ") == 0)
             {
-                sscanf(strLine, "%*s %f", &g_mc.faMCFreq[MV_SMCLSTR]);
+                sscanf(strLine, "%*s %f", &g_config.faMCFreq[MV_SMCLSTR]);
             }
             else if (strcmp(strKeyword, "MV_STROT_FREQ") == 0)
             {
-                sscanf(strLine, "%*s %f", &g_mc.faMCFreq[MV_STROT]);
+                sscanf(strLine, "%*s %f", &g_config.faMCFreq[MV_STROT]);
             }
             else if (strcmp(strKeyword, "MV_LOCAL_FREQ") == 0)
             {
-                sscanf(strLine, "%*s %f", &g_mc.faMCFreq[MV_LOCAL]);
+                sscanf(strLine, "%*s %f", &g_config.faMCFreq[MV_LOCAL]);
             }
             else if (strcmp(strKeyword, "MV_SNAKE_FREQ") == 0)
             {
-                sscanf(strLine, "%*s %f", &g_mc.faMCFreq[MV_SNAKE]);
+                sscanf(strLine, "%*s %f", &g_config.faMCFreq[MV_SNAKE]);
             }
             else if (strcmp(strKeyword, "MV_DBPVT_FREQ") == 0)
             {
-                sscanf(strLine, "%*s %f", &g_mc.faMCFreq[MV_DBPVT]);
+                sscanf(strLine, "%*s %f", &g_config.faMCFreq[MV_DBPVT]);
             }
             else if (strcmp(strKeyword, "MV_COLOCAL_FREQ") == 0)
             {
-                sscanf(strLine, "%*s %f", &g_mc.faMCFreq[MV_COLOCAL]);
+                sscanf(strLine, "%*s %f", &g_config.faMCFreq[MV_COLOCAL]);
             }
             else if (strcmp(strKeyword, "MV_MTLOCAL_FREQ") == 0)
             {
-                sscanf(strLine, "%*s %f", &g_mc.faMCFreq[MV_MTLOCAL]);
+                sscanf(strLine, "%*s %f", &g_config.faMCFreq[MV_MTLOCAL]);
             }
             else if (strcmp(strKeyword, "MV_PIVOT_FREQ") == 0)
             {
-                sscanf(strLine, "%*s %f", &g_mc.faMCFreq[MV_PIVOT]);
+                sscanf(strLine, "%*s %f", &g_config.faMCFreq[MV_PIVOT]);
             }
             else if (strcmp(strKeyword, "MV_BRROT_FREQ") == 0)
             {
-                sscanf(strLine, "%*s %f", &g_mc.faMCFreq[MV_BRROT]);
+                sscanf(strLine, "%*s %f", &g_config.faMCFreq[MV_BRROT]);
             }
             else if (strcmp(strKeyword, "MV_PR_SMCLSTR") == 0)
             {
-                sscanf(strLine, "%*s %f", &g_mc.faMCFreq[MV_PR_SMCLSTR]);
+                sscanf(strLine, "%*s %f", &g_config.faMCFreq[MV_PR_SMCLSTR]);
             }
             else if (strcmp(strKeyword, "MV_PR_CLSTR") == 0)
             {
-                sscanf(strLine, "%*s %f", &g_mc.faMCFreq[MV_PR_CLSTR]);
+                sscanf(strLine, "%*s %f", &g_config.faMCFreq[MV_PR_CLSTR]);
             }
             else if (strcmp(strKeyword, "RESTART_FILE") == 0)
             {
-                sscanf(strLine, "%*s %s", g_reports.strRestartFile);
+                sscanf(strLine, "%*s %s", g_config.strRestartFile);
             }
             else if (strcmp(strKeyword, "STRUCT_FILETYPE") == 0)
             {
-                sscanf(strLine, "%*s %d", &nStructFiletype);
+                sscanf(strLine, "%*s %d", &g_config.nStructFiletype);
             }
             else if (strcmp(strKeyword, "STRUCT_FILE") == 0)
             {
-                sscanf(strLine, "%*s %s", strStructFile);
+                sscanf(strLine, "%*s %s", g_config.strStructFile);
             }
             else if (strcmp(strKeyword, "ENERGY_FILE") == 0)
             {
-                sscanf(strLine, "%*s %s", strEnergyFile);
+                sscanf(strLine, "%*s %s", g_config.strEnergyFile);
             }
             else if (strcmp(strKeyword, "RANDOM_SEED") == 0)
             {
-                sscanf(strLine, "%*s %d", &g_mc.nRNG_Seed);
-                g_mc.nRNG_Seed = g_mc.nRNG_Seed == 0 ? time(NULL) : g_mc.nRNG_Seed;
+                sscanf(strLine, "%*s %d", &g_config.nRNG_Seed);
+                g_config.nRNG_Seed = g_config.nRNG_Seed == 0 ? time(NULL) : g_config.nRNG_Seed;
             }
             else if (strcmp(strKeyword, "REPORT_PREFIX") == 0)
             {
-                sscanf(strLine, "%*s %s", g_reports.strReportPrefix);
+                sscanf(strLine, "%*s %s", g_config.strReportPrefix);
             }
             else if (strcmp(strKeyword, "REPORT_LOG_FREQ") == 0)
             {
-                sscanf(strLine, "%*s %ld", &g_reports.naReportFreqs[REPORT_LOG]);
+                sscanf(strLine, "%*s %ld", &g_config.naReportFreqs[REPORT_LOG]);
             }
             else if (strcmp(strKeyword, "REPORT_ENERGY_FREQ") == 0)
             {
-                sscanf(strLine, "%*s %ld", &g_reports.naReportFreqs[REPORT_ENERGY]);
+                sscanf(strLine, "%*s %ld", &g_config.naReportFreqs[REPORT_ENERGY]);
             }
             else if (strcmp(strKeyword, "REPORT_CONFIG_FREQ") == 0)
             {
-                sscanf(strLine, "%*s %ld", &g_reports.naReportFreqs[REPORT_CONFIG]);
+                sscanf(strLine, "%*s %ld", &g_config.naReportFreqs[REPORT_CONFIG]);
             }
             else if (strcmp(strKeyword, "REPORT_MCMOVE_FREQ") == 0)
             {
-                sscanf(strLine, "%*s %ld", &g_reports.naReportFreqs[REPORT_MCMOVE]);
+                sscanf(strLine, "%*s %ld", &g_config.naReportFreqs[REPORT_MCMOVE]);
             }
             else if (strcmp(strKeyword, "REPORT_NETWORK_FREQ") == 0)
             {
-                sscanf(strLine, "%*s %ld", &g_reports.naReportFreqs[REPORT_NETWORK]);
+                sscanf(strLine, "%*s %ld", &g_config.naReportFreqs[REPORT_NETWORK]);
             }
             else if (strcmp(strKeyword, "REPORT_RDFTOT_FREQ") == 0)
             {
-                sscanf(strLine, "%*s %ld", &g_reports.naReportFreqs[REPORT_RDFTOT]);
+                sscanf(strLine, "%*s %ld", &g_config.naReportFreqs[REPORT_RDFTOT]);
             }
             else if (strcmp(strKeyword, "REPORT_COMDEN_FREQ") == 0)
             {
-                sscanf(strLine, "%*s %ld", &g_reports.naReportFreqs[REPORT_COMDEN]);
+                sscanf(strLine, "%*s %ld", &g_config.naReportFreqs[REPORT_COMDEN]);
             }
             else if (strcmp(strKeyword, "ANALYSIS_CLUSTER_MODE") == 0)
             {
-                sscanf(strLine, "%*s %d", &g_analysis.nClusteringMode);
+                sscanf(strLine, "%*s %d", &g_config.nClusteringMode);
             }
             else if (strcmp(strKeyword, "REPORT_CONFIG_MODE") == 0)
             {
-                sscanf(strLine, "%*s %ld", &g_reports.nTrajMode);
+                sscanf(strLine, "%*s %ld", &g_config.nTrajMode);
             }
             else if (strcmp(strKeyword, "BIAS_INDENT_RADIUS") == 0)
             {
-                sscanf(strLine, "%*s %f", &g_mc.fSquishRad);
+                sscanf(strLine, "%*s %f", &g_config.fSquishRad);
             }
             else if (strcmp(strKeyword, "BIAS_INDENT_STIFF") == 0)
             {
-                sscanf(strLine, "%*s %f", &g_mc.fSquish_Stiff);
+                sscanf(strLine, "%*s %f", &g_config.fSquish_Stiff);
             }
             else if (strcmp(strKeyword, "BIAS_KEEP_ON") == 0)
             {
-                sscanf(strLine, "%*s %d", &g_system.nBiasPotential_KeepON);
+                sscanf(strLine, "%*s %d", &g_config.nBiasPotential_KeepON);
             }
             else if (strcmp(strKeyword, "BIAS_COUPLED_TO_TEMP") == 0)
             {
-                sscanf(strLine, "%*s %d", &g_system.nBiasPotential_CoupledToTemp);
+                sscanf(strLine, "%*s %d", &g_config.nBiasPotential_CoupledToTemp);
             }
             else
             {
@@ -264,10 +310,10 @@ int Parse_Keyfile(char* filename)
 
     fclose(infile);
 
-    g_system.nBiasPotential_KeepON = g_system.nBiasPotential_KeepON == 1 ? 1 : 0;
-    g_system.nBiasPotential_CoupledToTemp = g_system.nBiasPotential_CoupledToTemp == 1 ? 1 : 0;
+    g_config.nBiasPotential_KeepON = g_config.nBiasPotential_KeepON == 1 ? 1 : 0;
+    g_config.nBiasPotential_CoupledToTemp = g_config.nBiasPotential_CoupledToTemp == 1 ? 1 : 0;
 
-    if (g_system.nBiasPotential_CoupledToTemp && g_system.nBiasPotential_KeepON)
+    if (g_config.nBiasPotential_CoupledToTemp && g_config.nBiasPotential_KeepON)
     {
         fprintf(stderr, "KeyFile error <%s>: Cannot have BIAS_COUPLED_TO_TEMP=1 and BIAS_KEEP_ON=1\n", filename);
         exit(1);
@@ -276,46 +322,48 @@ int Parse_Keyfile(char* filename)
     float freq_tot = 0.0f;
     for (i = MV_NULL + 1; i < MAX_MV; i++)
     {
-        freq_tot += g_mc.faMCFreq[i];
+        freq_tot += g_config.faMCFreq[i];
     }
 
     if (freq_tot == 0)
     {
         for (i = MV_NULL + 1; i < MAX_MV; i++)
         {
-            g_mc.faMCFreq[i] = 1.0f / (float)(MAX_MV - 1);
+            g_config.faMCFreq[i] = 1.0f / (float)(MAX_MV - 1);
         }
     }
     else
     {
         for (i = MV_NULL + 1; i < MAX_MV; i++)
         {
-            g_mc.faMCFreq[i] /= freq_tot;
+            g_config.faMCFreq[i] /= freq_tot;
         }
     }
 
-    if (strEnergyFile[0] != '\0')
+    Config_ApplyToRuntime(&g_config);
+
+    if (g_config.strEnergyFile[0] != '\0')
     {
-        nErr = Parse_EnergyFile(strEnergyFile);
+        nErr = Parse_EnergyFile(g_config.strEnergyFile);
     }
 
-    if (strStructFile[0] != '\0')
+    if (g_config.strStructFile[0] != '\0')
     {
         Parse_StructureFile_CalcBeadsAndChains(
-            strStructFile,
+            g_config.strStructFile,
             &g_system.tot_beads,
             &g_system.tot_chains,
             &g_system.tot_chain_types);
 
         CreateBeadsAndChains(g_system.tot_beads, g_system.tot_chains);
 
-        Parse_StructureFile(strStructFile);
+        Parse_StructureFile(g_config.strStructFile);
 
-        if (nStructFiletype == 0)
+        if (g_config.nStructFiletype == 0)
         {
             g_system.bReadConf = 0;
         }
-        else if (nStructFiletype == 1)
+        else if (g_config.nStructFiletype == 1)
         {
             printf("Reading restart file provided to generate initial "
                    "configuration.\n");

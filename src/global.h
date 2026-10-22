@@ -214,12 +214,52 @@ typedef struct AnalysisState
     lInt nTotGyrRadCounter;
 } AnalysisState;
 
+/*
+ * Keyfile-parsed simulation inputs (Phase 6.1).
+ * Parse fills g_config; Config_ApplyToRuntime copies into g_mc / g_system /
+ * g_reports / g_analysis so init and the run loop stay unchanged until 6.2.
+ */
+typedef struct SimulationConfig
+{
+    char strKeyfile[512];
+    char strEnergyFile[1000];
+    char strStructFile[1000];
+    int nStructFiletype;
+
+    lInt naBoxSize[POS_MAX];
+    lInt nAnnealing_Mode;
+    lInt nTemp_inv;
+    lInt nBiasPotential_Mode;
+    lInt nBiasPotential_KeepON;
+    lInt nBiasPotential_CoupledToTemp;
+
+    float fKT;
+    float fPreKT;
+    float fMC_TempRate;
+    float fDeltaTemp;
+    float fSquishRad;
+    float fSquish_Stiff;
+    float faMCFreq[MAX_MV];
+    lLong nMCStepsPerCycle;
+    lLong nMCStepsForTherm;
+    lInt nTotCycleNum;
+    lInt nRNG_Seed;
+
+    char strRestartFile[512];
+    char strReportPrefix[400];
+    lLong naReportFreqs[MAX_REPORT];
+    lLong nTrajMode;
+
+    lInt nClusteringMode;
+} SimulationConfig;
+
 /* Single process-wide instances (defined in globals.c). */
 extern SystemState g_system;
 extern EnergyTables g_energy;
 extern McControl g_mc;
 extern Reports g_reports;
 extern AnalysisState g_analysis;
+extern SimulationConfig g_config;
 
 /*
  * Compatibility shims: existing *_glb names alias into the domain structs.
