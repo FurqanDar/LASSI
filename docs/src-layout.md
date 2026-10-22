@@ -1,0 +1,52 @@
+# Source layout (after Phase 1 splits)
+
+Brief map of where C modules live under `src/`. Public APIs stay in the
+existing headers (`mcmove.h`, `structure.h`, `print.h`, …). No behavior change
+is implied by this split.
+
+## Entry / config
+
+| Files | Role |
+|-------|------|
+| `main.c` | Program entry and run loop |
+| `parsekey.c` / `parsekey.h` | Keyfile parsing |
+| `initialize.c` / `initialize.h` | System setup |
+| `global.h` | Shared globals and constants |
+
+## Monte Carlo moves (`mcmove.h`)
+
+| Files | Role |
+|-------|------|
+| `mcmove.c` | Dispatch: `MC_Step`, `MC_Step_Therm` |
+| `mcmove_moves.c` | Production `Move_*` |
+| `mcmove_moves_equil.c` | Thermalization `Move_*_Equil` |
+| `mcmove_ops.c` | `OP_*` lattice/bead helpers, Rosenbluth, MH |
+| `mcmove_rot.c` | `Rot_*`, rot-state checks, shuffle |
+
+## Lattice / structure (`structure.h`)
+
+| Files | Role |
+|-------|------|
+| `structure.c` | Lattice indices, distances, `LatPos_*`, vector helpers |
+| `structure_sanity.c` | Runtime sanity / linker checks |
+| `structure_neighbor.c` | `NeighborSearch_*` |
+| `structure_analysis.c` | RDF, radial density, COM, gyration |
+| `structure_lists.c` | Bead/chain/list helper ops |
+
+## I/O (`print.h`)
+
+| Files | Role |
+|-------|------|
+| `print.c` | `DataPrinting_*` / `DataAnalysis_*` orchestration |
+| `print_screen.c` | Screen / log / sanity-fail messages |
+| `print_fileio.c` | Trajectories, energy/MC files, restarts, `CopyData_*` |
+
+## Other
+
+| Files | Role |
+|-------|------|
+| `energy.c` / `energy.h` | Energy evaluation |
+| `cluster.c` / `cluster.h` | Cluster analysis |
+
+Build: `src/compile.sh` (also wired in top-level `Makefile` / `CMakeLists.txt`).
+Regression gate: `make characterization`.
