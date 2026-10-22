@@ -1,2 +1,3 @@
 # Characterization harness scratch directory
 tests/characterization/.work/
+tests/unit/test_lattice_index

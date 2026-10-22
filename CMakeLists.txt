@@ -31,6 +31,7 @@ add_executable(lassi
         src/print_fileio.c
         src/print.h
         src/structure.c
+        src/structure_lattice.c
         src/structure_sanity.c
         src/structure_neighbor.c
         src/structure_lists.c

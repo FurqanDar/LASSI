@@ -3,11 +3,18 @@
 
 #include "global.h"
 
+/* Lattice index + min-image distance (see structure_lattice.c).
+ * Pure cores take explicit box; wrappers bind g_system. */
+
+int Lat_Ind_FromCoords_Box(const int i, const int j, const int k, const int box_x, const int box_y);
+
 int Lat_Ind_FromCoords(const int i, const int j, const int k);
 
 int Lat_Ind_FromVec(const int* xArr);
 
 int Lat_Ind_OfBead(const int beadID);
+
+float Dist_PointToPoint_Box(const int* f1, const int* f2, const int* box);
 
 float Dist_BeadToBead(const int bead1, const int bead2);
 

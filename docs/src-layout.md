@@ -27,7 +27,8 @@ is implied by this split.
 
 | Files | Role |
 |-------|------|
-| `structure.c` | Lattice indices, distances, `LatPos_*`, vector helpers |
+| `structure_lattice.c` | Lattice index, min-image distances, `LatPos_*`, `Vec3n_*` (pure cores + `g_system` wrappers) |
+| `structure.c` | Topology helpers, `LatticeUtil_*`, bead angle helpers |
 | `structure_sanity.c` | Runtime sanity / linker checks |
 | `structure_neighbor.c` | `NeighborSearch_*` |
 | `structure_lists.c` | Bead/chain/list helper ops |
