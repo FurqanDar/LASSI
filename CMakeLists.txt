@@ -17,6 +17,10 @@ add_executable(lassi
         src/initialize.h
         src/main.c
         src/mcmove.c
+        src/mcmove_moves.c
+        src/mcmove_moves_equil.c
+        src/mcmove_ops.c
+        src/mcmove_rot.c
         src/mcmove.h
         src/parsekey.c
         src/parsekey.h
