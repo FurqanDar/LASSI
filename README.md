@@ -28,6 +28,6 @@ make characterization
 ```
 
 Exits non-zero (CI-style) if trajectory / energy / MC-move outputs drift from
-checked-in baselines. GitHub Actions runs `make characterization` on every push
-and pull request to `master` / `main`. See
+checked-in baselines. GitHub Actions runs `make unit-lattice` then
+`make characterization` on every push and pull request to `master` / `main`. See
 [`tests/characterization/README.md`](tests/characterization/README.md).
