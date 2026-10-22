@@ -13,6 +13,10 @@ float Dist_BeadToBead(const int bead1, const int bead2);
 
 float Dist_BeadToPoint(const int bead1, const int* f1);
 
+float Dist_BeadToPoint_Double(const int beadID, const lDub* f1);
+
+float Dist_BeadToPoint_Float(const int beadID, const float* f1);
+
 float Dist_PointToPoint_Float(const float* f1, const float* f2);
 
 float Dist_PointToPoint(const int* f1, const int* f2);

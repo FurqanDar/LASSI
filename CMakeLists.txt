@@ -27,4 +27,8 @@ add_executable(lassi
         src/print.c
         src/print.h
         src/structure.c
+        src/structure_sanity.c
+        src/structure_neighbor.c
+        src/structure_analysis.c
+        src/structure_lists.c
         src/structure.h)
