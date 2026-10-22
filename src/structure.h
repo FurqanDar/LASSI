@@ -32,9 +32,12 @@ float Dist_Vec3n(const int* f1);
 
 int Dist_VecMagSq(const int* f1);
 
-int Check_LinkerConstraint(const int beadID, const int* tmpR);
+/* Legality / linker constraints (see structure_legal.c).
+ * Pure cores take explicit distance + linker length; wrappers bind g_system. */
 
-int Check_MTLinkerConstraint_OLD(int beadID, int (*tmpR)[POS_MAX]);
+int LinkerConstraint_DistOK(const float xDis, const int linker_len);
+
+int Check_LinkerConstraint(const int beadID, const int* tmpR);
 
 int Check_LinkerConstraints_ForBeadList(const int listSize, const int* beadList);
 

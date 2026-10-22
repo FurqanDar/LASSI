@@ -28,8 +28,9 @@ is implied by this split.
 | Files | Role |
 |-------|------|
 | `structure_lattice.c` | Lattice index, min-image distances, `LatPos_*`, `Vec3n_*` (pure cores + `g_system` wrappers) |
+| `structure_legal.c` | Linker-constraint / bead-list legality (`LinkerConstraint_DistOK`, `Check_Linker*`, `Check_BeadID_InList`) |
 | `structure.c` | Topology helpers, `LatticeUtil_*`, bead angle helpers |
-| `structure_sanity.c` | Runtime sanity / linker checks |
+| `structure_sanity.c` | Runtime sanity orchestration (uses legal/lattice helpers) |
 | `structure_neighbor.c` | `NeighborSearch_*` |
 | `structure_lists.c` | Bead/chain/list helper ops |
 
