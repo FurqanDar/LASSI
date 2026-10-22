@@ -30,13 +30,15 @@ is implied by this split.
 | `structure.c` | Lattice indices, distances, `LatPos_*`, vector helpers |
 | `structure_sanity.c` | Runtime sanity / linker checks |
 | `structure_neighbor.c` | `NeighborSearch_*` |
-| `structure_analysis.c` | RDF, radial density, COM, gyration |
 | `structure_lists.c` | Bead/chain/list helper ops |
 
-## I/O (`print.h`)
+## Analysis / I/O
 
 | Files | Role |
 |-------|------|
+| `cluster.c` / `cluster.h` | Cluster finding and analysis |
+| `cluster_mc.h` | Move-facing cluster queries (see architecture.md) |
+| `analysis.c` | RDF, radial density, COM, gyration (decls still in `structure.h`) |
 | `print.c` | `DataPrinting_*` / `DataAnalysis_*` orchestration |
 | `print_screen.c` | Screen / log / sanity-fail messages |
 | `print_fileio.c` | Trajectories, energy/MC files, restarts, `CopyData_*` |
@@ -46,8 +48,6 @@ is implied by this split.
 | Files | Role |
 |-------|------|
 | `energy.c` / `energy.h` | Energy evaluation |
-| `cluster.c` / `cluster.h` | Cluster analysis |
-| `cluster_mc.h` | Move-facing cluster queries (see architecture.md) |
 
 Build: `src/compile.sh` (also wired in top-level `Makefile` / `CMakeLists.txt`).
 Regression gate: `make characterization`.

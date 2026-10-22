@@ -1,3 +1,6 @@
+/* Analysis / I/O layer (Phase 3.2): RDF / radial / COM / gyration.
+ * Formerly structure_analysis.c; moved so including cluster.h does not
+ * put a structure-layer unit above analysis in the dependency direction. */
 #include "structure.h"
 #include "cluster.h"
 
