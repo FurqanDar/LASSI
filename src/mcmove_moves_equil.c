@@ -166,7 +166,7 @@ int Move_Snake_Equil(int chainID, float MyTemp)
                                       g_system.naOldContNeighs);
         }
     const int resi = g_system.bead_info[angBead_old][BEAD_TYPE];
-    oldEn += faEnergy_glb[resi][resi][E_STIFF] ? Energy_Topo_Angle(angBead_old) : 0.;
+    oldEn += g_energy.faEnergy[resi][resi][E_STIFF] ? Energy_Topo_Angle(angBead_old) : 0.;
 
     if (SnakeFwd)
         { // Slithering the chain forwards in ID-space
@@ -192,7 +192,7 @@ int Move_Snake_Equil(int chainID, float MyTemp)
                                       g_system.naNewContNeighs);
         }
 
-    newEn += faEnergy_glb[resi][resi][E_STIFF] ? Energy_Topo_Angle(angBead_new) : 0.;
+    newEn += g_energy.faEnergy[resi][resi][E_STIFF] ? Energy_Topo_Angle(angBead_new) : 0.;
 
     // Doing the Metropolis-Hastings thing
     MCProb      = (lLDub) rand() / (lLDub) RAND_MAX;
@@ -533,7 +533,7 @@ int Move_Pivot_Equil(int chainID, float MyTemp)
         }
 
     const int resi = g_system.bead_info[anchorBead][BEAD_TYPE];
-    oldEn += faEnergy_glb[resi][resi][E_STIFF] ? Energy_Topo_Angle(anchorBead) : 0.;
+    oldEn += g_energy.faEnergy[resi][resi][E_STIFF] ? Energy_Topo_Angle(anchorBead) : 0.;
 
     for (i = 0; i < beadNum; i++)
         {
@@ -561,7 +561,7 @@ int Move_Pivot_Equil(int chainID, float MyTemp)
                                      g_system.naNewOvlpNeighs, g_system.naNewContNeighs);
         }
 
-    newEn += faEnergy_glb[resi][resi][E_STIFF] ? Energy_Topo_Angle(anchorBead) : 0.;
+    newEn += g_energy.faEnergy[resi][resi][E_STIFF] ? Energy_Topo_Angle(anchorBead) : 0.;
 
     lLDub MCProb = (lLDub) rand() / (lLDub) RAND_MAX;
     lLDub MHAcc  = OP_GenMHValue(FSum, BSum, oldEn - newEn, (lLDub) MyTemp);

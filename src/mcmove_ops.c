@@ -355,7 +355,7 @@ lLDub OP_GenMHValue(lLDub fRos, lLDub bRos, lLDub Delta_En, lLDub Cur_Temp)
     lLDub MH_Value;
 
     MH_Value = fRos - bRos + Delta_En / Cur_Temp;
-    if (MH_Value <= ldLogOfSmallestPossibleProb_glb)
+    if (MH_Value <= g_energy.ldLogOfSmallestPossibleProb)
         {
             MH_Value = 0.;
         }
@@ -542,7 +542,7 @@ lLDub MC_RosenbluthSampling_ForLocal_AtOld(const int beadID, const int resi, lon
             // *oldEn  = *oldEn + Energy_Anisotropic(beadID);
             ros_num = Check_RotStates_wNeighList(beadID, resi, g_system.naOldOvlpNeighs, neigh_num);
             OP_NormalizeRotState(0, ros_num);
-            return logl(ldaBoltzNorm_glb[0]);
+            return logl(g_energy.ldaBoltzNorm[0]);
         }
     else
         {
@@ -564,7 +564,7 @@ lLDub MC_RosenbluthSampling_ForLocal_AtNew(const int beadID, const int resi, int
 
             *bead_part = OP_PickRotState(ros_num);
 
-            return logl(ldaBoltzNorm_glb[0]);
+            return logl(g_energy.ldaBoltzNorm[0]);
         }
     else
         {
@@ -582,7 +582,7 @@ lLDub MC_RosenbluthSampling_ForChains_AtOld(const int beadID, const int resi, lo
             // *oldEn  = *oldEn + Energy_Anisotropic_For_Chain(beadID); 
             ros_num = Check_RotStates_wNeighList_ForChains(beadID, resi, g_system.naOldOvlpNeighs, neigh_num);
             OP_NormalizeRotState(0, ros_num);
-            return logl(ldaBoltzNorm_glb[0]);
+            return logl(g_energy.ldaBoltzNorm[0]);
         }
     else
         {
@@ -606,7 +606,7 @@ lLDub MC_RosenbluthSampling_ForChains_AtNew(const int beadID, const int resi, in
                 {
                     *bead_part = OP_PickRotState(ros_num);
                 }
-            return logl(ldaBoltzNorm_glb[0]); 
+            return logl(g_energy.ldaBoltzNorm[0]); 
         }
     else
         {
@@ -628,7 +628,7 @@ lLDub MC_RosenbluthSampling_ForLists_AtOld(const int beadIdx, const int listSize
             // ros_num = Check_RotStates_wNeighList(beadID, resi, g_system.naOldOvlpNeighs, neigh_num);
             ros_num = Check_RotStates_wNeighList_ForLists(beadIdx, listSize, beadList, resi, g_system.naOldOvlpNeighs, neigh_num);           
             OP_NormalizeRotState(0, ros_num);
-            return logl(ldaBoltzNorm_glb[0]);
+            return logl(g_energy.ldaBoltzNorm[0]);
         }
     else
         {
@@ -657,7 +657,7 @@ lLDub MC_RosenbluthSampling_ForLists_AtNew(const int beadIdx, const int listSize
                     *bead_part = OP_PickRotState(ros_num);
                 }
 
-            return logl(ldaBoltzNorm_glb[0]);
+            return logl(g_energy.ldaBoltzNorm[0]);
         }
     else
         {
@@ -677,7 +677,7 @@ lLDub MC_RosenbluthSampling_ForRange_AtOld(const int beadID, const int resi, con
             // ros_num = Check_RotStates_wNeighList(beadID, resi, g_system.naOldOvlpNeighs, neigh_num);
             ros_num = Check_RotState_wNeighList_ForRange(beadID, resi, smallestBead, largestBead, g_system.naOldOvlpNeighs, neigh_num);
             OP_NormalizeRotState(0, ros_num);
-            return logl(ldaBoltzNorm_glb[0]);
+            return logl(g_energy.ldaBoltzNorm[0]);
         }
     else
         {
@@ -701,7 +701,7 @@ lLDub MC_RosenbluthSampling_ForRange_AtNew(const int beadID, const int resi, con
                 {
                     *bead_part = OP_PickRotState(ros_num);
                 }
-            return logl(ldaBoltzNorm_glb[0]);
+            return logl(g_energy.ldaBoltzNorm[0]);
         }
     else
         {

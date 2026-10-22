@@ -45,7 +45,7 @@ float Energy_BiasingPotential(const int beadID)
                  * as a crowder.
                  */
                 totEn = (float) Dist_VecMagSq(posDiff);
-                if (thisType == ((int) nBeadTypes_glb - 1))
+                if (thisType == ((int) g_energy.nBeadTypes - 1))
                     {
                         if (totEn < g_mc.fSquishRad_Sq)
                             {
@@ -87,7 +87,7 @@ inline float Energy_Anisotropic(const int beadID)
     if (bP != -1)
         {
             resj = g_system.bead_info[bP][BEAD_TYPE];
-            return faEnergy_glb[resi][resj][E_SC_SC];
+            return g_energy.faEnergy[resi][resj][E_SC_SC];
         }
     else
         {
@@ -106,7 +106,7 @@ float Energy_Anisotropic_Self(const int beadID)
         { // This bead does have a bond
             if (g_system.bead_info[beadID][BEAD_CHAINID] == g_system.bead_info[bP][BEAD_CHAINID])
                 {
-                    totEn += faEnergy_glb[g_system.bead_info[beadID][BEAD_TYPE]][g_system.bead_info[bP][BEAD_TYPE]][E_SC_SC];
+                    totEn += g_energy.faEnergy[g_system.bead_info[beadID][BEAD_TYPE]][g_system.bead_info[bP][BEAD_TYPE]][E_SC_SC];
                 }
         }
     return totEn;
@@ -126,11 +126,11 @@ float Energy_Anisotropic_For_Chain(const int beadID)
             if (g_system.bead_info[beadID][BEAD_CHAINID] == g_system.bead_info[bP][BEAD_CHAINID])
                 {
                     totEn +=
-                        faEnergy_glb[g_system.bead_info[beadID][BEAD_TYPE]][g_system.bead_info[bP][BEAD_TYPE]][E_SC_SC] * 0.5f;
+                        g_energy.faEnergy[g_system.bead_info[beadID][BEAD_TYPE]][g_system.bead_info[bP][BEAD_TYPE]][E_SC_SC] * 0.5f;
                 }
             else
                 {
-                    totEn += faEnergy_glb[g_system.bead_info[beadID][BEAD_TYPE]][g_system.bead_info[bP][BEAD_TYPE]][E_SC_SC];
+                    totEn += g_energy.faEnergy[g_system.bead_info[beadID][BEAD_TYPE]][g_system.bead_info[bP][BEAD_TYPE]][E_SC_SC];
                 }
         }
     return totEn;
@@ -150,11 +150,11 @@ float Energy_Anisotropic_For_Range(const int beadID, const int smBead, const int
             if ((beadID <= lgBead) && (beadID >= smBead))
                 {
                     totEn +=
-                        faEnergy_glb[g_system.bead_info[beadID][BEAD_TYPE]][g_system.bead_info[bP][BEAD_TYPE]][E_SC_SC] * 0.5f;
+                        g_energy.faEnergy[g_system.bead_info[beadID][BEAD_TYPE]][g_system.bead_info[bP][BEAD_TYPE]][E_SC_SC] * 0.5f;
                 }
             else
                 {
-                    totEn += faEnergy_glb[g_system.bead_info[beadID][BEAD_TYPE]][g_system.bead_info[bP][BEAD_TYPE]][E_SC_SC];
+                    totEn += g_energy.faEnergy[g_system.bead_info[beadID][BEAD_TYPE]][g_system.bead_info[bP][BEAD_TYPE]][E_SC_SC];
                 }
         }
     return totEn;
@@ -176,18 +176,18 @@ float Energy_Anisotropic_Contiguous_Range(const int beadID, const int smallest_b
                     if (bP >= smallest_bead && bP <= largest_bead)
                         { // Within subset
                             totEn +=
-                                faEnergy_glb[g_system.bead_info[beadID][BEAD_TYPE]][g_system.bead_info[bP][BEAD_TYPE]][E_SC_SC] /
+                                g_energy.faEnergy[g_system.bead_info[beadID][BEAD_TYPE]][g_system.bead_info[bP][BEAD_TYPE]][E_SC_SC] /
                                 2.;
                         }
                     else
                         {
                             totEn +=
-                                faEnergy_glb[g_system.bead_info[beadID][BEAD_TYPE]][g_system.bead_info[bP][BEAD_TYPE]][E_SC_SC];
+                                g_energy.faEnergy[g_system.bead_info[beadID][BEAD_TYPE]][g_system.bead_info[bP][BEAD_TYPE]][E_SC_SC];
                         }
                 }
             else
                 {
-                    totEn += faEnergy_glb[g_system.bead_info[beadID][BEAD_TYPE]][g_system.bead_info[bP][BEAD_TYPE]][E_SC_SC];
+                    totEn += g_energy.faEnergy[g_system.bead_info[beadID][BEAD_TYPE]][g_system.bead_info[bP][BEAD_TYPE]][E_SC_SC];
                 }
         }
     return totEn;
@@ -216,11 +216,11 @@ float Energy_Anisotropic_With_List(const int beadID, const int* bead_list, const
                 }
             if (check_bead == 1)
                 {
-                    totEn += faEnergy_glb[g_system.bead_info[beadID][BEAD_TYPE]][g_system.bead_info[bP][BEAD_TYPE]][E_SC_SC] / 2.;
+                    totEn += g_energy.faEnergy[g_system.bead_info[beadID][BEAD_TYPE]][g_system.bead_info[bP][BEAD_TYPE]][E_SC_SC] / 2.;
                 }
             else
                 {
-                    totEn += faEnergy_glb[g_system.bead_info[beadID][BEAD_TYPE]][g_system.bead_info[bP][BEAD_TYPE]][E_SC_SC];
+                    totEn += g_energy.faEnergy[g_system.bead_info[beadID][BEAD_TYPE]][g_system.bead_info[bP][BEAD_TYPE]][E_SC_SC];
                 }
         }
     return totEn;
@@ -236,11 +236,11 @@ float Energy_Anisotropic_For_List(const int beadID, const int listSize, const in
             resj = g_system.bead_info[bP][BEAD_TYPE];
             if (Check_BeadID_InList(bP, listSize, beadList))
                 {
-                    return faEnergy_glb[resi][resj][E_SC_SC] * 0.5f;
+                    return g_energy.faEnergy[resi][resj][E_SC_SC] * 0.5f;
                 }
             else
                 {
-                    return faEnergy_glb[resi][resj][E_SC_SC];
+                    return g_energy.faEnergy[resi][resj][E_SC_SC];
                 }
         }
     else
@@ -253,20 +253,20 @@ float Energy_Anisotropic_For_List(const int beadID, const int listSize, const in
 /// beadType1 and beadType2, respectively. \param beadType1: Type of first bead.
 /// \param beadType2: Type of second bead.
 /// \param xDis: Distance between the two beads.
-/// \return faEnergy_glb[beadType1][beadType2][E_OVLP].
+/// \return g_energy.faEnergy[beadType1][beadType2][E_OVLP].
 float Energy_Iso_Ovlp(int const beadType1, int const beadType2, float const xDis)
 {
-    return faEnergy_glb[beadType1][beadType2][E_OVLP];
+    return g_energy.faEnergy[beadType1][beadType2][E_OVLP];
 }
 
 /// Energy_Iso_Cont - calculate the CONT interaction between two beads of types
 /// beadType1 and beadType2, respectively. \param beadType1: Type of first bead.
 /// \param beadType2: Type of second bead.
 /// \param xDis: Distance between the two beads.
-/// \return faEnergy_glb[beadType1][beadType2][E_CONT]/xDis.
+/// \return g_energy.faEnergy[beadType1][beadType2][E_CONT]/xDis.
 float Energy_Iso_Cont(int const beadType1, int const beadType2, float const xDis)
 {
-    return faEnergy_glb[beadType1][beadType2][E_CONT] / xDis;
+    return g_energy.faEnergy[beadType1][beadType2][E_CONT] / xDis;
 }
 
 /// Energy_Iso_fSol: Returns the solvation energy of this bead.
@@ -275,13 +275,13 @@ float Energy_Iso_Cont(int const beadType1, int const beadType2, float const xDis
 /// \return
 inline float Energy_Iso_fSol(int const beadType)
 {
-    return faEnergy_glb[beadType][beadType][E_F_SOL];
+    return g_energy.faEnergy[beadType][beadType][E_F_SOL];
 }
 
 float Energy_Topo_Angle(int const beadID)
 {
     const int resi            = g_system.bead_info[beadID][BEAD_TYPE];
-    const float E_stiff_const = faEnergy_glb[resi][resi][E_STIFF];
+    const float E_stiff_const = g_energy.faEnergy[resi][resi][E_STIFF];
     int frontBead, backBead;
     int r_posB[POS_MAX], r_posF[POS_MAX], vec1[POS_MAX], vec2[POS_MAX];
     float CosTheta, E_stiff;
@@ -317,7 +317,7 @@ float Energy_Topo_Angle(int const beadID)
 float Energy_Topo_Angle_with(int const beadID, int const backBead)
 {
     const int resi            = g_system.bead_info[beadID][BEAD_TYPE];
-    const float E_stiff_const = faEnergy_glb[resi][resi][E_STIFF];
+    const float E_stiff_const = g_energy.faEnergy[resi][resi][E_STIFF];
     int frontBead;
     int r_posF[POS_MAX], vec1[POS_MAX], vec2[POS_MAX];
     float CosTheta, E_stiff;
@@ -710,8 +710,8 @@ float Energy_Isotropic_Old(const int beadID)
                                 {
                                     if (abs(x) <= 1 && abs(y) <= 1 && abs(z) <= 1)
                                         { // Want solvation radius to be 1
-                                            totEn += faEnergy_glb[resi][resi][E_F_SOL];
-                                            totEn += faEnergy_glb[resi][resi][E_T_IND] * g_mc.fCuTemp;
+                                            totEn += g_energy.faEnergy[resi][resi][E_F_SOL];
+                                            totEn += g_energy.faEnergy[resi][resi][E_T_IND] * g_mc.fCuTemp;
                                         }
                                 }
                         }
@@ -775,7 +775,7 @@ float Energy_Isotropic(const int beadID)
                                 {
                                     if (abs(x) <= 1 && abs(y) <= 1 && abs(z) <= 1)
                                         { // Want solvation radius to be 1
-                                            totEn += faEnergy_glb[resi][resi][E_F_SOL];
+                                            totEn += g_energy.faEnergy[resi][resi][E_F_SOL];
                                         }
                                 }
                         }
@@ -846,7 +846,7 @@ float Energy_Isotropic_Self(const int beadID)
                                 {
                                     if (abs(x) <= 1 && abs(y) <= 1 && abs(z) <= 1)
                                         { // Want solvation radius to be 1
-                                            totEn += faEnergy_glb[resi][resi][E_F_SOL];
+                                            totEn += g_energy.faEnergy[resi][resi][E_F_SOL];
                                         }
                                 }
                         }
@@ -923,7 +923,7 @@ float Energy_Isotropic_For_Chain(const int beadID)
                                 {
                                     if (abs(x) <= 1 && abs(y) <= 1 && abs(z) <= 1)
                                         { // Want solvation radius to be 1
-                                            totEn += faEnergy_glb[resi][resi][E_F_SOL];
+                                            totEn += g_energy.faEnergy[resi][resi][E_F_SOL];
                                         }
                                 }
                         }
@@ -1013,7 +1013,7 @@ float Energy_Isotropic_Contiguous_Range(const int beadID, const int smallest_bea
                                 {
                                     if (abs(x) <= 1 && abs(y) <= 1 && abs(z) <= 1)
                                         { // Want solvation radius to be 1
-                                            totEn += faEnergy_glb[resi][resi][E_F_SOL];
+                                            totEn += g_energy.faEnergy[resi][resi][E_F_SOL];
                                         }
                                 }
                         }
@@ -1103,7 +1103,7 @@ float Energy_Isotropic_With_List(const int beadID, const int* bead_list, const i
                                 {
                                     if (abs(x) <= 1 && abs(y) <= 1 && abs(z) <= 1)
                                         { // Want solvation radius to be 1
-                                            totEn += faEnergy_glb[resi][resi][E_F_SOL];
+                                            totEn += g_energy.faEnergy[resi][resi][E_F_SOL];
                                         }
                                 }
                         }
@@ -1120,13 +1120,13 @@ void Energy_Total_System(void)
     // initialization
     for (i = 0; i < MAX_E; i++)
         {
-            faCurrEn_glb[i] = 0.0f;
+            g_energy.faCurrEn[i] = 0.0f;
         }
     // printf("We have %d beads and %d chains", g_system.tot_beads, g_system.tot_chains);
 
     for (i = 0; i < g_system.tot_beads; i++)
         {
-            faCurrEn_glb[E_SC_SC] += Energy_Anisotropic(i);
+            g_energy.faCurrEn[E_SC_SC] += Energy_Anisotropic(i);
         }
 
     int resi, ovlp_num, cont_num;
@@ -1138,13 +1138,13 @@ void Energy_Total_System(void)
                 {
                     cont_num = NeighborSearch_ForCont(i, g_system.bead_info[i], g_system.naOldContNeighs, g_system.naOldOvlpNeighs,
                                                       &ovlp_num);
-                    faCurrEn_glb[E_CONT] += Energy_OfCont_wNeighList(i, g_system.naOldContNeighs, cont_num);
+                    g_energy.faCurrEn[E_CONT] += Energy_OfCont_wNeighList(i, g_system.naOldContNeighs, cont_num);
                 }
             else if (g_system.nBeadTypeCanOvlp[resi] || g_system.nBeadTypeCanFSol[resi])
                 {
                     ovlp_num = NeighborSearch_ForOvlp(i, g_system.bead_info[i], g_system.naOldOvlpNeighs);
-                    faCurrEn_glb[E_OVLP] += Energy_OfOvlp_wNeighList(i, g_system.naOldOvlpNeighs, ovlp_num);
-                    faCurrEn_glb[E_F_SOL] += (float) (26 - ovlp_num) * faEnergy_glb[resi][resi][E_F_SOL];
+                    g_energy.faCurrEn[E_OVLP] += Energy_OfOvlp_wNeighList(i, g_system.naOldOvlpNeighs, ovlp_num);
+                    g_energy.faCurrEn[E_F_SOL] += (float) (26 - ovlp_num) * g_energy.faEnergy[resi][resi][E_F_SOL];
                 }
 
         }
@@ -1153,7 +1153,7 @@ void Energy_Total_System(void)
         {
             for (i = 0; i < g_system.tot_beads; i++)
                 {
-                    faCurrEn_glb[E_STIFF] += Energy_Topo_Angle(i);
+                    g_energy.faCurrEn[E_STIFF] += Energy_Topo_Angle(i);
                 }
         }
 
@@ -1161,17 +1161,17 @@ void Energy_Total_System(void)
         {
             for (i = 0; i < g_system.tot_beads; i++)
                 {
-                    faCurrEn_glb[E_BIAS] += Energy_BiasingPotential(i);
+                    g_energy.faCurrEn[E_BIAS] += Energy_BiasingPotential(i);
                 }
         }
 
     // Taking care of double-counting energies.
-    faCurrEn_glb[E_SC_SC] *= 0.5f;
-    faCurrEn_glb[E_OVLP] *= 0.5f;
-    faCurrEn_glb[E_CONT] *= 0.5f;
+    g_energy.faCurrEn[E_SC_SC] *= 0.5f;
+    g_energy.faCurrEn[E_OVLP] *= 0.5f;
+    g_energy.faCurrEn[E_CONT] *= 0.5f;
     for (i = 1; i < MAX_E; i++)
         {
-            faCurrEn_glb[E_TOT] += faCurrEn_glb[i];
+            g_energy.faCurrEn[E_TOT] += g_energy.faCurrEn[i];
         }
 }
 
@@ -1259,7 +1259,7 @@ void Energy_Iso_ForLocal(const int beadID, const int resi, const int* r_pos0, lo
 
     if (g_system.nBeadTypeCanFSol[resi])
         { // Solvation energy.
-            *oldEn = *oldEn + (float) (26 - *ovlp_num) * faEnergy_glb[resi][resi][E_F_SOL];
+            *oldEn = *oldEn + (float) (26 - *ovlp_num) * g_energy.faEnergy[resi][resi][E_F_SOL];
             *newEn = *newEn + Energy_ofSol_wNeighList(ovlp_neighs, *ovlp_num);
         }
 }
@@ -1292,7 +1292,7 @@ void Energy_Iso_ForLocalEquil(const int beadID, const int resi, const int* r_pos
 
     if (g_system.nBeadTypeCanFSol[resi])
         { // Solvation energy.
-            *oldEn = *oldEn + (float) (26 - *ovlp_num) * faEnergy_glb[resi][resi][E_F_SOL];
+            *oldEn = *oldEn + (float) (26 - *ovlp_num) * g_energy.faEnergy[resi][resi][E_F_SOL];
             *newEn = *newEn + Energy_ofSol_wNeighList(ovlp_neighs, *ovlp_num);
         }
 }
@@ -1326,7 +1326,7 @@ void Energy_Iso_ForChains(const int beadID, long double* oldEn, long double* new
 
     if (g_system.nBeadTypeCanFSol[resi])
         { // Solvation energy.
-            *oldEn = *oldEn + (float) (26 - *ovlp_num) * faEnergy_glb[resi][resi][E_F_SOL];
+            *oldEn = *oldEn + (float) (26 - *ovlp_num) * g_energy.faEnergy[resi][resi][E_F_SOL];
             *newEn = *newEn + Energy_ofSol_wNeighList(ovlp_neighs, *ovlp_num);
         }
 }
@@ -1360,7 +1360,7 @@ void Energy_Iso_ForChainsEquil(const int beadID, long double* oldEn, long double
 
     if (g_system.nBeadTypeCanFSol[resi])
         { // Solvation energy.
-            *oldEn = *oldEn + (float) (26 - *ovlp_num) * faEnergy_glb[resi][resi][E_F_SOL];
+            *oldEn = *oldEn + (float) (26 - *ovlp_num) * g_energy.faEnergy[resi][resi][E_F_SOL];
             *newEn = *newEn + Energy_ofSol_wNeighList(ovlp_neighs, *ovlp_num);
         }
 }
@@ -1395,7 +1395,7 @@ void Energy_Iso_ForCoLocal(const int thisBeadID, const int otherBeadID, const in
 
     if (g_system.nBeadTypeCanFSol[resi])
         { // Solvation energy.
-            *oldEn = *oldEn + (float) (26 - *ovlp_num) * faEnergy_glb[resi][resi][E_F_SOL];
+            *oldEn = *oldEn + (float) (26 - *ovlp_num) * g_energy.faEnergy[resi][resi][E_F_SOL];
             *newEn = *newEn + Energy_ofSol_wNeighList(ovlp_neighs, *ovlp_num);
         }
 }
@@ -1423,7 +1423,7 @@ void Energy_Iso_ForLists(const int beadIdx, int const listSize, const int beadLi
 
     if (g_system.nBeadTypeCanFSol[resi])
         { // Solvation energy.
-            *oldEn = *oldEn + (float) (26 - *ovlp_num) * faEnergy_glb[resi][resi][E_F_SOL];
+            *oldEn = *oldEn + (float) (26 - *ovlp_num) * g_energy.faEnergy[resi][resi][E_F_SOL];
             *newEn = *newEn + Energy_ofSol_wNeighList(ovlp_neighs, *ovlp_num);
         }
 
@@ -1471,7 +1471,7 @@ void Energy_Iso_ForRange(const int beadID, const int smallestBead, const int lar
 
     if (g_system.nBeadTypeCanFSol[resi])
         { // Solvation energy.
-            *oldEn = *oldEn + (float) (26 - *ovlp_num) * faEnergy_glb[resi][resi][E_F_SOL];
+            *oldEn = *oldEn + (float) (26 - *ovlp_num) * g_energy.faEnergy[resi][resi][E_F_SOL];
             *newEn = *newEn + Energy_ofSol_wNeighList(ovlp_neighs, *ovlp_num);
         }
 }
@@ -1509,7 +1509,7 @@ void Energy_Iso_ForRangeEquil(const int beadID, const int smallestBead, const in
 
     if (g_system.nBeadTypeCanFSol[resi])
         { // Solvation energy.
-            *oldEn = *oldEn + (float) (26 - *ovlp_num) * faEnergy_glb[resi][resi][E_F_SOL];
+            *oldEn = *oldEn + (float) (26 - *ovlp_num) * g_energy.faEnergy[resi][resi][E_F_SOL];
             *newEn = *newEn + Energy_ofSol_wNeighList(ovlp_neighs, *ovlp_num);
         }
 }

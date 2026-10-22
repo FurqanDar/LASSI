@@ -355,7 +355,7 @@ void ForEnergyMatrix_FillWithZeros()
                 {
                     for (k = 0; k < MAX_E; k++)
                         {
-                            faEnergy_glb[i][j][k] = 0.f;
+                            g_energy.faEnergy[i][j][k] = 0.f;
                         }
                 }
         }
@@ -458,8 +458,8 @@ int Parse_EnergyFile(char* strEnFile)
                 { // ignore empty lines
                     if (nFlag == -1)
                         { // sticker
-                            sscanf(strLine, "%d", &nBeadTypes_glb);
-                            if (nBeadTypes_glb > MAX_AA)
+                            sscanf(strLine, "%d", &g_energy.nBeadTypes);
+                            if (g_energy.nBeadTypes > MAX_AA)
                                 {
                                     fprintf(stderr, "ERROR: the number of AA types exceeds MAX_AA in %s.\n", strEnFile);
                                     nRes = 3;
@@ -488,22 +488,22 @@ int Parse_EnergyFile(char* strEnFile)
                     else
                         {                                      // Saving energy and radius matrices
                             nEntry = str2farr(strLine, fTemp); // Counting how many columns
-                            if (nEntry != nBeadTypes_glb)
+                            if (nEntry != g_energy.nBeadTypes)
                                 { // If columns not the same as sticker number
                                     if (nEntry == 1)
                                         { // If only 1-value, all-values in  that
                                           // matrix are this one
-                                            for (i = 0; i < nBeadTypes_glb; i++)
+                                            for (i = 0; i < g_energy.nBeadTypes; i++)
                                                 {
-                                                    for (j = 0; j < nBeadTypes_glb; j++)
+                                                    for (j = 0; j < g_energy.nBeadTypes; j++)
                                                         {
                                                             if (nFlag % 2 == 0)
                                                                 { // energy
-                                                                    faEnergy_glb[i][j][(int) (nFlag / 2)] = fTemp[0];
+                                                                    g_energy.faEnergy[i][j][(int) (nFlag / 2)] = fTemp[0];
                                                                 }
                                                             else
                                                                 { // radius
-                                                                    faEnRad_glb[i][j][(int) (nFlag / 2)] = fTemp[0];
+                                                                    g_energy.faEnRad[i][j][(int) (nFlag / 2)] = fTemp[0];
                                                                 }
                                                         }
                                                 }
@@ -523,16 +523,16 @@ int Parse_EnergyFile(char* strEnFile)
                                   // matrix
                                     if (nFlag % 2 == 0)
                                         { // energy
-                                            for (i = 0; i < nBeadTypes_glb; i++)
+                                            for (i = 0; i < g_energy.nBeadTypes; i++)
                                                 {
-                                                    faEnergy_glb[nRow][i][(int) (nFlag / 2)] = fTemp[i];
+                                                    g_energy.faEnergy[nRow][i][(int) (nFlag / 2)] = fTemp[i];
                                                 }
                                         }
                                     else
                                         { // radius
-                                            for (i = 0; i < nBeadTypes_glb; i++)
+                                            for (i = 0; i < g_energy.nBeadTypes; i++)
                                                 {
-                                                    faEnRad_glb[nRow][i][(int) (nFlag / 2)] = fTemp[i];
+                                                    g_energy.faEnRad[nRow][i][(int) (nFlag / 2)] = fTemp[i];
                                                 }
                                         }
                                     nRow++;

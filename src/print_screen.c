@@ -60,15 +60,15 @@ void PrintToScreen_AllEnergyMatrices(void)
 
     printf("%s Energy Matrices %s\n", lBrace, rBrace);
 
-    PrintToScreen_EnergyMatrix("OVLP ", nBeadTypes_glb, faEnergy_glb, E_OVLP);
+    PrintToScreen_EnergyMatrix("OVLP ", g_energy.nBeadTypes, g_energy.faEnergy, E_OVLP);
 
-    PrintToScreen_EnergyMatrix("CONT ", nBeadTypes_glb, faEnergy_glb, E_CONT);
+    PrintToScreen_EnergyMatrix("CONT ", g_energy.nBeadTypes, g_energy.faEnergy, E_CONT);
 
-    PrintToScreen_EnergyMatrix("SC_SC", nBeadTypes_glb, faEnergy_glb, E_SC_SC);
+    PrintToScreen_EnergyMatrix("SC_SC", g_energy.nBeadTypes, g_energy.faEnergy, E_SC_SC);
 
-    PrintToScreen_EnergyMatrix("FSOL ", nBeadTypes_glb, faEnergy_glb, E_F_SOL);
+    PrintToScreen_EnergyMatrix("FSOL ", g_energy.nBeadTypes, g_energy.faEnergy, E_F_SOL);
 
-    PrintToScreen_EnergyMatrix("STIFF", nBeadTypes_glb, faEnergy_glb, E_STIFF);
+    PrintToScreen_EnergyMatrix("STIFF", g_energy.nBeadTypes, g_energy.faEnergy, E_STIFF);
 }
 
 
@@ -146,7 +146,7 @@ void ScreenIO_Print_KeyFile(void)
     const char lBrace[] = "<======      ";
     const char rBrace[] = "      ======>";
     printf("%s System Settings %s\n", lBrace, rBrace);
-    printf("Number of Bead Types = %d\n", nBeadTypes_glb);
+    printf("Number of Bead Types = %d\n", g_energy.nBeadTypes);
     printf("Number of Beads      = %ld\n", (size_t) g_system.tot_beads);
     printf("Number of Chains     = %ld\n", (size_t) g_system.tot_chains);
     printf("Number of Components = %ld\n", (size_t) g_system.tot_chain_types);
@@ -193,13 +193,13 @@ void ScreenIO_Print_SystemEnergy(void)
 
     printf("%s\n", sSectionHead);
     puts("Energies          |");
-    printf("Tot  : %-10.2e |\n", faCurrEn_glb[E_TOT]);
-    printf("Ovlp : %-10.2e |\n", faCurrEn_glb[E_OVLP]);
-    printf("Cont : %-10.2e |\n", faCurrEn_glb[E_CONT]);
-    printf("Aniso: %-10.2e |\n", faCurrEn_glb[E_SC_SC]);
-    printf("FSol : %-10.2e |\n", faCurrEn_glb[E_F_SOL]);
-    printf("Stiff: %-10.2e |\n", faCurrEn_glb[E_STIFF]);
-    printf("Bias : %-10.2e |\n", faCurrEn_glb[E_BIAS]);
+    printf("Tot  : %-10.2e |\n", g_energy.faCurrEn[E_TOT]);
+    printf("Ovlp : %-10.2e |\n", g_energy.faCurrEn[E_OVLP]);
+    printf("Cont : %-10.2e |\n", g_energy.faCurrEn[E_CONT]);
+    printf("Aniso: %-10.2e |\n", g_energy.faCurrEn[E_SC_SC]);
+    printf("FSol : %-10.2e |\n", g_energy.faCurrEn[E_F_SOL]);
+    printf("Stiff: %-10.2e |\n", g_energy.faCurrEn[E_STIFF]);
+    printf("Bias : %-10.2e |\n", g_energy.faCurrEn[E_BIAS]);
     printf("%s\n", sSectionHead);
 }
 

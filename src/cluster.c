@@ -557,7 +557,7 @@ int Clus_Proximity_ChainCluster_ForTotal_IntOnly(int const chainID)
                             if (tmpBead != -1)
                                 {
                                     resj = g_system.bead_info[tmpBead][BEAD_TYPE];
-                                    if (faEnergy_glb[resi][resj][E_OVLP] >= 0.)
+                                    if (g_energy.faEnergy[resi][resj][E_OVLP] >= 0.)
                                         { // If not interacting, or repelling, it is not a
                                           // bond
                                             continue;
@@ -846,7 +846,7 @@ int Clus_Proximity_LimitedCluster_IntOnly(int const chainID)
                             if (tmpBead != -1)
                                 {
                                     resj = g_system.bead_info[tmpBead][BEAD_TYPE];
-                                    if (faEnergy_glb[resi][resj][E_OVLP] >= 0.)
+                                    if (g_energy.faEnergy[resi][resj][E_OVLP] >= 0.)
                                         { // If not interacting, or repelling, it is not a
                                           // bond
                                             continue;
@@ -969,7 +969,7 @@ int Clus_Proximity_LimitedCluster_IntOnly_Check(int const chainID, int const* Ol
                             if (tmpBead != -1)
                                 {
                                     resj = g_system.bead_info[tmpBead][BEAD_TYPE];
-                                    if (faEnergy_glb[resi][resj][E_OVLP] >= 0.)
+                                    if (g_energy.faEnergy[resi][resj][E_OVLP] >= 0.)
                                         { // If not interacting, or repelling, it is not a
                                           // bond
                                             continue;

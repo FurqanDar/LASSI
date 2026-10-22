@@ -228,15 +228,7 @@ extern AnalysisState g_analysis;
  */
 /* SystemState *_glb shims removed after Phase 2.2 call-site migration to g_system.* */
 
-#define nBeadTypes_glb                     g_energy.nBeadTypes
-#define faEnergy_glb                       g_energy.faEnergy
-#define faEnRad_glb                        g_energy.faEnRad
-#define naRotTrial_glb                     g_energy.naRotTrial
-#define ldaBoltzFac_glb                    g_energy.ldaBoltzFac
-#define ldaBoltzNorm_glb                   g_energy.ldaBoltzNorm
-#define ldaBoltzFacNorm_glb                g_energy.ldaBoltzFacNorm
-#define ldLogOfSmallestPossibleProb_glb    g_energy.ldLogOfSmallestPossibleProb
-#define faCurrEn_glb                       g_energy.faCurrEn
+/* EnergyTables *_glb shims removed after Phase 2 call-site migration to g_energy.* */
 
 /* McControl *_glb shims removed after Phase 2.2 call-site migration to g_mc.* */
 

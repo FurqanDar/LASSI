@@ -275,12 +275,12 @@ int Check_RotStates_wNeighList(int const beadID, int const resi, const int* neig
             tmpBead = neighList[i];
             resj    = g_system.bead_info[tmpBead][BEAD_TYPE];
 
-            if (faEnergy_glb[resi][resj][E_SC_SC] != 0.f)
+            if (g_energy.faEnergy[resi][resj][E_SC_SC] != 0.f)
                 {
                     if (g_system.bead_info[tmpBead][BEAD_FACE] == -1 || g_system.bead_info[tmpBead][BEAD_FACE] == beadID)
                         {
-                            ldaBoltzFac_glb[CandNums]   = ldaBoltzFacNorm_glb[resi][resj];
-                            naRotTrial_glb[0][CandNums] = tmpBead;
+                            g_energy.ldaBoltzFac[CandNums]   = g_energy.ldaBoltzFacNorm[resi][resj];
+                            g_energy.naRotTrial[0][CandNums] = tmpBead;
                             CandNums++;
                         }
                 }
@@ -310,7 +310,7 @@ int Check_RotStates_wNeighList_ForChains(int const beadID, int const resi, const
                 {
                     continue;
                 }
-            if (faEnergy_glb[resi][resj][E_SC_SC] == 0.f)
+            if (g_energy.faEnergy[resi][resj][E_SC_SC] == 0.f)
                 {
                     continue;
                 }
@@ -322,8 +322,8 @@ int Check_RotStates_wNeighList_ForChains(int const beadID, int const resi, const
             // before deciding the beadID's bond.
             if (tmpfaceID == -1 || ( (tmpfaceID >= beadID) && (tmpfaceID < lastbeadID) ) )
                 {
-                    ldaBoltzFac_glb[CandNums]   = ldaBoltzFacNorm_glb[resi][resj];
-                    naRotTrial_glb[0][CandNums] = tmpBead;
+                    g_energy.ldaBoltzFac[CandNums]   = g_energy.ldaBoltzFacNorm[resi][resj];
+                    g_energy.naRotTrial[0][CandNums] = tmpBead;
                     CandNums++;
                 }
         }
@@ -357,7 +357,7 @@ int Check_RotStates_wNeighList_ForLists(int const beadIdx, const int listSize, c
                     continue;
                 }
 
-            if (faEnergy_glb[resi][resj][E_SC_SC] == 0.f)
+            if (g_energy.faEnergy[resi][resj][E_SC_SC] == 0.f)
                 {
                     continue; // No interaction between these two types.
                 }
@@ -376,8 +376,8 @@ int Check_RotStates_wNeighList_ForLists(int const beadIdx, const int listSize, c
             // if the tmpfaceID is a later checked bead, then tmpBead can be a candidate
             if (tmpfaceID == -1 || j < listSize )  
                 {
-                    ldaBoltzFac_glb[CandNums]   = ldaBoltzFacNorm_glb[resi][resj];
-                    naRotTrial_glb[0][CandNums] = tmpBead;
+                    g_energy.ldaBoltzFac[CandNums]   = g_energy.ldaBoltzFacNorm[resi][resj];
+                    g_energy.naRotTrial[0][CandNums] = tmpBead;
                     CandNums++;
                 }
         }
@@ -411,7 +411,7 @@ int Check_RotState_wNeighList_ForRange(int const beadID, int const resi, int con
                 {
                     continue;
                 }
-            if (faEnergy_glb[resi][resj][E_SC_SC] == 0.f)
+            if (g_energy.faEnergy[resi][resj][E_SC_SC] == 0.f)
                 {
                     continue;
                 }
@@ -423,8 +423,8 @@ int Check_RotState_wNeighList_ForRange(int const beadID, int const resi, int con
             // before deciding the beadID's bond.
             if (tmpfaceID == -1 || ( (tmpfaceID >= beadID) && (tmpfaceID <= largestBead) ) )
                 {
-                    ldaBoltzFac_glb[CandNums]   = ldaBoltzFacNorm_glb[resi][resj];
-                    naRotTrial_glb[0][CandNums] = tmpBead;
+                    g_energy.ldaBoltzFac[CandNums]   = g_energy.ldaBoltzFacNorm[resi][resj];
+                    g_energy.naRotTrial[0][CandNums] = tmpBead;
                     CandNums++;
                 }
         }
@@ -464,11 +464,11 @@ int Check_RotStatesOld(int const beadID, int const resi, float const MyTemp)
             if (tmpBead != -1)
                 {
                     j = g_system.bead_info[tmpBead][BEAD_TYPE];
-                    if (faEnergy_glb[resi][j][E_SC_SC] != 0 &&
+                    if (g_energy.faEnergy[resi][j][E_SC_SC] != 0 &&
                         (g_system.bead_info[tmpBead][BEAD_FACE] == -1 || g_system.bead_info[tmpBead][BEAD_FACE] == beadID))
                         {
-                            ldaBoltzFac_glb[CandNums]   = ldaBoltzFacNorm_glb[resi][j];
-                            naRotTrial_glb[0][CandNums] = tmpBead;
+                            g_energy.ldaBoltzFac[CandNums]   = g_energy.ldaBoltzFacNorm[resi][j];
+                            g_energy.naRotTrial[0][CandNums] = tmpBead;
                             CandNums++;
                         }
                 }
@@ -509,11 +509,11 @@ int Check_RotStatesNew(int const beadID, int const resi, float const MyTemp)
             if (tmpBead != -1)
                 {
                     j = g_system.bead_info[tmpBead][BEAD_TYPE];
-                    if (faEnergy_glb[resi][j][E_SC_SC] != 0 &&
+                    if (g_energy.faEnergy[resi][j][E_SC_SC] != 0 &&
                         (g_system.bead_info[tmpBead][BEAD_FACE] == -1 || g_system.bead_info[tmpBead][BEAD_FACE] == beadID))
                         {
-                            ldaBoltzFac_glb[CandNums]   = ldaBoltzFacNorm_glb[resi][j];
-                            naRotTrial_glb[0][CandNums] = tmpBead;
+                            g_energy.ldaBoltzFac[CandNums]   = g_energy.ldaBoltzFacNorm[resi][j];
+                            g_energy.naRotTrial[0][CandNums] = tmpBead;
                             CandNums++;
                         }
                 }
@@ -524,31 +524,31 @@ int Check_RotStatesNew(int const beadID, int const resi, float const MyTemp)
 
 /// OP_NormalizeRotState -- normalizes the rotational boltzmann distribution,
 /// and generates the cumulative distribution so that we can sample from it.
-/// \param beadVal - ldaBoltzNorm_glb[MAX_VALENCY] stores the total Rosenbluth weights
-/// for moves that sample multiple stickers. Note that ldaBoltzFac_glb[] is now the
+/// \param beadVal - g_energy.ldaBoltzNorm[MAX_VALENCY] stores the total Rosenbluth weights
+/// for moves that sample multiple stickers. Note that g_energy.ldaBoltzFac[] is now the
 /// cumulative boltzmann distribution, which is sampled to propose bonds.
 /// \param CandNums - total possible bonding partners for this particular sticker case.
 /// A dissociated state integrated into the cumulative distribution implicitly.
 /// The normalized Boltzmann factor for the dissociated state is considered to be
-/// appended to the end of the ldaBoltzFac_glb[] array. This is because the
+/// appended to the end of the g_energy.ldaBoltzFac[] array. This is because the
 /// dissociated state is always a possible state.
 void OP_NormalizeRotState(const int beadVal, const int CandNum)
 {
     int i;
 
-    ldaBoltzNorm_glb[beadVal] = 1.; // Default value is a dissociated state
+    g_energy.ldaBoltzNorm[beadVal] = 1.; // Default value is a dissociated state
 
     for (i = 0; i < CandNum; i++)
         {
-            ldaBoltzNorm_glb[beadVal] += ldaBoltzFac_glb[i]; // Rosenbluth weights for beadVal
+            g_energy.ldaBoltzNorm[beadVal] += g_energy.ldaBoltzFac[i]; // Rosenbluth weights for beadVal
         }
     for (i = 0; i < CandNum; i++)
         {
-            ldaBoltzFac_glb[i] /= ldaBoltzNorm_glb[beadVal];
+            g_energy.ldaBoltzFac[i] /= g_energy.ldaBoltzNorm[beadVal];
         }
     for (i = 1; i < CandNum; i++)
         {
-            ldaBoltzFac_glb[i] += ldaBoltzFac_glb[i - 1];
+            g_energy.ldaBoltzFac[i] += g_energy.ldaBoltzFac[i - 1];
         }
 }
 
@@ -565,7 +565,7 @@ int OP_PickRotState(int CandNum)
     fProb = (lLDub) rand() / (lLDub) RAND_MAX;
     for (i = 0; i < CandNum; i++)
         {
-            if (fProb < ldaBoltzFac_glb[i])
+            if (fProb < g_energy.ldaBoltzFac[i])
                 {
                     break;
                 }
@@ -574,7 +574,7 @@ int OP_PickRotState(int CandNum)
     // last state, which is the dissociated state, is selected.
     if (i < CandNum) 
     {
-        newRot = naRotTrial_glb[0][i];
+        newRot = g_energy.naRotTrial[0][i];
     }
 
     return newRot;

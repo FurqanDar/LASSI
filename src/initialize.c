@@ -43,7 +43,7 @@ void Memory_Initialization_AtStart(void)
             strcpy(arr_name, "ldTotGyrRad");
             ldaTOTRg_Arr_glb = Create2DLongdouble(2, g_mc.nTotCycleNum, arr_name);
         }
-    nRDF_TotComps_glb = 2 + nBeadTypes_glb + nBeadTypes_glb * nBeadTypes_glb;
+    nRDF_TotComps_glb = 2 + g_energy.nBeadTypes + g_energy.nBeadTypes * g_energy.nBeadTypes;
     nRDF_TotComps_glb /= 2;
     if (naReportFreqs_glb[REPORT_RDFTOT] != 0)
         {
@@ -171,18 +171,18 @@ void Check_BeadTypewiseInteractions(void)
     g_system.bSystemHasTopo = 0;
 
     // SC-SC Check
-    for (i = 0; i < nBeadTypes_glb; i++)
+    for (i = 0; i < g_energy.nBeadTypes; i++)
         {
-            for (j = 0; j < nBeadTypes_glb; j++)
+            for (j = 0; j < g_energy.nBeadTypes; j++)
                 {
-                    if (faEnergy_glb[i][j][E_SC_SC])
+                    if (g_energy.faEnergy[i][j][E_SC_SC])
                         {
                             g_system.nBeadTypeIsSticker[i] = 1;
                         }
                 }
         }
 
-    for (i = 0; i < nBeadTypes_glb; i++)
+    for (i = 0; i < g_energy.nBeadTypes; i++)
         {
             if (g_system.nBeadTypeIsSticker[i])
                 {
@@ -191,17 +191,17 @@ void Check_BeadTypewiseInteractions(void)
         }
 
     // OVLP Check
-    for (i = 0; i < nBeadTypes_glb; i++)
+    for (i = 0; i < g_energy.nBeadTypes; i++)
         {
-            for (j = 0; j < nBeadTypes_glb; j++)
+            for (j = 0; j < g_energy.nBeadTypes; j++)
                 {
-                    if (faEnergy_glb[i][j][E_OVLP])
+                    if (g_energy.faEnergy[i][j][E_OVLP])
                         {
                             g_system.nBeadTypeCanOvlp[i] = 1;
                         }
                 }
         }
-    for (i = 0; i < nBeadTypes_glb; i++)
+    for (i = 0; i < g_energy.nBeadTypes; i++)
         {
             if (g_system.nBeadTypeCanOvlp[i])
                 {
@@ -210,17 +210,17 @@ void Check_BeadTypewiseInteractions(void)
         }
 
     // CONT Check
-    for (i = 0; i < nBeadTypes_glb; i++)
+    for (i = 0; i < g_energy.nBeadTypes; i++)
         {
-            for (j = 0; j < nBeadTypes_glb; j++)
+            for (j = 0; j < g_energy.nBeadTypes; j++)
                 {
-                    if (faEnergy_glb[i][j][E_CONT])
+                    if (g_energy.faEnergy[i][j][E_CONT])
                         {
                             g_system.nBeadTypeCanCont[i] = 1;
                         }
                 }
         }
-    for (i = 0; i < nBeadTypes_glb; i++)
+    for (i = 0; i < g_energy.nBeadTypes; i++)
         {
             if (g_system.nBeadTypeCanCont[i])
                 {
@@ -229,17 +229,17 @@ void Check_BeadTypewiseInteractions(void)
         }
 
     // FSOL Check
-    for (i = 0; i < nBeadTypes_glb; i++)
+    for (i = 0; i < g_energy.nBeadTypes; i++)
         {
-            for (j = 0; j < nBeadTypes_glb; j++)
+            for (j = 0; j < g_energy.nBeadTypes; j++)
                 {
-                    if (faEnergy_glb[i][j][E_F_SOL])
+                    if (g_energy.faEnergy[i][j][E_F_SOL])
                         {
                             g_system.nBeadTypeCanFSol[i] = 1;
                         }
                 }
         }
-    for (i = 0; i < nBeadTypes_glb; i++)
+    for (i = 0; i < g_energy.nBeadTypes; i++)
         {
             if (g_system.nBeadTypeCanFSol[i])
                 {
@@ -248,11 +248,11 @@ void Check_BeadTypewiseInteractions(void)
         }
 
     // T_IND Check
-    for (i = 0; i < nBeadTypes_glb; i++)
+    for (i = 0; i < g_energy.nBeadTypes; i++)
         {
-            for (j = 0; j < nBeadTypes_glb; j++)
+            for (j = 0; j < g_energy.nBeadTypes; j++)
                 {
-                    if (faEnergy_glb[i][j][E_T_IND])
+                    if (g_energy.faEnergy[i][j][E_T_IND])
                         {
                             g_system.nBeadTypeCanTInd[i] = 1;
                         }
@@ -260,11 +260,11 @@ void Check_BeadTypewiseInteractions(void)
         }
 
     // STIFF Check
-    for (i = 0; i < nBeadTypes_glb; i++)
+    for (i = 0; i < g_energy.nBeadTypes; i++)
         {
-            for (j = 0; j < nBeadTypes_glb; j++)
+            for (j = 0; j < g_energy.nBeadTypes; j++)
                 {
-                    if (faEnergy_glb[i][j][E_STIFF])
+                    if (g_energy.faEnergy[i][j][E_STIFF])
                         {
                             g_system.bSystemHasTopo = 1;
                         }
@@ -307,7 +307,7 @@ void Global_Array_Initialization_AtStart(void)
         {
             for (j = 0; j < MAX_ROTSTATES; j++)
                 {
-                    naRotTrial_glb[i][j] = -1;
+                    g_energy.naRotTrial[i][j] = -1;
                 }
         }
     for (i = 0; i < MAX_ROTSTATES - 1; i++)
@@ -413,7 +413,7 @@ void Global_Array_Initialization_AtStart(void)
         }
 
     g_mc.fSquishRad_Sq               = g_mc.fSquishRad * g_mc.fSquishRad;
-    ldLogOfSmallestPossibleProb_glb = logl((lLDub) 1. / (lLDub) RAND_MAX);
+    g_energy.ldLogOfSmallestPossibleProb = logl((lLDub) 1. / (lLDub) RAND_MAX);
     nLimitedClusterSize_glb         = (int) g_system.tot_chains / 2;
 
     printf("All setup has been completed!\n");
@@ -784,9 +784,9 @@ void Calculate_Rot_Bias(const float CurrentTemp)
         {
             for (j = 0; j < MAX_AA; j++)
                 {
-                    ldaBoltzFacNorm_glb[i][j] =
-                        (lLDub) expl(-(lLDub) faEnergy_glb[i][j][E_SC_SC] / (lLDub) CurrentTemp);
-                    // printf("%LE; ", ldaBoltzFacNorm_glb[i][j]);
+                    g_energy.ldaBoltzFacNorm[i][j] =
+                        (lLDub) expl(-(lLDub) g_energy.faEnergy[i][j][E_SC_SC] / (lLDub) CurrentTemp);
+                    // printf("%LE; ", g_energy.ldaBoltzFacNorm[i][j]);
                 }
             // printf("\n");
         }
