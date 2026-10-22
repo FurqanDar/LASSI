@@ -15,14 +15,13 @@ Please address all questions to [Furqan](http://pappulab.wustl.edu/people.html#g
 
 ## Characterization / regression harness
 
-A short fixed-seed smoke harness lives under `tests/characterization/`. From the
-repo root, after a normal build:
+Pinned-seed smoke decks under `tests/characterization/`. One command from the
+repo root:
 
 ```bash
 make characterization
 ```
 
-This runs two minimal decks and fails if trajectory / energy / MC-move outputs
-differ bit-for-bit from checked-in baselines. See
-[`tests/characterization/README.md`](tests/characterization/README.md) for
-details, determinism notes, and how to refresh baselines.
+Exits non-zero (CI-style) if trajectory / energy / MC-move outputs drift from
+checked-in baselines. See
+[`tests/characterization/README.md`](tests/characterization/README.md).

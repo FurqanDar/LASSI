@@ -1,9 +1,9 @@
 # Characterization harness
 
-Short, fixed-seed smoke runs that catch unintended changes to LASSI’s Monte Carlo
-trajectory. This is a characterization / regression check, not a physics test suite.
+Short, fully pinned (seed + flags) smoke runs that catch unintended changes to
+LASSI’s Monte Carlo trajectory.
 
-## Quick start
+## One command
 
 From the repository root:
 
@@ -11,22 +11,32 @@ From the repository root:
 make characterization
 ```
 
-Or:
+That builds via `src/compile.sh`, runs the smoke decks, and **exits non-zero
+(CI-style) if any baseline artifact differs bit-for-bit**.
 
-```bash
-bash tests/characterization/run_characterization.sh
-```
+## What is pinned
 
-The script builds `src/lassi` (unless `LASSI_BIN` points at an existing binary),
-runs the smoke decks, and **fails if any checked-in baseline file differs
-bit-for-bit**.
+Each deck’s `param.key` sets:
+
+- A **non-zero** `RANDOM_SEED` (seed `0` would call `time(NULL)` and is rejected
+  by the harness).
+- Explicit values for temperature / annealing, bias, all MC move frequencies
+  (including `MV_PR_*`), reporting frequencies, `REPORT_CONFIG_MODE`, and
+  `ANALYSIS_CLUSTER_MODE` — no reliance on ambient keyfile defaults.
+- Analysis writers that are unused here are set to frequency `0`.
+
+The harness itself also pins `LC_ALL=C`, `LANG=C`, and `TZ=UTC`, and checks the
+run log for `RNG Seed = <expected>`.
+
+Build flags are those in `src/compile.sh`
+(`gcc -march=x86-64 -O3 -std=gnu11 ... -lm -fcommon`).
 
 ## Decks
 
 | Deck | Based on | Seed | Size | Steps |
 |------|----------|------|------|-------|
-| `decks/smoke_single` | Example A (single diblock) | `RANDOM_SEED 42` | 1×20 beads, box 40 | PREEQ 500 + N_STEPS 2000, 1 cycle |
-| `decks/smoke_multi` | Example C (separated types) | `RANDOM_SEED 12345` | 2+2×10 beads, box 40 | same short schedule |
+| `decks/smoke_single` | Example A (single diblock) | `42` | 1×20 beads, box 40 | PREEQ 500 + N_STEPS 2000, 1 cycle |
+| `decks/smoke_multi` | Example C (separated types) | `12345` | 2+2×10 beads, box 40 | same short schedule |
 
 Compared artifacts (per deck), under `baselines/<deck>/`:
 
@@ -37,27 +47,19 @@ Stdout / `run.log` are **not** compared (they include wall-clock timings).
 
 ## Determinism
 
-With a non-zero `RANDOM_SEED`, these smoke decks produce **bit-identical**
-outputs on repeated runs using the same `src/compile.sh` binary on the same
-platform (verified on Linux glibc with the stock `rand()`/`srand()` path).
+With the pinned non-zero seeds and flags above, these decks produce
+**bit-identical** outputs on repeated runs using the same `src/compile.sh`
+binary on the same platform (Linux glibc `rand()`/`srand()`).
 
-Notes:
-
-- `RANDOM_SEED 0` means “seed from `time(NULL)`” and is **not** reproducible.
-- `rand()`/`srand()` behavior can differ across C libraries (e.g. glibc vs
-  macOS/BSD). Baselines checked in here were generated on Linux with
-  `src/compile.sh`. Cross-OS drift is an environment issue, not a simulation
-  physics change.
-- No simulation-code change is required for these smoke cases to be
-  deterministic given a fixed seed.
+`rand()` can differ across C libraries (glibc vs macOS/BSD). Baselines here were
+generated on Linux with `src/compile.sh`.
 
 ## Updating baselines
 
-Only after an **intentional** behavior change (or a deliberate reference refresh):
+Only after an **intentional** reference change:
 
 ```bash
 make characterization-update
 ```
 
-Then review the diff under `tests/characterization/baselines/` and commit it
-with the change that caused it.
+Then review and commit the diff under `tests/characterization/baselines/`.
