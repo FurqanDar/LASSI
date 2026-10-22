@@ -28,7 +28,7 @@ void Memory_Initialization_AtStart(void)
     strcpy(arr_name, "naClusterMatrix_glb");
     naClusterMatrix_glb = Create2DInt(g_system.tot_chains + 2, g_system.tot_chains + 2, arr_name);
 
-    if (naReportFreqs_glb[REPORT_NETWORK] != 0)
+    if (g_reports.naReportFreqs[REPORT_NETWORK] != 0)
         {
             strcpy(arr_name, "ldTotClusArr");
             ldaTOTCLUS_Arr_glb = Create2DLongdouble(2 + g_system.tot_chains, g_mc.nTotCycleNum, arr_name);
@@ -45,7 +45,7 @@ void Memory_Initialization_AtStart(void)
         }
     nRDF_TotComps_glb = 2 + g_energy.nBeadTypes + g_energy.nBeadTypes * g_energy.nBeadTypes;
     nRDF_TotComps_glb /= 2;
-    if (naReportFreqs_glb[REPORT_RDFTOT] != 0)
+    if (g_reports.naReportFreqs[REPORT_RDFTOT] != 0)
         {
 
             strcpy(arr_name, "ldTotRDFArr");
@@ -55,7 +55,7 @@ void Memory_Initialization_AtStart(void)
             ldaRDF_Arr_glb = Create1DLongdouble((nRDF_TotComps_glb * nRDF_TotBins_glb), arr_name);
         }
 
-    if (naReportFreqs_glb[REPORT_COMDEN] != 0)
+    if (g_reports.naReportFreqs[REPORT_COMDEN] != 0)
         {
             nRadDen_TotComps_glb  = 2 * g_system.tot_chain_types * (g_system.tot_chain_types + 1);
             nRadDen_CompShift_glb = g_system.tot_chain_types * (g_system.tot_chain_types + 1);
@@ -68,15 +68,15 @@ void Memory_Initialization_AtStart(void)
                 Create1DLongdouble(nRadDen_TotComps_glb * g_mc.nTotCycleNum * nRDF_TotBins_glb, arr_name);
         }
 
-    if (nTrajMode_glb == -1)
+    if (g_reports.nTrajMode == -1)
         {
-            nTraj_FramesPerCycle_glb = g_mc.nMCStepsPerCycle / naReportFreqs_glb[REPORT_CONFIG] + 1;
+            g_reports.nTraj_FramesPerCycle = g_mc.nMCStepsPerCycle / g_reports.naReportFreqs[REPORT_CONFIG] + 1;
             printf("\n***********************************************\n");
             printf("This feature is still experimental!\n");
             printf("\n***********************************************\n");
 
             strcpy(arr_name, "nTotTrajArr");
-            naTOTTRAJ_Arr_glb = Create1DInt(nTraj_FramesPerCycle_glb * g_system.tot_beads * BEADINFO_MAX, arr_name);
+            g_reports.naTOTTRAJ_Arr = Create1DInt(g_reports.nTraj_FramesPerCycle * g_system.tot_beads * BEADINFO_MAX, arr_name);
         }
 
     printf("Successfully allocated memory! Arrays initialized.\n");
@@ -115,39 +115,39 @@ void Memory_VerifyMalloc(void)
             printf("naChainCheckList_glb malloc failed\n");
             exit(1);
         }
-    if (ldaRDF_Arr_glb == NULL && naReportFreqs_glb[REPORT_RDFTOT] != 0)
+    if (ldaRDF_Arr_glb == NULL && g_reports.naReportFreqs[REPORT_RDFTOT] != 0)
         {
             printf("ldaRDF_Arr_glb malloc failed\n");
             exit(1);
         }
-    if (ldaTOTRDF_Arr_glb == NULL && naReportFreqs_glb[REPORT_RDFTOT] != 0)
+    if (ldaTOTRDF_Arr_glb == NULL && g_reports.naReportFreqs[REPORT_RDFTOT] != 0)
         {
             printf("ldaTOTRDF_Arr_glb malloc failed\n");
             exit(1);
         }
-    if (ldaRadDen_Arr_glb == NULL && naReportFreqs_glb[REPORT_COMDEN] != 0)
+    if (ldaRadDen_Arr_glb == NULL && g_reports.naReportFreqs[REPORT_COMDEN] != 0)
         {
             printf("ldaRadDen_Arr_glb malloc failed\n");
             exit(1);
         }
-    if (ldaTOTRadDen_Arr_glb == NULL && naReportFreqs_glb[REPORT_COMDEN] != 0)
+    if (ldaTOTRadDen_Arr_glb == NULL && g_reports.naReportFreqs[REPORT_COMDEN] != 0)
         {
             printf("ldaTOTRadDen_Arr_glb malloc failed\n");
             exit(1);
         }
-    if (ldaMOLCLUS_Arr_glb == NULL && naReportFreqs_glb[REPORT_NETWORK] != 0)
+    if (ldaMOLCLUS_Arr_glb == NULL && g_reports.naReportFreqs[REPORT_NETWORK] != 0)
         {
             printf("ldaMOLCLUS_Arr_glb malloc failed\n");
             exit(1);
         }
-    if (ldaTOTMOLCLUS_Arr_glb == NULL && naReportFreqs_glb[REPORT_NETWORK] != 0)
+    if (ldaTOTMOLCLUS_Arr_glb == NULL && g_reports.naReportFreqs[REPORT_NETWORK] != 0)
         {
             printf("ldaTOTMOLCLUS_Arr_glb malloc failed\n");
             exit(1);
         }
-    if ((naTOTTRAJ_Arr_glb == NULL) && (nTrajMode_glb == -1))
+    if ((g_reports.naTOTTRAJ_Arr == NULL) && (g_reports.nTrajMode == -1))
         {
-            printf("naTOTTRAJ_Arr_glb malloc failed\n");
+            printf("g_reports.naTOTTRAJ_Arr malloc failed\n");
             exit(1);
         }
 }
@@ -325,7 +325,7 @@ void Global_Array_Initialization_AtStart(void)
                 }
         }
 
-    if (naReportFreqs_glb[REPORT_NETWORK] != 0)
+    if (g_reports.naReportFreqs[REPORT_NETWORK] != 0)
         {
             for (i = 0; i < g_system.tot_chains; i++)
                 { // For MolWise Clus arrays
@@ -352,7 +352,7 @@ void Global_Array_Initialization_AtStart(void)
                 }
         }
 
-    if (naReportFreqs_glb[REPORT_RDFTOT] != 0)
+    if (g_reports.naReportFreqs[REPORT_RDFTOT] != 0)
         {
             for (i = 0; i < nRDF_TotBins_glb; i++)
                 { // For Radial distributions
@@ -367,7 +367,7 @@ void Global_Array_Initialization_AtStart(void)
                 }
         }
 
-    if (naReportFreqs_glb[REPORT_COMDEN] != 0)
+    if (g_reports.naReportFreqs[REPORT_COMDEN] != 0)
         {
             for (j = 0; j < nRadDen_TotComps_glb; j++)
                 { // For Density Dists wrt COM
@@ -427,7 +427,7 @@ void Reset_Counters(void)
     nTotRadDenCounter_glb       = 0;
     nTotClusCounter_glb         = 0;
     nLargestClusterRightNow_glb = 0;
-    nTrajCurFrame_glb           = 0;
+    g_reports.nTrajCurFrame           = 0;
 }
 
 /// Reset_Global_Arrays - resets the various global counters and arrays for
@@ -444,7 +444,7 @@ void Reset_Global_Arrays(void)
                 {
                     naClusterMatrix_glb[i][j] = -1;
                 }
-            if (naReportFreqs_glb[REPORT_NETWORK])
+            if (g_reports.naReportFreqs[REPORT_NETWORK])
                 {
                     for (j = 0; j < g_system.tot_chain_types; j++)
                         {
@@ -453,7 +453,7 @@ void Reset_Global_Arrays(void)
                 }
         }
     // Initializing arrays for pair-distribution calculations
-    if (naReportFreqs_glb[REPORT_RDFTOT])
+    if (g_reports.naReportFreqs[REPORT_RDFTOT])
         {
             for (j = 0; j < nRDF_TotComps_glb; j++)
                 {
@@ -463,7 +463,7 @@ void Reset_Global_Arrays(void)
                         }
                 }
         }
-    if (naReportFreqs_glb[REPORT_COMDEN])
+    if (g_reports.naReportFreqs[REPORT_COMDEN])
         {
             // Initalizing for density histograms wrt to the COM
             for (j = 0; j < nRadDen_TotComps_glb; j++)
@@ -725,7 +725,7 @@ void Initial_Conditions_FromFile(void)
     int i, j;
     int tmp_beadinfo[BEADINFO_MAX];
     FILE* infile;
-    infile       = fopen(strRestartFile_glb, "r");
+    infile       = fopen(g_reports.strRestartFile, "r");
     int tmpBeads = 0;
     while (fgets(strLine, sizeof(strLine), infile) != NULL)
         {

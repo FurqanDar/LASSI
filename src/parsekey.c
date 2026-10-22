@@ -179,7 +179,7 @@ int Parse_Keyfile(char* filename)
                         }
                     else if (strcmp(strKeyword, "RESTART_FILE") == 0)
                         {
-                            sscanf(strLine, "%*s %s", strRestartFile_glb);
+                            sscanf(strLine, "%*s %s", g_reports.strRestartFile);
                         }
                     else if (strcmp(strKeyword, "STRUCT_FILETYPE") == 0)
                         {
@@ -200,35 +200,35 @@ int Parse_Keyfile(char* filename)
                         }
                     else if (strcmp(strKeyword, "REPORT_PREFIX") == 0)
                         {
-                            sscanf(strLine, "%*s %s", strReportPrefix_glb);
+                            sscanf(strLine, "%*s %s", g_reports.strReportPrefix);
                         }
                     else if (strcmp(strKeyword, "REPORT_LOG_FREQ") == 0)
                         {
-                            sscanf(strLine, "%*s %ld", &naReportFreqs_glb[REPORT_LOG]);
+                            sscanf(strLine, "%*s %ld", &g_reports.naReportFreqs[REPORT_LOG]);
                         }
                     else if (strcmp(strKeyword, "REPORT_ENERGY_FREQ") == 0)
                         {
-                            sscanf(strLine, "%*s %ld", &naReportFreqs_glb[REPORT_ENERGY]);
+                            sscanf(strLine, "%*s %ld", &g_reports.naReportFreqs[REPORT_ENERGY]);
                         }
                     else if (strcmp(strKeyword, "REPORT_CONFIG_FREQ") == 0)
                         {
-                            sscanf(strLine, "%*s %ld", &naReportFreqs_glb[REPORT_CONFIG]);
+                            sscanf(strLine, "%*s %ld", &g_reports.naReportFreqs[REPORT_CONFIG]);
                         }
                     else if (strcmp(strKeyword, "REPORT_MCMOVE_FREQ") == 0)
                         {
-                            sscanf(strLine, "%*s %ld", &naReportFreqs_glb[REPORT_MCMOVE]);
+                            sscanf(strLine, "%*s %ld", &g_reports.naReportFreqs[REPORT_MCMOVE]);
                         }
                     else if (strcmp(strKeyword, "REPORT_NETWORK_FREQ") == 0)
                         {
-                            sscanf(strLine, "%*s %ld", &naReportFreqs_glb[REPORT_NETWORK]);
+                            sscanf(strLine, "%*s %ld", &g_reports.naReportFreqs[REPORT_NETWORK]);
                         }
                     else if (strcmp(strKeyword, "REPORT_RDFTOT_FREQ") == 0)
                         {
-                            sscanf(strLine, "%*s %ld", &naReportFreqs_glb[REPORT_RDFTOT]);
+                            sscanf(strLine, "%*s %ld", &g_reports.naReportFreqs[REPORT_RDFTOT]);
                         }
                     else if (strcmp(strKeyword, "REPORT_COMDEN_FREQ") == 0)
                         {
-                            sscanf(strLine, "%*s %ld", &naReportFreqs_glb[REPORT_COMDEN]);
+                            sscanf(strLine, "%*s %ld", &g_reports.naReportFreqs[REPORT_COMDEN]);
                         }
                     else if (strcmp(strKeyword, "ANALYSIS_CLUSTER_MODE") == 0)
                         {
@@ -236,7 +236,7 @@ int Parse_Keyfile(char* filename)
                         }
                     else if (strcmp(strKeyword, "REPORT_CONFIG_MODE") == 0)
                         {
-                            sscanf(strLine, "%*s %ld", &nTrajMode_glb);
+                            sscanf(strLine, "%*s %ld", &g_reports.nTrajMode);
                         }
                     else if (strcmp(strKeyword, "BIAS_INDENT_RADIUS") == 0)
                         {
@@ -331,9 +331,9 @@ int Parse_Keyfile(char* filename)
         }
     if (g_system.bReadConf == 1)
         {
-            if (strRestartFile_glb[0] != '\0')
+            if (g_reports.strRestartFile[0] != '\0')
                 {
-                    printf("Restart file is %s\n", strRestartFile_glb);
+                    printf("Restart file is %s\n", g_reports.strRestartFile);
                 }
             else
                 {

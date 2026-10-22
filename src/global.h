@@ -232,17 +232,7 @@ extern AnalysisState g_analysis;
 
 /* McControl *_glb shims removed after Phase 2.2 call-site migration to g_mc.* */
 
-#define strReportPrefix_glb                g_reports.strReportPrefix
-#define strFileEnergy_glb                  g_reports.strFileEnergy
-#define strFileTraj_glb                    g_reports.strFileTraj
-#define strFileMCMove_glb                  g_reports.strFileMCMove
-#define strFileSysProp_glb                 g_reports.strFileSysProp
-#define strRestartFile_glb                 g_reports.strRestartFile
-#define naReportFreqs_glb                  g_reports.naReportFreqs
-#define nTrajMode_glb                      g_reports.nTrajMode
-#define naTOTTRAJ_Arr_glb                  g_reports.naTOTTRAJ_Arr
-#define nTraj_FramesPerCycle_glb           g_reports.nTraj_FramesPerCycle
-#define nTrajCurFrame_glb                  g_reports.nTrajCurFrame
+/* Reports *_glb shims removed after Phase 2.5 call-site migration to g_reports.* */
 
 #define nClusteringMode_glb                g_analysis.nClusteringMode
 #define naClusterMatrix_glb                g_analysis.naClusterMatrix
