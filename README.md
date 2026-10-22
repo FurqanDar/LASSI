@@ -13,6 +13,11 @@ LASSI was written by Furqan Dar and Jeong-Mo Choi in the [Pappu Lab](http://papp
 
 Please address all questions to [Furqan](http://pappulab.wustl.edu/people.html#grads).
 
+## Source layout
+
+After Phase 1 file splits, modules under `src/` are grouped by concern
+(moves, structure, I/O). See [`docs/src-layout.md`](docs/src-layout.md).
+
 ## Characterization / regression harness
 
 Pinned-seed smoke decks under `tests/characterization/`. One command from the
