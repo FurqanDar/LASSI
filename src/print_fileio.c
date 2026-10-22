@@ -241,7 +241,7 @@ void FileIO_AppendEnergyTo_EnergyFile(const char* fileNameStr, const long nGen)
 /// \param nGen
 void FileIO_Trajectory_AppendFrame(const char* fileNameStr, const int run_it, const long nGen)
 {
-    if (nTrajMode_glb == 1)
+    if (g_reports.nTrajMode == 1)
         {
             FileIOUtil_Traj_Bin_AppendFrame_ToFile(fileNameStr, 0);
         }
@@ -349,7 +349,7 @@ void Save_Trajectory(const long nGen, const long curFrame)
             for (j = 0; j < BEADINFO_MAX; j++)
                 {
                     ar_idx                    = TrajArr_Index(i, curFrame, j);
-                    naTOTTRAJ_Arr_glb[ar_idx] = g_system.bead_info[i][j];
+                    g_reports.naTOTTRAJ_Arr[ar_idx] = g_system.bead_info[i][j];
                 }
         }
 }
@@ -370,18 +370,18 @@ void Write_Saved_Trajectory(char* filename, const int run_it)
     int i, j, k; // Looping index
     int ar_idx;
 
-    for (i = 0; i < nTrajCurFrame_glb; i++)
+    for (i = 0; i < g_reports.nTrajCurFrame; i++)
         {
             fprintf(fp, "ITEM: TIMESTEP\n");
             if (run_it >= 0)
                 {
                     fprintf(fp, "%ld\n",
                             g_mc.nMCStepsForTherm + run_it * g_mc.nMCStepsPerCycle +
-                                i * naReportFreqs_glb[REPORT_CONFIG]); // Timestep
+                                i * g_reports.naReportFreqs[REPORT_CONFIG]); // Timestep
                 }
             else
                 {
-                    fprintf(fp, "%ld\n", i * naReportFreqs_glb[REPORT_CONFIG]); // Timestep
+                    fprintf(fp, "%ld\n", i * g_reports.naReportFreqs[REPORT_CONFIG]); // Timestep
                 }
 
             fprintf(fp, "ITEM: NUMBER OF ATOMS\n");
@@ -396,17 +396,17 @@ void Write_Saved_Trajectory(char* filename, const int run_it)
                 {
                     fprintf(fp, "%d", j);
                     ar_idx = TrajArr_Index(j, i, BEAD_TYPE);
-                    fprintf(fp, " %d", naTOTTRAJ_Arr_glb[ar_idx]);
+                    fprintf(fp, " %d", g_reports.naTOTTRAJ_Arr[ar_idx]);
                     ar_idx = TrajArr_Index(j, i, BEAD_CHAINID);
-                    fprintf(fp, " %d", naTOTTRAJ_Arr_glb[ar_idx]);
+                    fprintf(fp, " %d", g_reports.naTOTTRAJ_Arr[ar_idx]);
                     ar_idx = TrajArr_Index(j, i, POS_X);
-                    fprintf(fp, " %d", naTOTTRAJ_Arr_glb[ar_idx]);
+                    fprintf(fp, " %d", g_reports.naTOTTRAJ_Arr[ar_idx]);
                     ar_idx = TrajArr_Index(j, i, POS_Y);
-                    fprintf(fp, " %d", naTOTTRAJ_Arr_glb[ar_idx]);
+                    fprintf(fp, " %d", g_reports.naTOTTRAJ_Arr[ar_idx]);
                     ar_idx = TrajArr_Index(j, i, POS_Z);
-                    fprintf(fp, " %d", naTOTTRAJ_Arr_glb[ar_idx]);
+                    fprintf(fp, " %d", g_reports.naTOTTRAJ_Arr[ar_idx]);
                     ar_idx = TrajArr_Index(j, i, BEAD_FACE);
-                    fprintf(fp, " %d", naTOTTRAJ_Arr_glb[ar_idx]);
+                    fprintf(fp, " %d", g_reports.naTOTTRAJ_Arr[ar_idx]);
                     fprintf(fp, "\n");
                 }
         }
@@ -578,7 +578,7 @@ void FileIO_WriteTo_RDFFile_TotFromGLB(const int run_it)
     int i, j, k;
     char dumFile[512];
     sprintf(dumFile, "%s_RDF.dat",
-            strReportPrefix_glb); // Name Of the RDF Files
+            g_reports.strReportPrefix); // Name Of the RDF Files
     fp = fopen(dumFile, "w");
     fprintf(fp, "#Split RDFs. ALL-ALL; DIAGONALS and then from 0-0, 0-1, and onwards \n");
     for (i = 0; i < run_it; i++)
@@ -606,7 +606,7 @@ void FileIO_WriteTo_COMDenFile_TotFromGLB(const int run_it)
     int i, j, k;
     char dumFile[512];
     sprintf(dumFile, "%s_COMDen.dat",
-            strReportPrefix_glb); // Name Of the COM Density Distribution
+            g_reports.strReportPrefix); // Name Of the COM Density Distribution
     fp = fopen(dumFile, "w");
     fprintf(fp, "#Density distribution from the COM outwards. Order is ChainType.\n");
     for (i = 0; i < run_it; i++)
@@ -634,7 +634,7 @@ void FileIO_WriteTo_ClusFile_TotFromGLB(const int run_it)
     int i, j, k;
     char dumFile[512];
     sprintf(dumFile, "%s_CLUS.dat",
-            strReportPrefix_glb); // Name Of the ClusterHistogram Files
+            g_reports.strReportPrefix); // Name Of the ClusterHistogram Files
     fp = fopen(dumFile, "w");
     fprintf(fp, "#Cluster Histograms: 1st column is largest cluster, and then clusters of size 1, 2, and so on\n");
     for (i = 0; i < run_it; i++)
@@ -659,7 +659,7 @@ void FileIO_WriteTo_MolClusFile_TotFromGLB(const int run_it)
     int i, j, k;
     char dumFile[512];
     sprintf(dumFile, "%s_MolClus.dat",
-            strReportPrefix_glb); // Name Of the COM Density Distribution
+            g_reports.strReportPrefix); // Name Of the COM Density Distribution
     fp = fopen(dumFile, "w");
     fprintf(fp, "#Cluster Histograms: 1st column is largest cluster, and then clusters of size 1, 2, and so on. Each "
                 "row is a different moltype\n");
@@ -688,7 +688,7 @@ void FileIO_WriteTo_GyrRadFile_TotFromGLB(const int run_it)
     int i, j, k;
     char dumFile[512];
     sprintf(dumFile, "%s_GR.dat",
-            strReportPrefix_glb); // Name Of the ClusterHistogram Files
+            g_reports.strReportPrefix); // Name Of the ClusterHistogram Files
     fp = fopen(dumFile, "w");
     fprintf(fp, "#Cluster Histograms: 1st column is largest cluster, and then "
                 "clusters of size 1, 2, and so on\n");
@@ -717,17 +717,17 @@ void FileIO_Write_TotalSysProp_TotFromGLB(const int run_it)
      * measured quantities. Within each file, each run_cycle shall be written
      * one-by-one in the style of Write_SysProp
      */
-    if (naReportFreqs_glb[REPORT_RDFTOT] != 0)
+    if (g_reports.naReportFreqs[REPORT_RDFTOT] != 0)
         {
             FileIO_WriteTo_RDFFile_TotFromGLB(run_it);
         }
 
-    if (naReportFreqs_glb[REPORT_COMDEN] != 0)
+    if (g_reports.naReportFreqs[REPORT_COMDEN] != 0)
         {
             FileIO_WriteTo_COMDenFile_TotFromGLB(run_it);
         }
 
-    if (naReportFreqs_glb[REPORT_NETWORK] != 0)
+    if (g_reports.naReportFreqs[REPORT_NETWORK] != 0)
         {
             FileIO_WriteTo_ClusFile_TotFromGLB(run_it);
             FileIO_WriteTo_MolClusFile_TotFromGLB(run_it);
@@ -759,68 +759,68 @@ void FileIOUtil_CreateFile_Binary_Overwrite(const char* fileName)
 void FileIO_CreateRunningDataFiles(void)
 {
     // Trajectory
-    if (naReportFreqs_glb[REPORT_CONFIG])
+    if (g_reports.naReportFreqs[REPORT_CONFIG])
         {
-            sprintf(strFileTraj_glb, "%s_topo.lammpstrj", strReportPrefix_glb); // Name of the topology file
-            FileIO_WriteTo_TopFile(strFileTraj_glb); // Write the topology file. Only need to write once
+            sprintf(g_reports.strFileTraj, "%s_topo.lammpstrj", g_reports.strReportPrefix); // Name of the topology file
+            FileIO_WriteTo_TopFile(g_reports.strFileTraj); // Write the topology file. Only need to write once
 
-            if (nTrajMode_glb == 1)
+            if (g_reports.nTrajMode == 1)
                 {
-                    sprintf(strFileTraj_glb, "%s_EQ_trj.lassi", strReportPrefix_glb);
-                    FileIOUtil_CreateFile_Binary_Overwrite(strFileTraj_glb); // Opens a new binary file.
+                    sprintf(g_reports.strFileTraj, "%s_EQ_trj.lassi", g_reports.strReportPrefix);
+                    FileIOUtil_CreateFile_Binary_Overwrite(g_reports.strFileTraj); // Opens a new binary file.
                 }
             else
                 {
-                    sprintf(strFileTraj_glb, "%s_EQ_trj.lammpstrj",
-                            strReportPrefix_glb); // Naming convention for trajectory files.
+                    sprintf(g_reports.strFileTraj, "%s_EQ_trj.lammpstrj",
+                            g_reports.strReportPrefix); // Naming convention for trajectory files.
                     FileIOUtil_CreateFile_Overwrite(
-                        strFileTraj_glb); // This opens a new trajectory file; each run_it will have its own
+                        g_reports.strFileTraj); // This opens a new trajectory file; each run_it will have its own
                 }
         }
 
     // Energy
-    if (naReportFreqs_glb[REPORT_ENERGY])
+    if (g_reports.naReportFreqs[REPORT_ENERGY])
         {
-            sprintf(strFileEnergy_glb, "%s_energy.dat", strReportPrefix_glb);
-            FileIOUtil_CreateFile_Overwrite(strFileEnergy_glb); // Open a new energy file; each run_it will have its own
-            FileIOUtil_WriteHeader_ForEnergy(strFileEnergy_glb);
+            sprintf(g_reports.strFileEnergy, "%s_energy.dat", g_reports.strReportPrefix);
+            FileIOUtil_CreateFile_Overwrite(g_reports.strFileEnergy); // Open a new energy file; each run_it will have its own
+            FileIOUtil_WriteHeader_ForEnergy(g_reports.strFileEnergy);
         }
 
     // MC Move Acceptance
-    if (naReportFreqs_glb[REPORT_MCMOVE])
+    if (g_reports.naReportFreqs[REPORT_MCMOVE])
         {
-            sprintf(strFileMCMove_glb, "%s_mcmove.dat", strReportPrefix_glb);
-            FileIOUtil_CreateFile_Overwrite(strFileMCMove_glb); // Open a new MCInfo file; each run_it will have its own
-            FileIOUtil_WriteHeader_ForMCMove(strFileMCMove_glb);
+            sprintf(g_reports.strFileMCMove, "%s_mcmove.dat", g_reports.strReportPrefix);
+            FileIOUtil_CreateFile_Overwrite(g_reports.strFileMCMove); // Open a new MCInfo file; each run_it will have its own
+            FileIOUtil_WriteHeader_ForMCMove(g_reports.strFileMCMove);
         }
 
     char strFileName[512];
 
-    if (naReportFreqs_glb[REPORT_COMDEN])
+    if (g_reports.naReportFreqs[REPORT_COMDEN])
         {
-            sprintf(strFileName, "%s_COMDen.dat", strReportPrefix_glb);
+            sprintf(strFileName, "%s_COMDen.dat", g_reports.strReportPrefix);
             FileIOUtil_CreateFile_Overwrite(strFileName);
             FileIOUtil_WriteHeader_ForCOMDen(strFileName);
         }
 
-    if (naReportFreqs_glb[REPORT_NETWORK])
+    if (g_reports.naReportFreqs[REPORT_NETWORK])
         {
-            sprintf(strFileName, "%s_CLUS.dat", strReportPrefix_glb);
+            sprintf(strFileName, "%s_CLUS.dat", g_reports.strReportPrefix);
             FileIOUtil_CreateFile_Overwrite(strFileName);
             FileIOUtil_WriteHeader_ForCLUS(strFileName);
 
-            sprintf(strFileName, "%s_MolClus.dat", strReportPrefix_glb);
+            sprintf(strFileName, "%s_MolClus.dat", g_reports.strReportPrefix);
             FileIOUtil_CreateFile_Overwrite(strFileName);
             FileIOUtil_WriteHeader_ForMolClus(strFileName);
 
-            sprintf(strFileName, "%s_GR.dat", strReportPrefix_glb);
+            sprintf(strFileName, "%s_GR.dat", g_reports.strReportPrefix);
             FileIOUtil_CreateFile_Overwrite(strFileName);
             FileIOUtil_WriteHeader_ForGyrRad(strFileName);
         }
 
-    if (naReportFreqs_glb[REPORT_RDFTOT])
+    if (g_reports.naReportFreqs[REPORT_RDFTOT])
         {
-            sprintf(strFileName, "%s_RDF.dat", strReportPrefix_glb);
+            sprintf(strFileName, "%s_RDF.dat", g_reports.strReportPrefix);
             FileIOUtil_CreateFile_Overwrite(strFileName);
             FileIOUtil_WriteHeader_ForRDF(strFileName);
         }
@@ -850,37 +850,37 @@ void FileIO_PrintCrashSnapshot(void)
 /// \param run_it
 void FileIOUtil_PreCycle_Init(const int run_it)
 {
-    if (naReportFreqs_glb[REPORT_CONFIG])
+    if (g_reports.naReportFreqs[REPORT_CONFIG])
         {
-            if (nTrajMode_glb == 1)
+            if (g_reports.nTrajMode == 1)
                 {
-                    sprintf(strFileTraj_glb, "%s_trj.lassi", strReportPrefix_glb);
+                    sprintf(g_reports.strFileTraj, "%s_trj.lassi", g_reports.strReportPrefix);
                     if (run_it == 0)
                         {
-                            FileIOUtil_CreateFile_Binary_Overwrite(strFileTraj_glb); // Opens a new binary file.
+                            FileIOUtil_CreateFile_Binary_Overwrite(g_reports.strFileTraj); // Opens a new binary file.
                         }
                 }
             else
                 {
-                    sprintf(strFileTraj_glb, "%s_trj.lammpstrj", strReportPrefix_glb);
+                    sprintf(g_reports.strFileTraj, "%s_trj.lammpstrj", g_reports.strReportPrefix);
                     if (run_it == 0)
                         {
-                            FileIOUtil_CreateFile_Overwrite(strFileTraj_glb);
+                            FileIOUtil_CreateFile_Overwrite(g_reports.strFileTraj);
                         }
                 }
         }
 
-    if (naReportFreqs_glb[REPORT_ENERGY])
+    if (g_reports.naReportFreqs[REPORT_ENERGY])
         {
-            sprintf(strFileEnergy_glb, "%s_%d_energy.dat", strReportPrefix_glb, run_it);
-            FileIOUtil_CreateFile_Overwrite(strFileEnergy_glb); // Open a new Energy file; each run_it will have its own
-            FileIOUtil_WriteHeader_ForEnergy(strFileEnergy_glb);
+            sprintf(g_reports.strFileEnergy, "%s_%d_energy.dat", g_reports.strReportPrefix, run_it);
+            FileIOUtil_CreateFile_Overwrite(g_reports.strFileEnergy); // Open a new Energy file; each run_it will have its own
+            FileIOUtil_WriteHeader_ForEnergy(g_reports.strFileEnergy);
         }
-    if (naReportFreqs_glb[REPORT_MCMOVE])
+    if (g_reports.naReportFreqs[REPORT_MCMOVE])
         {
-            sprintf(strFileMCMove_glb, "%s_%d_mcmove.dat", strReportPrefix_glb, run_it);
-            FileIOUtil_CreateFile_Overwrite(strFileMCMove_glb); // Open a new MCInfo file; each run_it will have its own
-            FileIOUtil_WriteHeader_ForMCMove(strFileMCMove_glb);
+            sprintf(g_reports.strFileMCMove, "%s_%d_mcmove.dat", g_reports.strReportPrefix, run_it);
+            FileIOUtil_CreateFile_Overwrite(g_reports.strFileMCMove); // Open a new MCInfo file; each run_it will have its own
+            FileIOUtil_WriteHeader_ForMCMove(g_reports.strFileMCMove);
         }
 }
 
@@ -889,10 +889,10 @@ void FileIOUtil_PreCycle_Init(const int run_it)
 /// \param run_it
 void FileIO_PostCycle_WriteSystemRestart(const int run_it)
 {
-    sprintf(strFileTraj_glb, "%s_%d_restart.lammpstrj", strReportPrefix_glb,
+    sprintf(g_reports.strFileTraj, "%s_%d_restart.lammpstrj", g_reports.strReportPrefix,
             run_it); // Naming convention for trajectory files.
-    FileIOUtil_CreateFile_Overwrite(strFileTraj_glb);
-    FileIOUtil_Traj_Txt_AppendFrame_ToFile(strFileTraj_glb, g_mc.nMCStepsForTherm + (run_it + 1) * g_mc.nMCStepsPerCycle);
+    FileIOUtil_CreateFile_Overwrite(g_reports.strFileTraj);
+    FileIOUtil_Traj_Txt_AppendFrame_ToFile(g_reports.strFileTraj, g_mc.nMCStepsForTherm + (run_it + 1) * g_mc.nMCStepsPerCycle);
 }
 
 
@@ -901,10 +901,10 @@ void FileIO_WriteRestart_ForThermalization(void)
 {
     if (g_mc.nMCStepsForTherm)
         {
-            sprintf(strFileTraj_glb, "%s_EQ_restart.lammpstrj",
-                    strReportPrefix_glb); // Naming convention for trajectory files.
-            FileIOUtil_CreateFile_Overwrite(strFileTraj_glb);
-            FileIOUtil_Traj_Txt_AppendFrame_ToFile(strFileTraj_glb, g_mc.nMCStepsForTherm);
+            sprintf(g_reports.strFileTraj, "%s_EQ_restart.lammpstrj",
+                    g_reports.strReportPrefix); // Naming convention for trajectory files.
+            FileIOUtil_CreateFile_Overwrite(g_reports.strFileTraj);
+            FileIOUtil_Traj_Txt_AppendFrame_ToFile(g_reports.strFileTraj, g_mc.nMCStepsForTherm);
         }
 }
 
@@ -915,15 +915,15 @@ void FileIO_WriteRestart_ForThermalization(void)
 /// \param run_it
 void CopyData_All(const int run_it)
 {
-    if (naReportFreqs_glb[REPORT_RDFTOT])
+    if (g_reports.naReportFreqs[REPORT_RDFTOT])
         {
             CopyData_RDF(run_it);
         }
-    if (naReportFreqs_glb[REPORT_COMDEN])
+    if (g_reports.naReportFreqs[REPORT_COMDEN])
         {
             CopyData_COMDen(run_it);
         }
-    if (naReportFreqs_glb[REPORT_NETWORK])
+    if (g_reports.naReportFreqs[REPORT_NETWORK])
         {
             CopyData_Clus(run_it);
         }
@@ -994,7 +994,7 @@ void FileIOUtil_AppendTo_GyrRadFile_ForRun(const int run_it)
 {
     FILE* fp;
     char dumFile[512];
-    sprintf(dumFile, "%s_GR.dat", strReportPrefix_glb); // Name Of the ClusterHistogram Files
+    sprintf(dumFile, "%s_GR.dat", g_reports.strReportPrefix); // Name Of the ClusterHistogram Files
     fp = fopen(dumFile, "a");
 
     fprintf(fp, "#Run_Cycle = %d; Avg Over %d Samples\n", run_it, nTotClusCounter_glb);
@@ -1012,7 +1012,7 @@ void FileIOUtil_AppendTo_ClusFile_ForRun(const int run_it)
     FILE* fp;
     int i;
     char dumFile[512];
-    sprintf(dumFile, "%s_CLUS.dat", strReportPrefix_glb); // Name Of the ClusterHistogram Files
+    sprintf(dumFile, "%s_CLUS.dat", g_reports.strReportPrefix); // Name Of the ClusterHistogram Files
     fp = fopen(dumFile, "a");
     fprintf(fp, "#Run_Cycle = %d; Avg Over %d Samples\n", run_it, nTotClusCounter_glb);
     const double normFactor = 1.0 / (double) nTotClusCounter_glb;
@@ -1035,7 +1035,7 @@ void FileIOUtil_AppendTo_MolClusFile_ForRun(const int run_it)
     FILE* fp;
     int i, j;
     char dumFile[512];
-    sprintf(dumFile, "%s_MolClus.dat", strReportPrefix_glb); // Name Of the ClusterHistogram Files
+    sprintf(dumFile, "%s_MolClus.dat", g_reports.strReportPrefix); // Name Of the ClusterHistogram Files
     fp = fopen(dumFile, "a");
     fprintf(fp, "#Run_Cycle = %d; Avg Over %d Samples\n", run_it, nTotClusCounter_glb);
 
@@ -1060,7 +1060,7 @@ void FileIOUtil_AppendTo_RDFFile_ForRun(const int run_it)
     FILE* fp;
     int i, j;
     char dumFile[512];
-    sprintf(dumFile, "%s_RDF.dat", strReportPrefix_glb); // Name Of the ClusterHistogram Files
+    sprintf(dumFile, "%s_RDF.dat", g_reports.strReportPrefix); // Name Of the ClusterHistogram Files
     fp = fopen(dumFile, "a");
     fprintf(fp, "#Run_Cycle = %d; Avg Over %d Samples\n", run_it, nTotRDFCounter_glb);
 
@@ -1085,7 +1085,7 @@ void FileIOUtil_AppendTo_COMDenFile_ForRun(const int run_it)
     FILE* fp;
     int i, j;
     char dumFile[512];
-    sprintf(dumFile, "%s_COMDen.dat", strReportPrefix_glb);
+    sprintf(dumFile, "%s_COMDen.dat", g_reports.strReportPrefix);
     fp = fopen(dumFile, "a");
     fprintf(fp, "#Run_Cycle = %d; Avg Over %d Samples\n", run_it, nTotRadDenCounter_glb);
 
@@ -1107,15 +1107,15 @@ void FileIOUtil_AppendTo_COMDenFile_ForRun(const int run_it)
 /// \param run_it
 void FileIO_PostCycle_WriteCycleAvgData(const int run_it)
 {
-    if (naReportFreqs_glb[REPORT_RDFTOT])
+    if (g_reports.naReportFreqs[REPORT_RDFTOT])
         {
             FileIOUtil_AppendTo_RDFFile_ForRun(run_it);
         }
-    if (naReportFreqs_glb[REPORT_COMDEN])
+    if (g_reports.naReportFreqs[REPORT_COMDEN])
         {
             FileIOUtil_AppendTo_COMDenFile_ForRun(run_it);
         }
-    if (naReportFreqs_glb[REPORT_NETWORK])
+    if (g_reports.naReportFreqs[REPORT_NETWORK])
         {
             FileIOUtil_AppendTo_ClusFile_ForRun(run_it);
             FileIOUtil_AppendTo_MolClusFile_ForRun(run_it);

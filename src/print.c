@@ -36,9 +36,9 @@ void DataPrinting_Thermalization(const long nGen)
     char cAccFlag      = 0;
     char cConfigFlag   = 0;
 
-    if (naReportFreqs_glb[REPORT_LOG])
+    if (g_reports.naReportFreqs[REPORT_LOG])
         {
-            cLogFlag = ForPrinting_GetReportState(nGen, naReportFreqs_glb[REPORT_LOG]);
+            cLogFlag = ForPrinting_GetReportState(nGen, g_reports.naReportFreqs[REPORT_LOG]);
             if (cLogFlag)
                 {
                     PerformRuntimeSanityChecks(nGen, -1);
@@ -50,19 +50,19 @@ void DataPrinting_Thermalization(const long nGen)
 
     if (nGen)
         {
-            if (naReportFreqs_glb[REPORT_CONFIG])
+            if (g_reports.naReportFreqs[REPORT_CONFIG])
                 {
-                    cConfigFlag = ForPrinting_GetReportState(nGen, naReportFreqs_glb[REPORT_CONFIG]);
+                    cConfigFlag = ForPrinting_GetReportState(nGen, g_reports.naReportFreqs[REPORT_CONFIG]);
                     if (cConfigFlag)
                         {
-                            FileIO_Trajectory_AppendFrame(strFileTraj_glb, -1, nGen);
+                            FileIO_Trajectory_AppendFrame(g_reports.strFileTraj, -1, nGen);
                         }
                 }
 
-            if (naReportFreqs_glb[REPORT_ENERGY])
+            if (g_reports.naReportFreqs[REPORT_ENERGY])
                 {
                     // DO ENERGY FLAGS
-                    cEnergyFlag = ForPrinting_GetReportState(nGen, naReportFreqs_glb[REPORT_ENERGY]);
+                    cEnergyFlag = ForPrinting_GetReportState(nGen, g_reports.naReportFreqs[REPORT_ENERGY]);
                     if (cEnergyFlag)
                         {
                             if (! cFlagForEnCal)
@@ -70,17 +70,17 @@ void DataPrinting_Thermalization(const long nGen)
                                     Energy_Total_System();
                                     cFlagForEnCal = 1;
                                 }
-                            FileIO_AppendEnergyTo_EnergyFile(strFileEnergy_glb, nGen);
+                            FileIO_AppendEnergyTo_EnergyFile(g_reports.strFileEnergy, nGen);
                         }
                 }
 
-            if (naReportFreqs_glb[REPORT_MCMOVE])
+            if (g_reports.naReportFreqs[REPORT_MCMOVE])
                 {
                     // DO MC_ACC PRINTING
-                    cAccFlag = ForPrinting_GetReportState(nGen, naReportFreqs_glb[REPORT_MCMOVE]);
+                    cAccFlag = ForPrinting_GetReportState(nGen, g_reports.naReportFreqs[REPORT_MCMOVE]);
                     if (cAccFlag)
                         {
-                            FileIO_WriteTo_MCMoveFile(strFileMCMove_glb, nGen, g_mc.fCuTemp);
+                            FileIO_WriteTo_MCMoveFile(g_reports.strFileMCMove, nGen, g_mc.fCuTemp);
                         }
                 }
         }
@@ -98,9 +98,9 @@ void DataPrinting_DuringRunCycles(const long nGen, const int run_it)
     char cAccFlag      = 0;
     char cConfigFlag   = 0;
 
-    if (naReportFreqs_glb[REPORT_LOG])
+    if (g_reports.naReportFreqs[REPORT_LOG])
         {
-            cLogFlag = ForPrinting_GetReportState(nGen, naReportFreqs_glb[REPORT_LOG]);
+            cLogFlag = ForPrinting_GetReportState(nGen, g_reports.naReportFreqs[REPORT_LOG]);
             if (cLogFlag)
                 {
                     PerformRuntimeSanityChecks(nGen, run_it);
@@ -112,19 +112,19 @@ void DataPrinting_DuringRunCycles(const long nGen, const int run_it)
 
     if (nGen)
         {
-            if (naReportFreqs_glb[REPORT_CONFIG])
+            if (g_reports.naReportFreqs[REPORT_CONFIG])
                 {
-                    cConfigFlag = ForPrinting_GetReportState(nGen, naReportFreqs_glb[REPORT_CONFIG]);
+                    cConfigFlag = ForPrinting_GetReportState(nGen, g_reports.naReportFreqs[REPORT_CONFIG]);
                     if (cConfigFlag)
                         {
-                            FileIO_Trajectory_AppendFrame(strFileTraj_glb, run_it, nGen);
+                            FileIO_Trajectory_AppendFrame(g_reports.strFileTraj, run_it, nGen);
                         }
                 }
 
-            if (naReportFreqs_glb[REPORT_ENERGY])
+            if (g_reports.naReportFreqs[REPORT_ENERGY])
                 {
                     // DO ENERGY PRINTING
-                    cEnergyFlag = ForPrinting_GetReportState(nGen, naReportFreqs_glb[REPORT_ENERGY]);
+                    cEnergyFlag = ForPrinting_GetReportState(nGen, g_reports.naReportFreqs[REPORT_ENERGY]);
                     if (cEnergyFlag)
                         {
                             if (! cFlagForEnCal)
@@ -132,17 +132,17 @@ void DataPrinting_DuringRunCycles(const long nGen, const int run_it)
                                     Energy_Total_System();
                                     cFlagForEnCal = 1;
                                 }
-                            FileIO_AppendEnergyTo_EnergyFile(strFileEnergy_glb, nGen);
+                            FileIO_AppendEnergyTo_EnergyFile(g_reports.strFileEnergy, nGen);
                         }
                 }
 
-            if (naReportFreqs_glb[REPORT_MCMOVE])
+            if (g_reports.naReportFreqs[REPORT_MCMOVE])
                 {
                     // DO MC_ACC PRINTING
-                    cAccFlag = ForPrinting_GetReportState(nGen, naReportFreqs_glb[REPORT_MCMOVE]);
+                    cAccFlag = ForPrinting_GetReportState(nGen, g_reports.naReportFreqs[REPORT_MCMOVE]);
                     if (cAccFlag)
                         {
-                            FileIO_WriteTo_MCMoveFile(strFileMCMove_glb, nGen, g_mc.fCuTemp);
+                            FileIO_WriteTo_MCMoveFile(g_reports.strFileMCMove, nGen, g_mc.fCuTemp);
                         }
                 }
         }
@@ -159,24 +159,24 @@ void DataAnalysis_DuringRunCycles(const long nGen, const int run_it)
     //    char cCOM_flag  = 0;
     //    char cCLUS_flag = 0;
 
-    if (naReportFreqs_glb[REPORT_RDFTOT])
+    if (g_reports.naReportFreqs[REPORT_RDFTOT])
         { // SysProp is printed outside of this function in main.c, lol
-            if (nGen % naReportFreqs_glb[REPORT_RDFTOT] == 0)
+            if (nGen % g_reports.naReportFreqs[REPORT_RDFTOT] == 0)
                 {
                     // TODO: Update RDF Calculations
                     RDF_ComponentWise_Avg();
                 }
         }
-    if (naReportFreqs_glb[REPORT_COMDEN])
+    if (g_reports.naReportFreqs[REPORT_COMDEN])
         { // SysProp is printed outside of this function in main.c, lol
-            if (nGen % naReportFreqs_glb[REPORT_COMDEN] == 0)
+            if (nGen % g_reports.naReportFreqs[REPORT_COMDEN] == 0)
                 {
                     RadialDensityAnalysis_Perform_Analysis();
                 }
         }
-    if (naReportFreqs_glb[REPORT_NETWORK])
+    if (g_reports.naReportFreqs[REPORT_NETWORK])
         { // SysProp is printed outside of this function in main.c, lol
-            if (nGen % naReportFreqs_glb[REPORT_NETWORK] == 0)
+            if (nGen % g_reports.naReportFreqs[REPORT_NETWORK] == 0)
                 {
                     ClusAnalysis_Perform_Analysis(nClusteringMode_glb);
                     // TODO: Update Gyration calculations
