@@ -33,6 +33,6 @@ add_executable(lassi
         src/structure.c
         src/structure_sanity.c
         src/structure_neighbor.c
-        src/structure_analysis.c
         src/structure_lists.c
-        src/structure.h)
+        src/structure.h
+        src/analysis.c)

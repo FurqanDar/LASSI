@@ -13,7 +13,7 @@ In practice:
 | Lattice / structure | `structure*.c`, `structure.h` | `global.h` only (plus peer structure units via `structure.h`) |
 | Energy | `energy.c`, `energy.h` | structure, `global.h` |
 | Moves | `mcmove*.c`, `mcmove.h` | energy, structure, `cluster_mc.h` (move-facing cluster queries only), `global.h` |
-| Analysis / I/O | `cluster.*`, `print*.c`, `print.h` | moves (if needed), energy, structure, `global.h` |
+| Analysis / I/O | `cluster.*`, `analysis.c`, `print*.c`, `print.h` | moves (if needed), energy, structure, `global.h` |
 | Main / parse | `main.c`, `parsekey.*`, `initialize.*` | any layer above |
 
 **Must not:** a lower layer `#include` a higher-layer header (e.g. structure must not include `print.h` / `mcmove.h` / `energy.h`; energy must not include `mcmove.h` / `print.h`; moves should not include `print.h` / `initialize.h`).
@@ -27,9 +27,11 @@ analysis-layer `cluster.h`. Those decls live in **`cluster_mc.h`** (implemented
 in `cluster.c`). `cluster.h` includes `cluster_mc.h` so analysis callers are
 unchanged. `mcmove_moves.c` includes only `cluster_mc.h`.
 
-## Known exceptions (deferred)
+## Analysis helpers
 
-1. **`structure_analysis.c` → `cluster.h`** — RDF / radial helpers use cluster utilities. The file is analysis-flavored despite the `structure_` prefix; a later move/rename may place it with analysis.
+`analysis.c` (formerly `structure_analysis.c`) lives in the analysis / I/O layer
+and may include `cluster.h`. Public decls for RDF / radial / COM / gyration
+remain in `structure.h` for now to avoid call-site churn.
 
 Sanity checks in `structure_sanity.c` call I/O printers via **forward declarations** (not `#include "print.h"`) so structure does not take a hard include edge into I/O.
 
