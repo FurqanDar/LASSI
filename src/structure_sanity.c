@@ -14,10 +14,10 @@ int CheckSystemUtil_BeadPosAndLattPosOK(void)
     int latt_pos_ind;
     int latt_bead;
 
-    for (beadID = 0; beadID < tot_beads_glb; beadID++)
+    for (beadID = 0; beadID < g_system.tot_beads; beadID++)
         {
             latt_pos_ind = Lat_Ind_OfBead(beadID);
-            latt_bead    = naTotLattice_glb[latt_pos_ind];
+            latt_bead    = g_system.naTotLattice[latt_pos_ind];
             if (latt_bead != beadID)
                 {
                     return beadID;
@@ -37,11 +37,11 @@ int Check_LinkerConstraintForBead(const int beadID)
     int idx; // Iterator to loop over bond Partners
     int bondPartner;
     idx         = 0;
-    bondPartner = topo_info_glb[beadID][idx]; // Initializing the two.
-    while (idx < MAX_BONDS && topo_info_glb[beadID][idx] != -1)
+    bondPartner = g_system.topo_info[beadID][idx]; // Initializing the two.
+    while (idx < MAX_BONDS && g_system.topo_info[beadID][idx] != -1)
         { // Keep going till we run out of partners
-            bondPartner = topo_info_glb[beadID][idx];
-            if (Dist_BeadToBead(beadID, bondPartner) > LINKER_RSCALE * (float) linker_len_glb[beadID][idx])
+            bondPartner = g_system.topo_info[beadID][idx];
+            if (Dist_BeadToBead(beadID, bondPartner) > LINKER_RSCALE * (float) g_system.linker_len[beadID][idx])
                 {
                     return bondPartner; // This means that we have broken one of the linkers.
                 }
@@ -58,7 +58,7 @@ int CheckSystemUtil_MolecularStructuresOK(void)
 {
     int beadID;
 
-    for (beadID = 0; beadID < tot_chains_glb; beadID++)
+    for (beadID = 0; beadID < g_system.tot_chains; beadID++)
         {
             if (Check_LinkerConstraintForBead(beadID) >= 0)
                 {
@@ -76,12 +76,12 @@ int CheckSystemUtil_BeadBondsSymmetricOK(void)
 {
     int beadID;
 
-    for (beadID = 0; beadID < tot_beads_glb; beadID++)
+    for (beadID = 0; beadID < g_system.tot_beads; beadID++)
         {
-            int bondPartner = bead_info_glb[beadID][BEAD_FACE];
+            int bondPartner = g_system.bead_info[beadID][BEAD_FACE];
             if (bondPartner != -1)
                 {
-                    if (bead_info_glb[bondPartner][BEAD_FACE] != beadID)
+                    if (g_system.bead_info[bondPartner][BEAD_FACE] != beadID)
                         {
                             return beadID;
                         }
@@ -99,9 +99,9 @@ int CheckSystemUtil_BeadBondsDistanceOK(void)
 {
     int beadID;
     //    float bDist;
-    for (beadID = 0; beadID < tot_beads_glb; beadID++)
+    for (beadID = 0; beadID < g_system.tot_beads; beadID++)
         {
-            int bondPartner = bead_info_glb[beadID][BEAD_FACE];
+            int bondPartner = g_system.bead_info[beadID][BEAD_FACE];
             if (bondPartner != -1)
                 {
                     const float bDist = Dist_BeadToBead(beadID, bondPartner);
@@ -122,9 +122,9 @@ int CheckSystemUtil_NoSelfBonds(void)
 {
     int beadID;
 
-    for (beadID = 0; beadID < tot_beads_glb; beadID++)
+    for (beadID = 0; beadID < g_system.tot_beads; beadID++)
         {
-            int bondPartner = bead_info_glb[beadID][BEAD_FACE];
+            int bondPartner = g_system.bead_info[beadID][BEAD_FACE];
             if (bondPartner == beadID)
                 {
                     return beadID;
@@ -255,24 +255,24 @@ void PerformRuntimeSanityChecks(const long nGen, const int run_cycle)
      * The following set of snippets cause specific failures.
      */
     //    //Causes lattice failure only
-    //    naTotLattice_glb[Lat_Ind_OfBead(10)]=5;
+    //    g_system.naTotLattice[Lat_Ind_OfBead(10)]=5;
     //
     //    //Causes structure failure only
-    //    bead_info_glb[2][0] = 30;
-    //    bead_info_glb[3][0] = 0;
-    //    naTotLattice_glb[Lat_Ind_OfBead(2)]=2;
-    //    naTotLattice_glb[Lat_Ind_OfBead(3)]=3;
+    //    g_system.bead_info[2][0] = 30;
+    //    g_system.bead_info[3][0] = 0;
+    //    g_system.naTotLattice[Lat_Ind_OfBead(2)]=2;
+    //    g_system.naTotLattice[Lat_Ind_OfBead(3)]=3;
     //
     //    //Causes bond-symmetry failure only
-    //    bead_info_glb[4][BEAD_FACE] = 5;
-    //    bead_info_glb[5][BEAD_FACE] = -1;
+    //    g_system.bead_info[4][BEAD_FACE] = 5;
+    //    g_system.bead_info[5][BEAD_FACE] = -1;
     //
     //    //Causes self-bond failure only
-    //    bead_info_glb[6][BEAD_FACE] = 6;
+    //    g_system.bead_info[6][BEAD_FACE] = 6;
     //
     //    //Causes bond-distance failure only
-    //    bead_info_glb[2][BEAD_FACE] = 3;
-    //    bead_info_glb[3][BEAD_FACE] = 2;
+    //    g_system.bead_info[2][BEAD_FACE] = 3;
+    //    g_system.bead_info[3][BEAD_FACE] = 2;
 
     PerformRuntimeSanityCheck_BeadPosAndLattPos(nGen, run_cycle);
 
@@ -288,7 +288,7 @@ void PerformRuntimeSanityChecks(const long nGen, const int run_cycle)
 
 /// Check_LinkerConstraint - if I move beadID to tmpR, do I still satisfy the linker lengths for beadID?
 /// For the proposed location, we loop over all bonded partners of beadID and check if the distance is within the
-/// linker_len_glb distance.
+/// g_system.linker_len distance.
 /// \param beadID
 /// \param tmpR
 /// \return 1 means all is good, 0 means bad.
@@ -298,12 +298,12 @@ int Check_LinkerConstraint(const int beadID, const int* const tmpR)
     int idx;         // Iterator to loop over bond Partners
     int bondPartner; // It is what it is.
     idx         = 0;
-    bondPartner = topo_info_glb[beadID][idx]; // Initializing the two.
-    while (idx < MAX_BONDS && topo_info_glb[beadID][idx] != -1)
+    bondPartner = g_system.topo_info[beadID][idx]; // Initializing the two.
+    while (idx < MAX_BONDS && g_system.topo_info[beadID][idx] != -1)
         { // Keep going till we run out of partners
-            bondPartner = topo_info_glb[beadID][idx];
-            if (Dist_PointToPoint(bead_info_glb[bondPartner], tmpR) >
-                LINKER_RSCALE * (float) linker_len_glb[beadID][idx])
+            bondPartner = g_system.topo_info[beadID][idx];
+            if (Dist_PointToPoint(g_system.bead_info[bondPartner], tmpR) >
+                LINKER_RSCALE * (float) g_system.linker_len[beadID][idx])
                 {
                     return 0; // This means that we have broken one of the linkers.
                 }
@@ -334,7 +334,7 @@ int Check_LinkerConstraints_ForBeadList(const int listSize, const int* beadList)
                 { 
                     bead2 = dumBonds[j+1];
                     xDis  = Dist_BeadToBead(bead1, bead2);
-                    if (xDis > LINKER_RSCALE * (float) linker_len_glb[bead1][j])
+                    if (xDis > LINKER_RSCALE * (float) g_system.linker_len[bead1][j])
                         {
                             return 0;
                         }

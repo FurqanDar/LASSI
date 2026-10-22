@@ -12,7 +12,7 @@
 /// \return
 long TrajArr_Index(const int beadID, const int nFrameNumber, const int beadProp)
 {
-    return beadProp + BEADINFO_MAX * (beadID + tot_beads_glb * nFrameNumber);
+    return beadProp + BEADINFO_MAX * (beadID + g_system.tot_beads * nFrameNumber);
 }
 
 
@@ -41,7 +41,7 @@ void Write_ClusterDist(char* filename, long nGen)
     else
         {
             fprintf(fp, "#%ld\n", nGen);
-            for (i = 0; i <= tot_chains_glb; i++)
+            for (i = 0; i <= g_system.tot_chains; i++)
                 {
                     fprintf(fp, "%ld\t", laClusHistList_glb[i]);
                 }
@@ -275,18 +275,18 @@ void FileIOUtil_Traj_Txt_AppendFrame_ToFile(const char* filename, const long nGe
     fprintf(fp, "%ld\n", nGen); // Timestep
 
     fprintf(fp, "ITEM: NUMBER OF ATOMS\n");
-    fprintf(fp, "%ld\n", (size_t) tot_beads_glb); // Total atom number
+    fprintf(fp, "%ld\n", (size_t) g_system.tot_beads); // Total atom number
 
     fprintf(fp, "ITEM: BOX BOUNDS pp pp pp\n"); // BCs are always periodic for now
-    fprintf(fp, "0 %d\n0 %d\n0 %d\n", naBoxSize_glb[0], naBoxSize_glb[1], naBoxSize_glb[2]); // Box dimensions
+    fprintf(fp, "0 %d\n0 %d\n0 %d\n", g_system.naBoxSize[0], g_system.naBoxSize[1], g_system.naBoxSize[2]); // Box dimensions
 
     fprintf(fp, "ITEM: ATOMS id type mol x y z bP\n"); // What we are printing
 
-    for (i = 0; i < tot_beads_glb; i++)
+    for (i = 0; i < g_system.tot_beads; i++)
         {
-            fprintf(fp, "%d %d %d %d %d %d %d\n", i, bead_info_glb[i][BEAD_TYPE], bead_info_glb[i][BEAD_CHAINID],
-                    bead_info_glb[i][POS_X], bead_info_glb[i][POS_Y], bead_info_glb[i][POS_Z],
-                    bead_info_glb[i][BEAD_FACE]);
+            fprintf(fp, "%d %d %d %d %d %d %d\n", i, g_system.bead_info[i][BEAD_TYPE], g_system.bead_info[i][BEAD_CHAINID],
+                    g_system.bead_info[i][POS_X], g_system.bead_info[i][POS_Y], g_system.bead_info[i][POS_Z],
+                    g_system.bead_info[i][BEAD_FACE]);
         }
 
     fclose(fp);
@@ -301,7 +301,7 @@ void TrajUtil_SubselectDataFromBeadInfo(int** restrict sub_beads, int** restrict
 {
     int i;
 
-    for (i = 0; i < tot_beads_glb; i++)
+    for (i = 0; i < g_system.tot_beads; i++)
         {
             sub_beads[i][0] = input_beads[i][POS_X];
             sub_beads[i][1] = input_beads[i][POS_Y];
@@ -319,16 +319,16 @@ void FileIOUtil_Traj_Bin_AppendFrame_ToFile(const char* filename, const long nGe
 {
     const int nCrds = 4;
 
-    int** subBeadInfo = Create2DInt(nCrds, tot_beads_glb, "TrajBinSubArr");
+    int** subBeadInfo = Create2DInt(nCrds, g_system.tot_beads, "TrajBinSubArr");
 
-    TrajUtil_SubselectDataFromBeadInfo(subBeadInfo, bead_info_glb);
+    TrajUtil_SubselectDataFromBeadInfo(subBeadInfo, g_system.bead_info);
 
     FILE* fp = fopen(filename, "ab");
 
-    const int nBeads = (int) tot_beads_glb;
+    const int nBeads = (int) g_system.tot_beads;
 
     fwrite(&nBeads, sizeof(int), 1, fp);
-    fwrite(subBeadInfo[0], sizeof(int), nCrds * tot_beads_glb, fp);
+    fwrite(subBeadInfo[0], sizeof(int), nCrds * g_system.tot_beads, fp);
     fclose(fp);
 
     free(subBeadInfo[0]);
@@ -344,12 +344,12 @@ void Save_Trajectory(const long nGen, const long curFrame)
 
     int i, j;
     long ar_idx;
-    for (i = 0; i < tot_beads_glb; i++)
+    for (i = 0; i < g_system.tot_beads; i++)
         {
             for (j = 0; j < BEADINFO_MAX; j++)
                 {
                     ar_idx                    = TrajArr_Index(i, curFrame, j);
-                    naTOTTRAJ_Arr_glb[ar_idx] = bead_info_glb[i][j];
+                    naTOTTRAJ_Arr_glb[ar_idx] = g_system.bead_info[i][j];
                 }
         }
 }
@@ -385,14 +385,14 @@ void Write_Saved_Trajectory(char* filename, const int run_it)
                 }
 
             fprintf(fp, "ITEM: NUMBER OF ATOMS\n");
-            fprintf(fp, "%ld\n", (size_t) tot_beads_glb); // Total atom number
+            fprintf(fp, "%ld\n", (size_t) g_system.tot_beads); // Total atom number
 
             fprintf(fp, "ITEM: BOX BOUNDS pp pp pp\n"); // BCs are always periodic for now
-            fprintf(fp, "0 %d\n0 %d\n0 %d\n", naBoxSize_glb[0], naBoxSize_glb[1], naBoxSize_glb[2]); // Box dimensions
+            fprintf(fp, "0 %d\n0 %d\n0 %d\n", g_system.naBoxSize[0], g_system.naBoxSize[1], g_system.naBoxSize[2]); // Box dimensions
 
             fprintf(fp, "ITEM: ATOMS id type mol x y z bP\n"); // What we are printing
 
-            for (j = 0; j < tot_beads_glb; j++)
+            for (j = 0; j < g_system.tot_beads; j++)
                 {
                     fprintf(fp, "%d", j);
                     ar_idx = TrajArr_Index(j, i, BEAD_TYPE);
@@ -474,14 +474,14 @@ void FileIO_WriteTo_TopFile(const char* filename)
     printf("Writing the topology file!\n");
     fprintf(fp, "LAMMPS Description\n");                   // The file must start with this.
     fprintf(fp, "\n");                                     // Empty line.
-    fprintf(fp, "\t%ld\tatoms\n", (size_t) tot_beads_glb); // Listing total number of atoms
+    fprintf(fp, "\t%ld\tatoms\n", (size_t) g_system.tot_beads); // Listing total number of atoms
     numBonds = 0;
-    for (i = 0; i < tot_beads_glb; i++)
+    for (i = 0; i < g_system.tot_beads; i++)
         {
             for (j = 0; j < MAX_BONDS; j++)
                 {
-                    if (topo_info_glb[i][j] != -1)
-                        { // There is a bond between i and topo_info_glb[i][j]
+                    if (g_system.topo_info[i][j] != -1)
+                        { // There is a bond between i and g_system.topo_info[i][j]
                             numBonds++;
                         }
                 }
@@ -496,9 +496,9 @@ void FileIO_WriteTo_TopFile(const char* filename)
     fprintf(fp, "1\tbond types\n");                  // System can have multiple bond-lengths
     fprintf(fp, "0\tangle types\n");                 // Systems don't have any angular forces yet
     fprintf(fp, "\n");                               // Empty line.
-    fprintf(fp, " 0 %d xlo xhi\n", naBoxSize_glb[0]);
-    fprintf(fp, " 0 %d ylo yhi\n", naBoxSize_glb[1]);
-    fprintf(fp, " 0 %d zlo zhi\n", naBoxSize_glb[2]);
+    fprintf(fp, " 0 %d xlo xhi\n", g_system.naBoxSize[0]);
+    fprintf(fp, " 0 %d ylo yhi\n", g_system.naBoxSize[1]);
+    fprintf(fp, " 0 %d zlo zhi\n", g_system.naBoxSize[2]);
     fprintf(fp, "\n");       // Empty line.
     fprintf(fp, "Masses\n"); // These don't really mean anything
     fprintf(fp, "\n");       // Empty line.
@@ -510,23 +510,23 @@ void FileIO_WriteTo_TopFile(const char* filename)
     fprintf(fp, "\n");             // Empty line.
     fprintf(fp, "Atoms # bond\n"); // Signifying the beginning of atom coordinates.
     fprintf(fp, "\n");             // Empty line.
-    for (i = 0; i < tot_beads_glb; i++)
+    for (i = 0; i < g_system.tot_beads; i++)
         {
-            fprintf(fp, "%d %d %d %d %d %d\n", i, bead_info_glb[i][BEAD_CHAINID], bead_info_glb[i][BEAD_TYPE],
-                    bead_info_glb[i][POS_X], bead_info_glb[i][POS_Y], bead_info_glb[i][POS_Z]);
+            fprintf(fp, "%d %d %d %d %d %d\n", i, g_system.bead_info[i][BEAD_CHAINID], g_system.bead_info[i][BEAD_TYPE],
+                    g_system.bead_info[i][POS_X], g_system.bead_info[i][POS_Y], g_system.bead_info[i][POS_Z]);
         }                   // Done with the coordinates
     fprintf(fp, "\n");      // Empty line.
     fprintf(fp, "Bonds\n"); // Signifying the beginning of atom coordinates.
     fprintf(fp, "\n");      // Empty line.
     k = 0;                  // This guy counts bondIDs
-    for (i = 0; i < tot_beads_glb; i++)
+    for (i = 0; i < g_system.tot_beads; i++)
         {
             for (j = 0; j < MAX_BONDS; j++)
                 {
-                    if (topo_info_glb[i][j] != -1)
-                        { // There is a bond between i and topo_info_glb[i][j]
-                            fprintf(fp, "%d %d %d %d\n", k, linker_len_glb[i][j] / (int) fLinkerLength_glb, i,
-                                    topo_info_glb[i][j]);
+                    if (g_system.topo_info[i][j] != -1)
+                        { // There is a bond between i and g_system.topo_info[i][j]
+                            fprintf(fp, "%d %d %d %d\n", k, g_system.linker_len[i][j] / (int) g_system.fLinkerLength, i,
+                                    g_system.topo_info[i][j]);
                             k++;
                         }
                 }
@@ -548,10 +548,10 @@ void Write_SysProp(char* filename)
     fprintf(fp, "#Contains various averaged quatities.\n");
     // Gyration Radius
     fprintf(fp, "#Total Rg\n%f\t%f\n#Cluster Hist\n", faSysGyrRad_glb / (float) nTotGyrRadCounter_glb,
-            (float) naBoxSize_glb[0] / 2.);
+            (float) g_system.naBoxSize[0] / 2.);
     // Cluster Histogram
     fprintf(fp, "%f\t", (float) nLargestClusterRightNow_glb / (float) nTotClusCounter_glb);
-    for (i = 1; i <= tot_chains_glb; i++)
+    for (i = 1; i <= g_system.tot_chains; i++)
         {
             fprintf(fp, "%f\t", (float) laClusHistList_glb[i] / (float) nTotClusCounter_glb);
         }
@@ -640,7 +640,7 @@ void FileIO_WriteTo_ClusFile_TotFromGLB(const int run_it)
     for (i = 0; i < run_it; i++)
         {
             fprintf(fp, "#Run_Cycle = %d\n", i);
-            for (k = 0; k <= tot_chains_glb; k++)
+            for (k = 0; k <= g_system.tot_chains; k++)
                 {
                     fprintf(fp, "%LE\t", ldaTOTCLUS_Arr_glb[i][k]);
                 }
@@ -666,9 +666,9 @@ void FileIO_WriteTo_MolClusFile_TotFromGLB(const int run_it)
     for (i = 0; i < run_it; i++)
         {
             fprintf(fp, "#Run_Cycle = %d\n", i);
-            for (j = 0; j < tot_chain_types_glb; j++)
+            for (j = 0; j < g_system.tot_chain_types; j++)
                 {
-                    for (k = 0; k < tot_chains_glb; k++)
+                    for (k = 0; k < g_system.tot_chains; k++)
                         {
                             fprintf(fp, "%LE\t", ldaTOTMOLCLUS_Arr_glb[MolClusArr_Index(i, j, k)]);
                         }
@@ -833,12 +833,12 @@ void FileIO_PrintCrashSnapshot(void)
 
     int i, x, y, z, bP;
     fputs("#CRASH SNAPSHOT\n#X, Y, Z, bondPartner\n", fp);
-    for (i = 0; i < tot_beads_glb; i++)
+    for (i = 0; i < g_system.tot_beads; i++)
         {
-            x  = bead_info_glb[i][POS_X];
-            y  = bead_info_glb[i][POS_Y];
-            z  = bead_info_glb[i][POS_Z];
-            bP = bead_info_glb[i][BEAD_FACE];
+            x  = g_system.bead_info[i][POS_X];
+            y  = g_system.bead_info[i][POS_Y];
+            z  = g_system.bead_info[i][POS_Z];
+            bP = g_system.bead_info[i][BEAD_FACE];
             fprintf(fp, "%d %d %d %d\n", x, y, z, bP);
         }
 
@@ -971,20 +971,20 @@ void CopyData_Clus(const int run_it)
     int i, j;
     const long double normFactor  = 1.0 / (long double) nTotClusCounter_glb;
     ldaTOTCLUS_Arr_glb[run_it][0] = (long double) nLargestClusterRightNow_glb * normFactor;
-    for (i = 1; i <= tot_chains_glb; i++)
+    for (i = 1; i <= g_system.tot_chains; i++)
         {
             ldaTOTCLUS_Arr_glb[run_it][i] = (long double) laClusHistList_glb[i] * normFactor;
         }
-    for (i = 0; i < tot_chains_glb; i++)
+    for (i = 0; i < g_system.tot_chains; i++)
         {
-            for (j = 0; j < tot_chain_types_glb; j++)
+            for (j = 0; j < g_system.tot_chain_types; j++)
                 {
                     ldaTOTMOLCLUS_Arr_glb[MolClusArr_Index(run_it, j, i)] =
                         ldaMOLCLUS_Arr_glb[MolClusArr_Index(0, j, i)] * normFactor;
                 }
         }
     ldaTOTRg_Arr_glb[run_it][0] = (long double) faSysGyrRad_glb / (long double) nTotGyrRadCounter_glb;
-    ldaTOTRg_Arr_glb[run_it][1] = (long double) naBoxSize_glb[0] / 2.0;
+    ldaTOTRg_Arr_glb[run_it][1] = (long double) g_system.naBoxSize[0] / 2.0;
 }
 
 
@@ -999,7 +999,7 @@ void FileIOUtil_AppendTo_GyrRadFile_ForRun(const int run_it)
 
     fprintf(fp, "#Run_Cycle = %d; Avg Over %d Samples\n", run_it, nTotClusCounter_glb);
     fprintf(fp, "%LE\t", (long double) faSysGyrRad_glb / (long double) nTotGyrRadCounter_glb);
-    fprintf(fp, "%LE\n", (long double) naBoxSize_glb[0] / 2.0);
+    fprintf(fp, "%LE\n", (long double) g_system.naBoxSize[0] / 2.0);
 
     fclose(fp);
 }
@@ -1019,7 +1019,7 @@ void FileIOUtil_AppendTo_ClusFile_ForRun(const int run_it)
 
     laClusHistList_glb[0] = nLargestClusterRightNow_glb;
 
-    for (i = 0; i <= tot_chains_glb; i++)
+    for (i = 0; i <= g_system.tot_chains; i++)
         {
             fprintf(fp, "%E\t", (double) laClusHistList_glb[i] * normFactor);
         }
@@ -1041,9 +1041,9 @@ void FileIOUtil_AppendTo_MolClusFile_ForRun(const int run_it)
 
     const long double normFactor = 1.0 / (long double) nTotClusCounter_glb;
 
-    for (j = 0; j < tot_chain_types_glb; j++)
+    for (j = 0; j < g_system.tot_chain_types; j++)
         {
-            for (i = 0; i < tot_chains_glb; i++)
+            for (i = 0; i < g_system.tot_chains; i++)
                 {
                     fprintf(fp, "%LE\t", ldaMOLCLUS_Arr_glb[MolClusArr_Index(0, j, i)] * normFactor);
                 }

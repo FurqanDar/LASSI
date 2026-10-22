@@ -29,7 +29,7 @@ int NeighborSearch_ForOvlp(int const beadID, const int* startVec, int* neighList
                     for (r_disp[2] = -nRad; r_disp[2] <= nRad; r_disp[2]++)
                         {
                             LatPos_add_wPBC_ofComp(r_chck, startVec, r_disp, POS_Z);
-                            tmpBead = naTotLattice_glb[Lat_Ind_FromVec(r_chck)];
+                            tmpBead = g_system.naTotLattice[Lat_Ind_FromVec(r_chck)];
                             if (tmpBead != -1 && tmpBead != beadID)
                                 {
                                     neighList[neigh_num++] = tmpBead;
@@ -68,7 +68,7 @@ int NeighborSearch_ForCont(int const beadID, const int* startVec, int* contList,
                     for (r_disp[2] = -nRad; r_disp[2] <= nRad; r_disp[2]++)
                         {
                             LatPos_add_wPBC_ofComp(r_chck, startVec, r_disp, POS_Z);
-                            tmpBead = naTotLattice_glb[Lat_Ind_FromVec(r_chck)];
+                            tmpBead = g_system.naTotLattice[Lat_Ind_FromVec(r_chck)];
                             if (tmpBead != -1 && tmpBead != beadID)
                                 {
                                     if ((abs(r_disp[0]) <= 1) && (abs(r_disp[1]) <= 1) && (abs(r_disp[2]) <= 1))
@@ -106,7 +106,7 @@ int NeighborSearch_EmptySitesAround_wRad(const int* startVec, const int nRad)
                     for (r_disp[2] = -nRad; r_disp[2] <= nRad; r_disp[2]++)
                         {
                             LatPos_add_wPBC(r_search, startVec, r_disp);
-                            tmpBead = naTotLattice_glb[Lat_Ind_FromVec(r_search)];
+                            tmpBead = g_system.naTotLattice[Lat_Ind_FromVec(r_search)];
                             if (tmpBead == -1)
                                 {
                                     empty_num++;
@@ -141,7 +141,7 @@ int NeighborSearch_AroundPoint_UptoIndex(const int beadID, const int* startVec, 
     for (i = 0; i < upTO; ++i)
         {
             LatPos_add_wPBC(r_search, startVec, r_all[i]);
-            tmpBead = naTotLattice_glb[Lat_Ind_FromVec(r_search)];
+            tmpBead = g_system.naTotLattice[Lat_Ind_FromVec(r_search)];
             if (tmpBead != -1)
                 {
                     neighList[neigh_num++] = tmpBead;
@@ -167,7 +167,7 @@ int NeighborSearch_AroundPoint_wRad_IgnBead(const int beadID, const int* startVe
                     for (r_disp[2] = -nRad; r_disp[2] <= nRad; r_disp[2]++)
                         {
                             LatPos_add_wPBC(r_search, startVec, r_disp);
-                            tmpBead = naTotLattice_glb[Lat_Ind_FromVec(r_search)];
+                            tmpBead = g_system.naTotLattice[Lat_Ind_FromVec(r_search)];
                             if (tmpBead != -1 && tmpBead != beadID)
                                 {
                                     neighList[neigh_num++] = tmpBead;
@@ -196,7 +196,7 @@ int NeighborSearch_AroundPoint_wRad_wDists(const int beadID, const int* startVec
                     for (r_disp[2] = -nRad; r_disp[2] <= nRad; r_disp[2]++)
                         {
                             LatPos_add_wPBC(r_search, startVec, r_disp);
-                            tmpBead = naTotLattice_glb[Lat_Ind_FromVec(r_search)];
+                            tmpBead = g_system.naTotLattice[Lat_Ind_FromVec(r_search)];
                             if (tmpBead != -1 && tmpBead != beadID)
                                 {
                                     neighList[neigh_num] = tmpBead;
@@ -234,7 +234,7 @@ int NeighborSearch_ForCluster_Ovlp(int const beadID, const int* startVec, int* n
                     for (r_disp[2] = -nRad; r_disp[2] <= nRad; r_disp[2]++)
                         {
                             LatPos_add_wPBC_ofComp(r_chck, startVec, r_disp, POS_Z);
-                            tmpBead = naTotLattice_glb[Lat_Ind_FromVec(r_chck)];
+                            tmpBead = g_system.naTotLattice[Lat_Ind_FromVec(r_chck)];
                             if (tmpBead != -1)
                                 {
                                     neighList[neigh_num] = tmpBead;

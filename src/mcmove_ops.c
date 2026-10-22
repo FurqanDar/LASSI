@@ -12,12 +12,12 @@ int Check_ChainDisp(const int chainID, const int* vec_disp)
 { // Checks if chain can be displaced by vec_disp
     int i;
     int r_chck[POS_MAX];
-    const int firstB = chain_info_glb[chainID][CHAIN_START];
-    const int lastB  = firstB + chain_info_glb[chainID][CHAIN_LENGTH];
+    const int firstB = g_system.chain_info[chainID][CHAIN_START];
+    const int lastB  = firstB + g_system.chain_info[chainID][CHAIN_LENGTH];
     for (i = firstB; i < lastB; i++)
         {
-            LatPos_add_wPBC(r_chck, vec_disp, bead_info_glb[i]);
-            if (naTotLattice_glb[Lat_Ind_FromVec(r_chck)] != -1)
+            LatPos_add_wPBC(r_chck, vec_disp, g_system.bead_info[i]);
+            if (g_system.naTotLattice[Lat_Ind_FromVec(r_chck)] != -1)
                 { // Steric clash
                     return 0;
                 }
@@ -33,8 +33,8 @@ int Check_ChainDisp(const int chainID, const int* vec_disp)
 void OP_System_DispChain(int chainID, const int* movR)
 {
     int i, l;
-    const int fB = chain_info_glb[chainID][CHAIN_START];
-    const int lB = fB + chain_info_glb[chainID][CHAIN_LENGTH];
+    const int fB = g_system.chain_info[chainID][CHAIN_START];
+    const int lB = fB + g_system.chain_info[chainID][CHAIN_LENGTH];
     int r_pos0[POS_MAX], r_posNew[POS_MAX];
 
     // Copy beads to old.
@@ -42,12 +42,12 @@ void OP_System_DispChain(int chainID, const int* movR)
 
     for (i = fB; i < lB; i++)
         {
-            LatPos_copy(r_pos0, bead_info_glb[i]);
-            LatPos_add_wPBC(bead_info_glb[i], r_pos0, movR);
-            LatPos_copy(r_posNew, bead_info_glb[i]);
+            LatPos_copy(r_pos0, g_system.bead_info[i]);
+            LatPos_add_wPBC(g_system.bead_info[i], r_pos0, movR);
+            LatPos_copy(r_posNew, g_system.bead_info[i]);
 
-            naTotLattice_glb[Lat_Ind_FromVec(r_pos0)]   = -1; // Removing from old place
-            naTotLattice_glb[Lat_Ind_FromVec(r_posNew)] = i;  // Adding to new place
+            g_system.naTotLattice[Lat_Ind_FromVec(r_pos0)]   = -1; // Removing from old place
+            g_system.naTotLattice[Lat_Ind_FromVec(r_posNew)] = i;  // Adding to new place
         }
 }
 
@@ -60,11 +60,11 @@ void OP_System_DispChain_ForTrans(const int chainID, const int* movR)
 {
     // Displaces current chain by movR and handles lattice
     // Specific for Move_Trans because it breaks old bonds!
-    // Also remembers where everything was moved and saves into old_bead_glb
+    // Also remembers where everything was moved and saves into g_system.old_bead
 
     int i, l;
-    const int fB = chain_info_glb[chainID][CHAIN_START];
-    const int lB = fB + chain_info_glb[chainID][CHAIN_LENGTH];
+    const int fB = g_system.chain_info[chainID][CHAIN_START];
+    const int lB = fB + g_system.chain_info[chainID][CHAIN_LENGTH];
     int r_pos0[POS_MAX], r_posNew[POS_MAX];
 
     // Copy beads to old.
@@ -72,40 +72,40 @@ void OP_System_DispChain_ForTrans(const int chainID, const int* movR)
 
     for (i = fB; i < lB; i++)
         {
-            LatPos_copy(r_pos0, bead_info_glb[i]);
-            LatPos_add_wPBC(bead_info_glb[i], r_pos0, movR);
-            LatPos_copy(r_posNew, bead_info_glb[i]);
+            LatPos_copy(r_pos0, g_system.bead_info[i]);
+            LatPos_add_wPBC(g_system.bead_info[i], r_pos0, movR);
+            LatPos_copy(r_posNew, g_system.bead_info[i]);
 
-            naTotLattice_glb[Lat_Ind_FromVec(r_pos0)]   = -1; // Removing from old place
-            naTotLattice_glb[Lat_Ind_FromVec(r_posNew)] = i;  // Adding to new place
+            g_system.naTotLattice[Lat_Ind_FromVec(r_pos0)]   = -1; // Removing from old place
+            g_system.naTotLattice[Lat_Ind_FromVec(r_posNew)] = i;  // Adding to new place
             OP_Beads_BreakBond(i);
         }
 }
 
-/// OP_System_RestoreChain - uses old_bead_glb to undo what OP_System_DispChain does.
+/// OP_System_RestoreChain - uses g_system.old_bead to undo what OP_System_DispChain does.
 /// \param chainID
 void OP_System_RestoreChain(int chainID)
-{ // Uses old_bead_glb to undo what OP_System_DispChain does.
+{ // Uses g_system.old_bead to undo what OP_System_DispChain does.
     int i, l;
-    const int fB = chain_info_glb[chainID][CHAIN_START];
-    const int lB = fB + chain_info_glb[chainID][CHAIN_LENGTH];
+    const int fB = g_system.chain_info[chainID][CHAIN_START];
+    const int lB = fB + g_system.chain_info[chainID][CHAIN_LENGTH];
 
     // Removing from 'new' place.
     for (i = fB; i < lB; ++i)
         {
-            naTotLattice_glb[Lat_Ind_OfBead(i)] = -1;
+            g_system.naTotLattice[Lat_Ind_OfBead(i)] = -1;
         }
 
     // Remembering where we were.
     for (i = fB; i < lB; ++i)
         {
-            OP_CopyBead(bead_info_glb[i], old_bead_glb[i]);
+            OP_CopyBead(g_system.bead_info[i], g_system.old_bead[i]);
         }
 
     // Placing back.
     for (i = fB; i < lB; ++i)
         {
-            naTotLattice_glb[Lat_Ind_OfBead(i)] = i;
+            g_system.naTotLattice[Lat_Ind_OfBead(i)] = i;
         }
 }
 
@@ -130,7 +130,7 @@ void OP_CopyBeadsToOld(const int firstB, const int lastB)
     int i;
     for (i = firstB; i < lastB; i++)
         {
-            OP_CopyBead(old_bead_glb[i], bead_info_glb[i]);
+            OP_CopyBead(g_system.old_bead[i], g_system.bead_info[i]);
         }
 }
 
@@ -143,19 +143,19 @@ void OP_RestoreBeadsFromOld(const int firstB, const int lastB)
     int i, j;
     for (i = firstB; i < lastB; i++)
         {
-            OP_CopyBead(bead_info_glb[i], old_bead_glb[i]);
+            OP_CopyBead(g_system.bead_info[i], g_system.old_bead[i]);
         }
 }
 
 /// OP_System_RestoreChain_ForTrans - translation variant to restore chainID.
 /// \param chainID
 void OP_System_RestoreChain_ForTrans(int chainID)
-{ // Uses old_bead_glb to undo what OP_System_DispChain_ForTrans does.
+{ // Uses g_system.old_bead to undo what OP_System_DispChain_ForTrans does.
     // Note that removing and placing separately makes sure that no incorrect
     // bonds are formed, or unformed.
     int i, l;
-    const int fB = chain_info_glb[chainID][CHAIN_START];
-    const int lB = fB + chain_info_glb[chainID][CHAIN_LENGTH];
+    const int fB = g_system.chain_info[chainID][CHAIN_START];
+    const int lB = fB + g_system.chain_info[chainID][CHAIN_LENGTH];
 
     // Breaking all current bonds
     for (i = fB; i < lB; ++i)
@@ -166,19 +166,19 @@ void OP_System_RestoreChain_ForTrans(int chainID)
     // Removing from 'new' place.
     for (i = fB; i < lB; ++i)
         {
-            naTotLattice_glb[Lat_Ind_OfBead(i)] = -1;
+            g_system.naTotLattice[Lat_Ind_OfBead(i)] = -1;
         }
 
     // Remembering where we were.
     for (i = fB; i < lB; ++i)
         {
-            OP_CopyBead(bead_info_glb[i], old_bead_glb[i]);
+            OP_CopyBead(g_system.bead_info[i], g_system.old_bead[i]);
         }
 
     // Placing back.
     for (i = fB; i < lB; ++i)
         {
-            naTotLattice_glb[Lat_Ind_OfBead(i)] = i;
+            g_system.naTotLattice[Lat_Ind_OfBead(i)] = i;
         }
 
     // Restoring older bonds.
@@ -198,23 +198,23 @@ void OP_RestoreChain_ForSnake(const int fB, const int lB)
 
     for (i = fB; i < lB; i++)
         { // Resetting the lattice
-            if (bead_info_glb[i][BEAD_FACE] != -1)
+            if (g_system.bead_info[i][BEAD_FACE] != -1)
                 { // Need to break the newly proposed bond
-                    bead_info_glb[bead_info_glb[i][BEAD_FACE]][BEAD_FACE] = -1;
+                    g_system.bead_info[g_system.bead_info[i][BEAD_FACE]][BEAD_FACE] = -1;
                 }
-            naTotLattice_glb[Lat_Ind_OfBead(i)] = -1;
+            g_system.naTotLattice[Lat_Ind_OfBead(i)] = -1;
         }
     for (i = fB; i < lB; i++)
         {
             for (j = 0; j < BEADINFO_MAX; j++)
                 {
-                    bead_info_glb[i][j] = old_bead_glb[i][j]; // Restoring
+                    g_system.bead_info[i][j] = g_system.old_bead[i][j]; // Restoring
                 }
-            if (bead_info_glb[i][BEAD_FACE] != -1)
+            if (g_system.bead_info[i][BEAD_FACE] != -1)
                 { // I was bonded so restore the bond
-                    bead_info_glb[bead_info_glb[i][BEAD_FACE]][BEAD_FACE] = i;
+                    g_system.bead_info[g_system.bead_info[i][BEAD_FACE]][BEAD_FACE] = i;
                 }
-            naTotLattice_glb[Lat_Ind_OfBead(i)] = i;
+            g_system.naTotLattice[Lat_Ind_OfBead(i)] = i;
         }
 }
 
@@ -224,7 +224,7 @@ void OP_RestoreChain_ForSnake(const int fB, const int lB)
 int Check_MoveBeadTo(const int* newPos)
 { // Checks if I can move here
 
-    if (naTotLattice_glb[Lat_Ind_FromVec(newPos)] != -1)
+    if (g_system.naTotLattice[Lat_Ind_FromVec(newPos)] != -1)
         {
             return 0; // There's something here already, brah
         }
@@ -237,20 +237,20 @@ int Check_MoveBeadTo(const int* newPos)
 /// \param newPos
 void OP_System_MoveBeadTo(const int beadID, const int* newPos)
 { // Updates position to new one and handles lattice
-    OP_CopyBead(old_bead_glb[beadID], bead_info_glb[beadID]);
-    LatPos_copy(bead_info_glb[beadID], newPos);
-    naTotLattice_glb[Lat_Ind_FromVec(old_bead_glb[beadID])] = -1;     // Removing from old place.
-    naTotLattice_glb[Lat_Ind_FromVec(newPos)]               = beadID; // Placing in new place.
+    OP_CopyBead(g_system.old_bead[beadID], g_system.bead_info[beadID]);
+    LatPos_copy(g_system.bead_info[beadID], newPos);
+    g_system.naTotLattice[Lat_Ind_FromVec(g_system.old_bead[beadID])] = -1;     // Removing from old place.
+    g_system.naTotLattice[Lat_Ind_FromVec(newPos)]               = beadID; // Placing in new place.
 }
 
 /// OP_System_MoveBeadTo_Inv - performs the inverse of OP_System_MoveBeadTo to
-/// restore beadID using old_bead_glb.
+/// restore beadID using g_system.old_bead.
 /// \param beadID
 void OP_System_MoveBeadTo_Inv(int beadID)
 {                                                  // Undoes what OP_System_MoveBeadTo does
-    naTotLattice_glb[Lat_Ind_OfBead(beadID)] = -1; // Removing from newly proposed place.
-    OP_CopyBead(bead_info_glb[beadID], old_bead_glb[beadID]);
-    naTotLattice_glb[Lat_Ind_OfBead(beadID)] = beadID; // Placing back where we used to be.
+    g_system.naTotLattice[Lat_Ind_OfBead(beadID)] = -1; // Removing from newly proposed place.
+    OP_CopyBead(g_system.bead_info[beadID], g_system.old_bead[beadID]);
+    g_system.naTotLattice[Lat_Ind_OfBead(beadID)] = beadID; // Placing back where we used to be.
     OP_Beads_RestoreBond(beadID);
 }
 
@@ -266,15 +266,15 @@ void OP_MoveBeadTo_ForMTLocal(int beadID, const int* newPos)
     int tmpR2[POS_MAX];
     for (i = 0; i < POS_MAX; i++)
         {
-            bead_info_glb[beadID][i] = newPos[i];
-            tmpR2[i]                 = bead_info_glb[beadID][i];
+            g_system.bead_info[beadID][i] = newPos[i];
+            tmpR2[i]                 = g_system.bead_info[beadID][i];
         }
-    naTotLattice_glb[Lat_Ind_FromVec(tmpR2)] = beadID;
-    i                                        = bead_info_glb[beadID][BEAD_FACE];
+    g_system.naTotLattice[Lat_Ind_FromVec(tmpR2)] = beadID;
+    i                                        = g_system.bead_info[beadID][BEAD_FACE];
     if (i != -1)
         {
-            bead_info_glb[i][BEAD_FACE]      = -1;
-            bead_info_glb[beadID][BEAD_FACE] = -1;
+            g_system.bead_info[i][BEAD_FACE]      = -1;
+            g_system.bead_info[beadID][BEAD_FACE] = -1;
         }
 }
 
@@ -306,32 +306,32 @@ void OP_SwapBeads(int bead1, int bead2)
     // First the coordinates
     for (i = 0; i < POS_MAX; i++)
         {
-            tmpR[i]                 = bead_info_glb[bead1][i];
-            tmpR2[i]                = bead_info_glb[bead2][i];
-            bead_info_glb[bead1][i] = tmpR2[i];
-            bead_info_glb[bead2][i] = tmpR[i];
+            tmpR[i]                 = g_system.bead_info[bead1][i];
+            tmpR2[i]                = g_system.bead_info[bead2][i];
+            g_system.bead_info[bead1][i] = tmpR2[i];
+            g_system.bead_info[bead2][i] = tmpR[i];
         }
 
     // Onto bonds and partners
-    MyF1 = bead_info_glb[bead1][BEAD_FACE]; // Bead 1's bonding partner
-    MyF2 = bead_info_glb[bead2][BEAD_FACE]; // Bead 2's bonding partner.
+    MyF1 = g_system.bead_info[bead1][BEAD_FACE]; // Bead 1's bonding partner
+    MyF2 = g_system.bead_info[bead2][BEAD_FACE]; // Bead 2's bonding partner.
     // If they are bonded to each other, don't do anything
     if (MyF1 != bead2)
         {
-            bead_info_glb[bead1][BEAD_FACE] = MyF2;
-            bead_info_glb[bead2][BEAD_FACE] = MyF1;
+            g_system.bead_info[bead1][BEAD_FACE] = MyF2;
+            g_system.bead_info[bead2][BEAD_FACE] = MyF1;
             if (MyF1 != -1)
                 {                                           // Need to swap partners -- very 2019
-                    bead_info_glb[MyF1][BEAD_FACE] = bead2; // It's bonded to bead2 now
+                    g_system.bead_info[MyF1][BEAD_FACE] = bead2; // It's bonded to bead2 now
                 }
             if (MyF2 != -1)
                 {
-                    bead_info_glb[MyF2][BEAD_FACE] = bead1;
+                    g_system.bead_info[MyF2][BEAD_FACE] = bead1;
                 }
         }
     // Swap them on the lattice
-    naTotLattice_glb[Lat_Ind_FromVec(tmpR)]  = bead2;
-    naTotLattice_glb[Lat_Ind_FromVec(tmpR2)] = bead1;
+    g_system.naTotLattice[Lat_Ind_FromVec(tmpR)]  = bead2;
+    g_system.naTotLattice[Lat_Ind_FromVec(tmpR2)] = bead1;
 }
 
 /// OP_GenMHValue - calculates the acceptance ratio for a given state.
@@ -378,37 +378,37 @@ void OP_System_Snake_SlitherFwd(const int firstB, const int lastB, const int* r_
 {
     int i;
     int r_tmp[POS_MAX];
-    naTotLattice_glb[Lat_Ind_OfBead(firstB)] = -1; // Only the firstB's location is empty
+    g_system.naTotLattice[Lat_Ind_OfBead(firstB)] = -1; // Only the firstB's location is empty
     for (i = firstB; i < lastB - 1; i++)
         {
-            LatPos_copy(bead_info_glb[i], old_bead_glb[i + 1]); // Hopping over by one bead
-            LatPos_copy(r_tmp, bead_info_glb[i]);
-            naTotLattice_glb[Lat_Ind_FromVec(r_tmp)] = i;
+            LatPos_copy(g_system.bead_info[i], g_system.old_bead[i + 1]); // Hopping over by one bead
+            LatPos_copy(r_tmp, g_system.bead_info[i]);
+            g_system.naTotLattice[Lat_Ind_FromVec(r_tmp)] = i;
         }
     // Moving the last bead, and it has to be done independently because lastB-1
     // -> r_posNew
     i = lastB - 1;
-    LatPos_copy(bead_info_glb[i], r_posNew);
-    naTotLattice_glb[Lat_Ind_FromVec(r_posNew)] = i;
+    LatPos_copy(g_system.bead_info[i], r_posNew);
+    g_system.naTotLattice[Lat_Ind_FromVec(r_posNew)] = i;
 }
 
 void OP_System_Snake_SlitherBck(const int firstB, const int lastB, const int* r_posNew)
 {
     int i;
     int r_tmp[POS_MAX];
-    naTotLattice_glb[Lat_Ind_OfBead(lastB - 1)] = -1; // Only the lastB-1's location is empty
+    g_system.naTotLattice[Lat_Ind_OfBead(lastB - 1)] = -1; // Only the lastB-1's location is empty
     for (i = firstB + 1; i < lastB; i++)
         {
-            LatPos_copy(bead_info_glb[i], old_bead_glb[i - 1]); // Hopping back by one bead
-            LatPos_copy(r_tmp, bead_info_glb[i]);
-            naTotLattice_glb[Lat_Ind_FromVec(r_tmp)] = i;
+            LatPos_copy(g_system.bead_info[i], g_system.old_bead[i - 1]); // Hopping back by one bead
+            LatPos_copy(r_tmp, g_system.bead_info[i]);
+            g_system.naTotLattice[Lat_Ind_FromVec(r_tmp)] = i;
         }
 
     // Moving the first bead, and it has to be done independently because firstB
     // -> r_posNew
     i = firstB;
-    LatPos_copy(bead_info_glb[i], r_posNew);
-    naTotLattice_glb[Lat_Ind_FromVec(r_posNew)] = i;
+    LatPos_copy(g_system.bead_info[i], r_posNew);
+    g_system.naTotLattice[Lat_Ind_FromVec(r_posNew)] = i;
 }
 
 void OP_Beads_CopyBeadsInListToOld(const int listSize, const int* beadList)
@@ -418,7 +418,7 @@ void OP_Beads_CopyBeadsInListToOld(const int listSize, const int* beadList)
     for (i = 0; i < listSize; i++)
         {
             thisBead = beadList[i];
-            OP_CopyBead(old_bead_glb[thisBead], bead_info_glb[thisBead]);
+            OP_CopyBead(g_system.old_bead[thisBead], g_system.bead_info[thisBead]);
         }
 }
 
@@ -429,7 +429,7 @@ void OP_Beads_CopyBeadsInListFromOld(const int listSize, const int* beadList)
     for (i = 0; i < listSize; i++)
         {
             thisBead = beadList[i];
-            OP_CopyBead(bead_info_glb[thisBead], old_bead_glb[thisBead]);
+            OP_CopyBead(g_system.bead_info[thisBead], g_system.old_bead[thisBead]);
         }
 }
 
@@ -440,7 +440,7 @@ void OP_Beads_CopyBeadsInListToPosList(const int listSize, const int* beadList, 
     for (i = 0; i < listSize; i++)
         {
             thisBead = beadList[i];
-            LatPos_copy(beadPos[i], bead_info_glb[thisBead]);
+            LatPos_copy(beadPos[i], g_system.bead_info[thisBead]);
         }
 }
 
@@ -450,7 +450,7 @@ void OP_Lattice_EmptySitesForListOfBeads(const int listSize, const int* beadList
     for (i = 0; i < listSize; i++)
         {
             thisBead                                   = beadList[i];
-            naTotLattice_glb[Lat_Ind_OfBead(thisBead)] = -1;
+            g_system.naTotLattice[Lat_Ind_OfBead(thisBead)] = -1;
         }
 }
 
@@ -460,7 +460,7 @@ void OP_Lattice_PlaceBeadsInList(const int listSize, const int* beadList)
     for (i = 0; i < listSize; i++)
         {
             thisBead                                   = beadList[i];
-            naTotLattice_glb[Lat_Ind_OfBead(thisBead)] = thisBead;
+            g_system.naTotLattice[Lat_Ind_OfBead(thisBead)] = thisBead;
         }
 }
 
@@ -469,7 +469,7 @@ void OP_Lattice_EmptySitesForListOfPos(const int listSize, const int (*beadPos)[
     int i;
     for (i = 0; i < listSize; i++)
         {
-            naTotLattice_glb[Lat_Ind_FromVec(beadPos[i])] = -1;
+            g_system.naTotLattice[Lat_Ind_FromVec(beadPos[i])] = -1;
         }
 }
 
@@ -479,7 +479,7 @@ void OP_Beads_MoveBeadsInListToPos(const int listSize, const int* beadList, cons
     for (i = 0; i < listSize; i++)
         {
             tmpBead = beadList[i];
-            LatPos_copy(bead_info_glb[tmpBead], newPos[i]);
+            LatPos_copy(g_system.bead_info[tmpBead], newPos[i]);
         }
 }
 
@@ -495,11 +495,11 @@ void OP_Beads_BreakBondsInList(const int listSize, const int* beadList)
 
 void OP_Beads_BreakBond(const int beadID)
 {
-    const int bP = bead_info_glb[beadID][BEAD_FACE];
+    const int bP = g_system.bead_info[beadID][BEAD_FACE];
     if (bP != -1)
         {
-            bead_info_glb[bP][BEAD_FACE]     = -1;
-            bead_info_glb[beadID][BEAD_FACE] = -1;
+            g_system.bead_info[bP][BEAD_FACE]     = -1;
+            g_system.bead_info[beadID][BEAD_FACE] = -1;
         }
 }
 
@@ -515,10 +515,10 @@ void OP_Beads_RestoreBondsInList(const int listSize, const int* beadList)
 
 void OP_Beads_RestoreBond(const int beadID)
 {
-    const int bP = bead_info_glb[beadID][BEAD_FACE];
+    const int bP = g_system.bead_info[beadID][BEAD_FACE];
     if (bP != -1)
         {
-            bead_info_glb[bP][BEAD_FACE] = beadID;
+            g_system.bead_info[bP][BEAD_FACE] = beadID;
         }
 }
 
@@ -528,19 +528,19 @@ void OP_Inv_MoveBeads_InList_ToPos(const int listSize, const int* beadList)
     for (i = 0; i < listSize; i++)
         {
             tmpBead = beadList[i];
-            LatPos_copy(bead_info_glb[tmpBead], old_bead_glb[tmpBead]);
+            LatPos_copy(g_system.bead_info[tmpBead], g_system.old_bead[tmpBead]);
         }
 }
 
 lLDub MC_RosenbluthSampling_ForLocal_AtOld(const int beadID, const int resi, long double* oldEn, const int neigh_num)
 {
     int ros_num;
-    if (nBeadTypeIsSticker_glb[resi])
+    if (g_system.nBeadTypeIsSticker[resi])
         {
             // the anisotropic energy should not be added to the oldEn
             // because it is already counted in this biased smapling.
             // *oldEn  = *oldEn + Energy_Anisotropic(beadID);
-            ros_num = Check_RotStates_wNeighList(beadID, resi, naOldOvlpNeighs_glb, neigh_num);
+            ros_num = Check_RotStates_wNeighList(beadID, resi, g_system.naOldOvlpNeighs, neigh_num);
             OP_NormalizeRotState(0, ros_num);
             return logl(ldaBoltzNorm_glb[0]);
         }
@@ -556,10 +556,10 @@ lLDub MC_RosenbluthSampling_ForLocal_AtNew(const int beadID, const int resi, int
     int ros_num;
 
     *bead_part = -1;
-    if (nBeadTypeIsSticker_glb[resi])
+    if (g_system.nBeadTypeIsSticker[resi])
         {
-            // OP_ShuffleArray(neigh_num, naNewOvlpNeighs_glb);
-            ros_num = Check_RotStates_wNeighList(beadID, resi, naNewOvlpNeighs_glb, neigh_num);
+            // OP_ShuffleArray(neigh_num, g_system.naNewOvlpNeighs);
+            ros_num = Check_RotStates_wNeighList(beadID, resi, g_system.naNewOvlpNeighs, neigh_num);
             OP_NormalizeRotState(0, ros_num);
 
             *bead_part = OP_PickRotState(ros_num);
@@ -575,12 +575,12 @@ lLDub MC_RosenbluthSampling_ForLocal_AtNew(const int beadID, const int resi, int
 lLDub MC_RosenbluthSampling_ForChains_AtOld(const int beadID, const int resi, long double* oldEn, const int neigh_num)
 {
     int ros_num;
-    if (nBeadTypeIsSticker_glb[resi])
+    if (g_system.nBeadTypeIsSticker[resi])
         {
             // the anisotropic energy should not be added to the oldEn
             // because it is already counted in this biased smapling.
             // *oldEn  = *oldEn + Energy_Anisotropic_For_Chain(beadID); 
-            ros_num = Check_RotStates_wNeighList_ForChains(beadID, resi, naOldOvlpNeighs_glb, neigh_num);
+            ros_num = Check_RotStates_wNeighList_ForChains(beadID, resi, g_system.naOldOvlpNeighs, neigh_num);
             OP_NormalizeRotState(0, ros_num);
             return logl(ldaBoltzNorm_glb[0]);
         }
@@ -594,13 +594,13 @@ lLDub MC_RosenbluthSampling_ForChains_AtNew(const int beadID, const int resi, in
                                             const int neigh_num)
 {
     int ros_num;
-    const int cur_part = bead_info_glb[beadID][BEAD_FACE];
+    const int cur_part = g_system.bead_info[beadID][BEAD_FACE];
     *bead_part         = -1;
-    if (nBeadTypeIsSticker_glb[resi])
+    if (g_system.nBeadTypeIsSticker[resi])
         {
-            // OP_ShuffleArray(neigh_num, naNewOvlpNeighs_glb);
-            // ros_num = Check_RotStates_wNeighList_ForChains(beadID, resi, naNewOvlpNeighs_glb, neigh_num);
-            ros_num = Check_RotStates_wNeighList_ForChains(beadID, resi, naNewOvlpNeighs_glb, neigh_num);
+            // OP_ShuffleArray(neigh_num, g_system.naNewOvlpNeighs);
+            // ros_num = Check_RotStates_wNeighList_ForChains(beadID, resi, g_system.naNewOvlpNeighs, neigh_num);
+            ros_num = Check_RotStates_wNeighList_ForChains(beadID, resi, g_system.naNewOvlpNeighs, neigh_num);
             OP_NormalizeRotState(0, ros_num);
             if (cur_part == -1)
                 {
@@ -618,15 +618,15 @@ lLDub MC_RosenbluthSampling_ForLists_AtOld(const int beadIdx, const int listSize
                                            lLDub* oldEn, const int neigh_num)
 {
     const int beadID = beadList[beadIdx];
-    const int resi   = bead_info_glb[beadID][BEAD_TYPE];
+    const int resi   = g_system.bead_info[beadID][BEAD_TYPE];
     int ros_num;
-    if (nBeadTypeIsSticker_glb[resi])
+    if (g_system.nBeadTypeIsSticker[resi])
         {
             // the anisotropic energy should not be added to the oldEn
             // because it is already counted in this biased smapling.
             // *oldEn  = *oldEn + Energy_Anisotropic_For_List(beadID, listSize, beadList);
-            // ros_num = Check_RotStates_wNeighList(beadID, resi, naOldOvlpNeighs_glb, neigh_num);
-            ros_num = Check_RotStates_wNeighList_ForLists(beadIdx, listSize, beadList, resi, naOldOvlpNeighs_glb, neigh_num);           
+            // ros_num = Check_RotStates_wNeighList(beadID, resi, g_system.naOldOvlpNeighs, neigh_num);
+            ros_num = Check_RotStates_wNeighList_ForLists(beadIdx, listSize, beadList, resi, g_system.naOldOvlpNeighs, neigh_num);           
             OP_NormalizeRotState(0, ros_num);
             return logl(ldaBoltzNorm_glb[0]);
         }
@@ -641,16 +641,16 @@ lLDub MC_RosenbluthSampling_ForLists_AtNew(const int beadIdx, const int listSize
 {
     *bead_part         = -1;
     const int beadID   = beadList[beadIdx];
-    const int resi     = bead_info_glb[beadID][BEAD_TYPE];
-    const int cur_part = bead_info_glb[beadID][BEAD_FACE];
+    const int resi     = g_system.bead_info[beadID][BEAD_TYPE];
+    const int cur_part = g_system.bead_info[beadID][BEAD_FACE];
     int ros_num;
-    if (nBeadTypeIsSticker_glb[resi])
+    if (g_system.nBeadTypeIsSticker[resi])
         {
             // the anisotropic energy should not be added to the oldEn
             // because it is already counted in this biased smapling.
             // *newEn  = *newEn + Energy_Anisotropic_For_List(beadID, listSize, beadList);
-            // ros_num = Check_RotStates_wNeighList(beadID, resi, naNewOvlpNeighs_glb, neigh_num);
-            ros_num = Check_RotStates_wNeighList_ForLists(beadIdx, listSize, beadList, resi, naNewOvlpNeighs_glb, neigh_num);           
+            // ros_num = Check_RotStates_wNeighList(beadID, resi, g_system.naNewOvlpNeighs, neigh_num);
+            ros_num = Check_RotStates_wNeighList_ForLists(beadIdx, listSize, beadList, resi, g_system.naNewOvlpNeighs, neigh_num);           
             OP_NormalizeRotState(0, ros_num);
             if (cur_part == -1)
                 {
@@ -669,13 +669,13 @@ lLDub MC_RosenbluthSampling_ForRange_AtOld(const int beadID, const int resi, con
                                            const int largestBead, lLDub* oldEn, const int neigh_num)
 {
     int ros_num;
-    if (nBeadTypeIsSticker_glb[resi])
+    if (g_system.nBeadTypeIsSticker[resi])
         {
             // the anisotropic energy should not be added to the oldEn
             // because it is already counted in this biased smapling.
             // *oldEn  = *oldEn + Energy_Anisotropic_For_Range(beadID, smallestBead, largestBead);
-            // ros_num = Check_RotStates_wNeighList(beadID, resi, naOldOvlpNeighs_glb, neigh_num);
-            ros_num = Check_RotState_wNeighList_ForRange(beadID, resi, smallestBead, largestBead, naOldOvlpNeighs_glb, neigh_num);
+            // ros_num = Check_RotStates_wNeighList(beadID, resi, g_system.naOldOvlpNeighs, neigh_num);
+            ros_num = Check_RotState_wNeighList_ForRange(beadID, resi, smallestBead, largestBead, g_system.naOldOvlpNeighs, neigh_num);
             OP_NormalizeRotState(0, ros_num);
             return logl(ldaBoltzNorm_glb[0]);
         }
@@ -689,13 +689,13 @@ lLDub MC_RosenbluthSampling_ForRange_AtNew(const int beadID, const int resi, con
                                            const int largestBead, int* bead_part, lLDub* newEn, const int neigh_num)
 {
     int ros_num;
-    const int cur_part = bead_info_glb[beadID][BEAD_FACE];
+    const int cur_part = g_system.bead_info[beadID][BEAD_FACE];
     *bead_part         = -1;
-    if (nBeadTypeIsSticker_glb[resi])
+    if (g_system.nBeadTypeIsSticker[resi])
         {
-            // OP_ShuffleArray(neigh_num, naNewOvlpNeighs_glb);
-            // ros_num = Check_RotStates_wNeighList(beadID, resi, naNewOvlpNeighs_glb, neigh_num);
-            ros_num = Check_RotState_wNeighList_ForRange(beadID, resi, smallestBead, largestBead, naNewOvlpNeighs_glb, neigh_num);
+            // OP_ShuffleArray(neigh_num, g_system.naNewOvlpNeighs);
+            // ros_num = Check_RotStates_wNeighList(beadID, resi, g_system.naNewOvlpNeighs, neigh_num);
+            ros_num = Check_RotState_wNeighList_ForRange(beadID, resi, smallestBead, largestBead, g_system.naNewOvlpNeighs, neigh_num);
             OP_NormalizeRotState(0, ros_num);
             if (cur_part == -1)
                 {

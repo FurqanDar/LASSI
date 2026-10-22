@@ -4,7 +4,7 @@
 #include "structure.h"
 
 /// OP_Rotation - given the rotation operation PivotM, rotate beadID using
-/// tmpR[POS_MAX] as the origin. Note the global array naTempR_glb[POS_MAX] stores
+/// tmpR[POS_MAX] as the origin. Note the global array g_system.naTempR[POS_MAX] stores
 /// the locations of the post-rotated beads. Furthermore, if PivotM is 10, the
 /// null operation is still performed. Mathematically, we have that
 /// f$vec{r}^prime = hat{R}_i(theta)vec{r}f$ where f$vec{r}f$ is the new
@@ -64,7 +64,7 @@ void OP_Rotation(int PivotM, int beadID, int* tmpR)
                 // printf("How\n");
                 for (j = 0; j < POS_MAX; j++)
                     {
-                        naTempR_glb[j] = bead_info_glb[beadID][j]; // Does nothing; should make the move fail.
+                        g_system.naTempR[j] = g_system.bead_info[beadID][j]; // Does nothing; should make the move fail.
                     }
                 break;
         }
@@ -77,13 +77,13 @@ void Rot_X_90(int beadID, const int tmpR[POS_MAX])
     // Performs a rotation by 90 degrees around x-axis. tmpR is the new origin.
     for (j = 0; j < POS_MAX; j++)
         {
-            naTempR_glb[j] = bead_info_glb[beadID][j];
+            g_system.naTempR[j] = g_system.bead_info[beadID][j];
         }
-    naTempR_glb[POS_Y] = tmpR[POS_Y] + tmpR[POS_Z] - bead_info_glb[beadID][POS_Z];
-    naTempR_glb[POS_Z] = bead_info_glb[beadID][POS_Y] - tmpR[POS_Y] + tmpR[POS_Z];
+    g_system.naTempR[POS_Y] = tmpR[POS_Y] + tmpR[POS_Z] - g_system.bead_info[beadID][POS_Z];
+    g_system.naTempR[POS_Z] = g_system.bead_info[beadID][POS_Y] - tmpR[POS_Y] + tmpR[POS_Z];
     // Adjusting for periodic boundaries
-    naTempR_glb[POS_Y] = (naTempR_glb[POS_Y] + naBoxSize_glb[POS_Y]) % naBoxSize_glb[POS_Y];
-    naTempR_glb[POS_Z] = (naTempR_glb[POS_Z] + naBoxSize_glb[POS_Z]) % naBoxSize_glb[POS_Z];
+    g_system.naTempR[POS_Y] = (g_system.naTempR[POS_Y] + g_system.naBoxSize[POS_Y]) % g_system.naBoxSize[POS_Y];
+    g_system.naTempR[POS_Z] = (g_system.naTempR[POS_Z] + g_system.naBoxSize[POS_Z]) % g_system.naBoxSize[POS_Z];
 }
 
 void Rot_X_180(int beadID, const int tmpR[POS_MAX])
@@ -94,13 +94,13 @@ void Rot_X_180(int beadID, const int tmpR[POS_MAX])
     // for the rotation.
     for (j = 0; j < POS_MAX; j++)
         {
-            naTempR_glb[j] = bead_info_glb[beadID][j];
+            g_system.naTempR[j] = g_system.bead_info[beadID][j];
         }
-    naTempR_glb[POS_Y] = 2 * tmpR[POS_Y] - bead_info_glb[beadID][POS_Y];
-    naTempR_glb[POS_Z] = 2 * tmpR[POS_Z] - bead_info_glb[beadID][POS_Z];
+    g_system.naTempR[POS_Y] = 2 * tmpR[POS_Y] - g_system.bead_info[beadID][POS_Y];
+    g_system.naTempR[POS_Z] = 2 * tmpR[POS_Z] - g_system.bead_info[beadID][POS_Z];
     // Adjusting for periodic boundaries
-    naTempR_glb[POS_Y] = (naTempR_glb[POS_Y] + naBoxSize_glb[POS_Y]) % naBoxSize_glb[POS_Y];
-    naTempR_glb[POS_Z] = (naTempR_glb[POS_Z] + naBoxSize_glb[POS_Z]) % naBoxSize_glb[POS_Z];
+    g_system.naTempR[POS_Y] = (g_system.naTempR[POS_Y] + g_system.naBoxSize[POS_Y]) % g_system.naBoxSize[POS_Y];
+    g_system.naTempR[POS_Z] = (g_system.naTempR[POS_Z] + g_system.naBoxSize[POS_Z]) % g_system.naBoxSize[POS_Z];
 }
 
 void Rot_X_270(int beadID, const int tmpR[POS_MAX])
@@ -110,13 +110,13 @@ void Rot_X_270(int beadID, const int tmpR[POS_MAX])
     // Performs a rotation by 270 degrees around x-axis. tmpR is the new origin.
     for (j = 0; j < POS_MAX; j++)
         {
-            naTempR_glb[j] = bead_info_glb[beadID][j];
+            g_system.naTempR[j] = g_system.bead_info[beadID][j];
         }
-    naTempR_glb[POS_Y] = bead_info_glb[beadID][POS_Z] + tmpR[POS_Y] - tmpR[POS_Z];
-    naTempR_glb[POS_Z] = tmpR[POS_Y] + tmpR[POS_Z] - bead_info_glb[beadID][POS_Y];
+    g_system.naTempR[POS_Y] = g_system.bead_info[beadID][POS_Z] + tmpR[POS_Y] - tmpR[POS_Z];
+    g_system.naTempR[POS_Z] = tmpR[POS_Y] + tmpR[POS_Z] - g_system.bead_info[beadID][POS_Y];
     // Adjusting for periodic boundaries
-    naTempR_glb[POS_Y] = (naTempR_glb[POS_Y] + naBoxSize_glb[POS_Y]) % naBoxSize_glb[POS_Y];
-    naTempR_glb[POS_Z] = (naTempR_glb[POS_Z] + naBoxSize_glb[POS_Z]) % naBoxSize_glb[POS_Z];
+    g_system.naTempR[POS_Y] = (g_system.naTempR[POS_Y] + g_system.naBoxSize[POS_Y]) % g_system.naBoxSize[POS_Y];
+    g_system.naTempR[POS_Z] = (g_system.naTempR[POS_Z] + g_system.naBoxSize[POS_Z]) % g_system.naBoxSize[POS_Z];
 }
 
 void Rot_Y_90(int beadID, const int tmpR[POS_MAX])
@@ -125,13 +125,13 @@ void Rot_Y_90(int beadID, const int tmpR[POS_MAX])
     // Performs a rotation by 90 degrees around x-axis. tmpR is the new origin.
     for (j = 0; j < POS_MAX; j++)
         {
-            naTempR_glb[j] = bead_info_glb[beadID][j];
+            g_system.naTempR[j] = g_system.bead_info[beadID][j];
         }
-    naTempR_glb[POS_X] = (bead_info_glb[beadID][POS_Z] - tmpR[POS_Z] + tmpR[POS_X]);
-    naTempR_glb[POS_Z] = (tmpR[POS_X] + tmpR[POS_Z] - bead_info_glb[beadID][POS_X]);
+    g_system.naTempR[POS_X] = (g_system.bead_info[beadID][POS_Z] - tmpR[POS_Z] + tmpR[POS_X]);
+    g_system.naTempR[POS_Z] = (tmpR[POS_X] + tmpR[POS_Z] - g_system.bead_info[beadID][POS_X]);
     // Adjusting for periodic boundaries
-    naTempR_glb[POS_X] = (naTempR_glb[POS_X] + naBoxSize_glb[POS_X]) % naBoxSize_glb[POS_X];
-    naTempR_glb[POS_Z] = (naTempR_glb[POS_Z] + naBoxSize_glb[POS_Z]) % naBoxSize_glb[POS_Z];
+    g_system.naTempR[POS_X] = (g_system.naTempR[POS_X] + g_system.naBoxSize[POS_X]) % g_system.naBoxSize[POS_X];
+    g_system.naTempR[POS_Z] = (g_system.naTempR[POS_Z] + g_system.naBoxSize[POS_Z]) % g_system.naBoxSize[POS_Z];
 }
 
 void Rot_Y_180(int beadID, const int tmpR[POS_MAX])
@@ -140,13 +140,13 @@ void Rot_Y_180(int beadID, const int tmpR[POS_MAX])
     // Performs a rotation by 270 degrees around x-axis. tmpR is the new origin.
     for (j = 0; j < POS_MAX; j++)
         {
-            naTempR_glb[j] = bead_info_glb[beadID][j];
+            g_system.naTempR[j] = g_system.bead_info[beadID][j];
         }
-    naTempR_glb[POS_X] = (2 * tmpR[POS_X] - bead_info_glb[beadID][POS_X]);
-    naTempR_glb[POS_Z] = (2 * tmpR[POS_Z] - bead_info_glb[beadID][POS_Z]);
+    g_system.naTempR[POS_X] = (2 * tmpR[POS_X] - g_system.bead_info[beadID][POS_X]);
+    g_system.naTempR[POS_Z] = (2 * tmpR[POS_Z] - g_system.bead_info[beadID][POS_Z]);
     // Adjusting for periodic boundaries
-    naTempR_glb[POS_X] = (naTempR_glb[POS_X] + naBoxSize_glb[POS_X]) % naBoxSize_glb[POS_X];
-    naTempR_glb[POS_Z] = (naTempR_glb[POS_Z] + naBoxSize_glb[POS_Z]) % naBoxSize_glb[POS_Z];
+    g_system.naTempR[POS_X] = (g_system.naTempR[POS_X] + g_system.naBoxSize[POS_X]) % g_system.naBoxSize[POS_X];
+    g_system.naTempR[POS_Z] = (g_system.naTempR[POS_Z] + g_system.naBoxSize[POS_Z]) % g_system.naBoxSize[POS_Z];
 }
 
 void Rot_Y_270(int beadID, const int tmpR[POS_MAX])
@@ -155,13 +155,13 @@ void Rot_Y_270(int beadID, const int tmpR[POS_MAX])
     // Performs a rotation by 270 degrees around x-axis. tmpR is the new origin.
     for (j = 0; j < POS_MAX; j++)
         {
-            naTempR_glb[j] = bead_info_glb[beadID][j];
+            g_system.naTempR[j] = g_system.bead_info[beadID][j];
         }
-    naTempR_glb[POS_X] = (tmpR[POS_X] + tmpR[POS_Z] - bead_info_glb[beadID][POS_Z]);
-    naTempR_glb[POS_Z] = (bead_info_glb[beadID][POS_X] - tmpR[POS_X] + tmpR[POS_Z]);
+    g_system.naTempR[POS_X] = (tmpR[POS_X] + tmpR[POS_Z] - g_system.bead_info[beadID][POS_Z]);
+    g_system.naTempR[POS_Z] = (g_system.bead_info[beadID][POS_X] - tmpR[POS_X] + tmpR[POS_Z]);
     // Adjusting for periodic boundaries
-    naTempR_glb[POS_X] = (naTempR_glb[POS_X] + naBoxSize_glb[POS_X]) % naBoxSize_glb[POS_X];
-    naTempR_glb[POS_Z] = (naTempR_glb[POS_Z] + naBoxSize_glb[POS_Z]) % naBoxSize_glb[POS_Z];
+    g_system.naTempR[POS_X] = (g_system.naTempR[POS_X] + g_system.naBoxSize[POS_X]) % g_system.naBoxSize[POS_X];
+    g_system.naTempR[POS_Z] = (g_system.naTempR[POS_Z] + g_system.naBoxSize[POS_Z]) % g_system.naBoxSize[POS_Z];
 }
 
 void Rot_Z_90(int beadID, const int tmpR[POS_MAX])
@@ -170,13 +170,13 @@ void Rot_Z_90(int beadID, const int tmpR[POS_MAX])
     // Performs a rotation by 270 degrees around x-axis. tmpR is the new origin.
     for (j = 0; j < POS_MAX; j++)
         {
-            naTempR_glb[j] = bead_info_glb[beadID][j];
+            g_system.naTempR[j] = g_system.bead_info[beadID][j];
         }
-    naTempR_glb[POS_X] = (tmpR[POS_X] + tmpR[POS_Y] - bead_info_glb[beadID][POS_Y]);
-    naTempR_glb[POS_Y] = (bead_info_glb[beadID][POS_X] - tmpR[POS_X] + tmpR[POS_Y]);
+    g_system.naTempR[POS_X] = (tmpR[POS_X] + tmpR[POS_Y] - g_system.bead_info[beadID][POS_Y]);
+    g_system.naTempR[POS_Y] = (g_system.bead_info[beadID][POS_X] - tmpR[POS_X] + tmpR[POS_Y]);
     // Adjusting for periodic boundaries
-    naTempR_glb[POS_X] = (bead_info_glb[beadID][POS_X] + naBoxSize_glb[POS_X]) % naBoxSize_glb[POS_X];
-    naTempR_glb[POS_Y] = (bead_info_glb[beadID][POS_Y] + naBoxSize_glb[POS_Y]) % naBoxSize_glb[POS_Y];
+    g_system.naTempR[POS_X] = (g_system.bead_info[beadID][POS_X] + g_system.naBoxSize[POS_X]) % g_system.naBoxSize[POS_X];
+    g_system.naTempR[POS_Y] = (g_system.bead_info[beadID][POS_Y] + g_system.naBoxSize[POS_Y]) % g_system.naBoxSize[POS_Y];
 }
 
 void Rot_Z_180(int beadID, const int tmpR[POS_MAX])
@@ -185,13 +185,13 @@ void Rot_Z_180(int beadID, const int tmpR[POS_MAX])
     // Performs a rotation by 270 degrees around x-axis. tmpR is the new origin.
     for (j = 0; j < POS_MAX; j++)
         {
-            naTempR_glb[j] = bead_info_glb[beadID][j];
+            g_system.naTempR[j] = g_system.bead_info[beadID][j];
         }
-    naTempR_glb[POS_X] = (2 * tmpR[POS_X] - bead_info_glb[beadID][POS_X]);
-    naTempR_glb[POS_Y] = (2 * tmpR[POS_Y] - bead_info_glb[beadID][POS_Y]);
+    g_system.naTempR[POS_X] = (2 * tmpR[POS_X] - g_system.bead_info[beadID][POS_X]);
+    g_system.naTempR[POS_Y] = (2 * tmpR[POS_Y] - g_system.bead_info[beadID][POS_Y]);
     // Adjusting for periodic boundaries
-    naTempR_glb[POS_X] = (bead_info_glb[beadID][POS_X] + naBoxSize_glb[POS_X]) % naBoxSize_glb[POS_X];
-    naTempR_glb[POS_Y] = (bead_info_glb[beadID][POS_Y] + naBoxSize_glb[POS_Y]) % naBoxSize_glb[POS_Y];
+    g_system.naTempR[POS_X] = (g_system.bead_info[beadID][POS_X] + g_system.naBoxSize[POS_X]) % g_system.naBoxSize[POS_X];
+    g_system.naTempR[POS_Y] = (g_system.bead_info[beadID][POS_Y] + g_system.naBoxSize[POS_Y]) % g_system.naBoxSize[POS_Y];
 }
 
 void Rot_Z_270(int beadID, const int tmpR[POS_MAX])
@@ -200,13 +200,13 @@ void Rot_Z_270(int beadID, const int tmpR[POS_MAX])
     // Performs a rotation by 270 degrees around x-axis. tmpR is the new origin.
     for (j = 0; j < POS_MAX; j++)
         {
-            naTempR_glb[j] = bead_info_glb[beadID][j];
+            g_system.naTempR[j] = g_system.bead_info[beadID][j];
         }
-    naTempR_glb[POS_X] = (bead_info_glb[beadID][POS_Y] + tmpR[POS_X] - tmpR[POS_Y]);
-    naTempR_glb[POS_Y] = (tmpR[POS_X] + tmpR[POS_Y] - bead_info_glb[beadID][POS_X]);
+    g_system.naTempR[POS_X] = (g_system.bead_info[beadID][POS_Y] + tmpR[POS_X] - tmpR[POS_Y]);
+    g_system.naTempR[POS_Y] = (tmpR[POS_X] + tmpR[POS_Y] - g_system.bead_info[beadID][POS_X]);
     // Adjusting for periodic boundaries
-    naTempR_glb[POS_X] = (bead_info_glb[beadID][POS_X] + naBoxSize_glb[POS_X]) % naBoxSize_glb[POS_X];
-    naTempR_glb[POS_Y] = (bead_info_glb[beadID][POS_Y] + naBoxSize_glb[POS_Y]) % naBoxSize_glb[POS_Y];
+    g_system.naTempR[POS_X] = (g_system.bead_info[beadID][POS_X] + g_system.naBoxSize[POS_X]) % g_system.naBoxSize[POS_X];
+    g_system.naTempR[POS_Y] = (g_system.bead_info[beadID][POS_Y] + g_system.naBoxSize[POS_Y]) % g_system.naBoxSize[POS_Y];
 }
 
 /// OP_ShuffleRotIndecies - randomly shuffles the incdecies to sample the
@@ -225,10 +225,10 @@ void OP_ShuffleRotIndecies(void)
     for (i = MAX_ROTSTATES - 2; i > 0; i--)
         {
             j                   = rand() % (i + 1);
-            i_val               = naRot_IndArr_glb[i];
-            j_val               = naRot_IndArr_glb[j];
-            naRot_IndArr_glb[i] = j_val;
-            naRot_IndArr_glb[j] = i_val;
+            i_val               = g_system.naRot_IndArr[i];
+            j_val               = g_system.naRot_IndArr[j];
+            g_system.naRot_IndArr[i] = j_val;
+            g_system.naRot_IndArr[j] = i_val;
         }
 }
 
@@ -273,11 +273,11 @@ int Check_RotStates_wNeighList(int const beadID, int const resi, const int* neig
     for (i = 0; i < neighNum; i++)
         {
             tmpBead = neighList[i];
-            resj    = bead_info_glb[tmpBead][BEAD_TYPE];
+            resj    = g_system.bead_info[tmpBead][BEAD_TYPE];
 
             if (faEnergy_glb[resi][resj][E_SC_SC] != 0.f)
                 {
-                    if (bead_info_glb[tmpBead][BEAD_FACE] == -1 || bead_info_glb[tmpBead][BEAD_FACE] == beadID)
+                    if (g_system.bead_info[tmpBead][BEAD_FACE] == -1 || g_system.bead_info[tmpBead][BEAD_FACE] == beadID)
                         {
                             ldaBoltzFac_glb[CandNums]   = ldaBoltzFacNorm_glb[resi][resj];
                             naRotTrial_glb[0][CandNums] = tmpBead;
@@ -295,14 +295,14 @@ int Check_RotStates_wNeighList_ForChains(int const beadID, int const resi, const
     int tmpBead, tmpfaceID, firstbeadID, lastbeadID, chainID;
     int resj, i;
 
-    chainID     = bead_info_glb[beadID][BEAD_CHAINID];
-    firstbeadID = chain_info_glb[chainID][CHAIN_START]; // First bead of the chain where beadID is.
-    lastbeadID  = firstbeadID + chain_info_glb[chainID][CHAIN_LENGTH];
+    chainID     = g_system.bead_info[beadID][BEAD_CHAINID];
+    firstbeadID = g_system.chain_info[chainID][CHAIN_START]; // First bead of the chain where beadID is.
+    lastbeadID  = firstbeadID + g_system.chain_info[chainID][CHAIN_LENGTH];
 
     for (i = 0; i < neighNum; i++)
         {
             tmpBead = neighList[i];
-            resj    = bead_info_glb[tmpBead][BEAD_TYPE];
+            resj    = g_system.bead_info[tmpBead][BEAD_TYPE];
             // Check if the tmpBead is a preceding part of the chain.
             // In this case, the tmpBead already decided that it did not bond to any bead.
             // So, it can not be a candidate.
@@ -315,7 +315,7 @@ int Check_RotStates_wNeighList_ForChains(int const beadID, int const resi, const
                     continue;
                 }
             
-            tmpfaceID = bead_info_glb[tmpBead][BEAD_FACE];
+            tmpfaceID = g_system.bead_info[tmpBead][BEAD_FACE];
             // Check if the tmpfaceBead is a remained part of the chain.
             // if the tmpfaceBead is a later checked bead, then tmpBead can be a candidate
             // because the bond between tmpBead and tmpfaceBead was not formed 
@@ -341,7 +341,7 @@ int Check_RotStates_wNeighList_ForLists(int const beadIdx, const int listSize, c
     for (i = 0; i < neighNum; i++)
         {
             tmpBead = neighList[i];
-            resj    = bead_info_glb[tmpBead][BEAD_TYPE];
+            resj    = g_system.bead_info[tmpBead][BEAD_TYPE];
             // Check if the bead is already in the list.
             // If it is, then it cannot be a candidate because it
             // already decided that it did not bond to any bead.
@@ -362,7 +362,7 @@ int Check_RotStates_wNeighList_ForLists(int const beadIdx, const int listSize, c
                     continue; // No interaction between these two types.
                 }
            
-            tmpfaceID = bead_info_glb[tmpBead][BEAD_FACE];
+            tmpfaceID = g_system.bead_info[tmpBead][BEAD_FACE];
 
             // check if the tmpfaceBead is a remained part of the list.
             for(j= beadIdx; j < listSize; j++) 
@@ -403,7 +403,7 @@ int Check_RotState_wNeighList_ForRange(int const beadID, int const resi, int con
     for (i = 0; i < neighNum; i++)
         {
             tmpBead = neighList[i];
-            resj    = bead_info_glb[tmpBead][BEAD_TYPE];
+            resj    = g_system.bead_info[tmpBead][BEAD_TYPE];
             // Check if the tmpBead is a preceding part of the range.
             // In this case, the tmpBead already decided that it did not bond to any bead.
             // So, it can not be a candidate.
@@ -416,7 +416,7 @@ int Check_RotState_wNeighList_ForRange(int const beadID, int const resi, int con
                     continue;
                 }
             
-            tmpfaceID = bead_info_glb[tmpBead][BEAD_FACE];
+            tmpfaceID = g_system.bead_info[tmpBead][BEAD_FACE];
             // Check if the tmpfaceBead is a remained part of the range.
             // if the tmpfaceBead is a later checked bead, then tmpBead can be a candidate
             // because the bond between tmpBead and tmpfaceBead was not formed
@@ -451,21 +451,21 @@ int Check_RotStatesOld(int const beadID, int const resi, float const MyTemp)
     int r_pos0[POS_MAX], r_search[POS_MAX];
     for (j = 0; j < POS_MAX; j++)
         {
-            r_pos0[j] = bead_info_glb[beadID][j];
+            r_pos0[j] = g_system.bead_info[beadID][j];
         }
     for (k = 0; k < MAX_ROTSTATES - 1; k++)
         {
-            i = naRot_IndArr_glb[k];
+            i = g_system.naRot_IndArr[k];
 
-            LatPos_add_wPBC(r_search, r_pos0, naLocalArr_glb[i]);
+            LatPos_add_wPBC(r_search, r_pos0, g_system.naLocalArr[i]);
 
             tmpBead = Lat_Ind_FromVec(r_search);
-            tmpBead = naTotLattice_glb[tmpBead];
+            tmpBead = g_system.naTotLattice[tmpBead];
             if (tmpBead != -1)
                 {
-                    j = bead_info_glb[tmpBead][BEAD_TYPE];
+                    j = g_system.bead_info[tmpBead][BEAD_TYPE];
                     if (faEnergy_glb[resi][j][E_SC_SC] != 0 &&
-                        (bead_info_glb[tmpBead][BEAD_FACE] == -1 || bead_info_glb[tmpBead][BEAD_FACE] == beadID))
+                        (g_system.bead_info[tmpBead][BEAD_FACE] == -1 || g_system.bead_info[tmpBead][BEAD_FACE] == beadID))
                         {
                             ldaBoltzFac_glb[CandNums]   = ldaBoltzFacNorm_glb[resi][j];
                             naRotTrial_glb[0][CandNums] = tmpBead;
@@ -495,22 +495,22 @@ int Check_RotStatesNew(int const beadID, int const resi, float const MyTemp)
     int tmpR[POS_MAX], tmpR2[POS_MAX];
     for (j = 0; j < POS_MAX; j++)
         {
-            tmpR[j] = bead_info_glb[beadID][j];
+            tmpR[j] = g_system.bead_info[beadID][j];
         }
     for (k = 0; k < MAX_ROTSTATES - 1; k++)
         {
-            i = naRot_IndArr_glb[k];
+            i = g_system.naRot_IndArr[k];
             for (j = 0; j < POS_MAX; j++)
                 {
-                    tmpR2[j] = (tmpR[j] + naLocalArr_glb[i][j] + naBoxSize_glb[j]) % naBoxSize_glb[j];
+                    tmpR2[j] = (tmpR[j] + g_system.naLocalArr[i][j] + g_system.naBoxSize[j]) % g_system.naBoxSize[j];
                 }
             tmpBead = Lat_Ind_FromVec(tmpR2);
-            tmpBead = naTotLattice_glb[tmpBead];
+            tmpBead = g_system.naTotLattice[tmpBead];
             if (tmpBead != -1)
                 {
-                    j = bead_info_glb[tmpBead][BEAD_TYPE];
+                    j = g_system.bead_info[tmpBead][BEAD_TYPE];
                     if (faEnergy_glb[resi][j][E_SC_SC] != 0 &&
-                        (bead_info_glb[tmpBead][BEAD_FACE] == -1 || bead_info_glb[tmpBead][BEAD_FACE] == beadID))
+                        (g_system.bead_info[tmpBead][BEAD_FACE] == -1 || g_system.bead_info[tmpBead][BEAD_FACE] == beadID))
                         {
                             ldaBoltzFac_glb[CandNums]   = ldaBoltzFacNorm_glb[resi][j];
                             naRotTrial_glb[0][CandNums] = tmpBead;

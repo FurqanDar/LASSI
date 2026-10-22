@@ -28,8 +28,8 @@ int MC_Step(float fMCTemp)
         {
             // Translation
             case MV_TRANS:
-                i       = rand() % tot_beads_glb;  // Pick random bead
-                i       = bead_info_glb[i][BEAD_CHAINID]; // Get the chainID
+                i       = rand() % g_system.tot_beads;  // Pick random bead
+                i       = g_system.bead_info[i][BEAD_CHAINID]; // Get the chainID
                 nAccept = Move_Trans(i, fMCTemp);
                 break;
 
@@ -40,64 +40,64 @@ int MC_Step(float fMCTemp)
 
                 // Cluster translation iff ClusSize <= 5
             case MV_SMCLSTR:
-                i       = rand() % tot_beads_glb;  // Pick random bead
-                i       = bead_info_glb[i][BEAD_CHAINID]; // Get the chainID
+                i       = rand() % g_system.tot_beads;  // Pick random bead
+                i       = g_system.bead_info[i][BEAD_CHAINID]; // Get the chainID
                 nAccept = Move_SmallClus_Network(i, fMCTemp);
                 break;
 
                 // Change Rotational State
             case MV_STROT:
-                i       = rand() % tot_beads_glb;
+                i       = rand() % g_system.tot_beads;
                 nAccept = Move_Rot(i, fMCTemp);
                 break;
 
                 // Local Move
             case MV_LOCAL:
-                i       = rand() % tot_beads_glb;
+                i       = rand() % g_system.tot_beads;
                 nAccept = Move_Local(i, fMCTemp);
                 break;
 
                 // Slithering Snake
             case MV_SNAKE:
-                i       = rand() % tot_beads_glb;  // Pick random bead
-                i       = bead_info_glb[i][BEAD_CHAINID]; // Get the chainID
+                i       = rand() % g_system.tot_beads;  // Pick random bead
+                i       = g_system.bead_info[i][BEAD_CHAINID]; // Get the chainID
                 nAccept = Move_Snake(i, fMCTemp);
                 break;
 
                 // Double Pivot
             case MV_DBPVT:
-                i       = rand() % tot_beads_glb; // Pick a random bead
+                i       = rand() % g_system.tot_beads; // Pick a random bead
                 nAccept = Move_DbPvt(i, fMCTemp);
                 break;
 
                 // Co-Local
             case MV_COLOCAL:
-                i       = rand() % tot_beads_glb; // Pick a random bead
+                i       = rand() % g_system.tot_beads; // Pick a random bead
                 nAccept = Move_CoLocal(i, fMCTemp);
                 break;
 
                 // Shake Move
             case MV_MTLOCAL:
-                i       = rand() % tot_beads_glb;
+                i       = rand() % g_system.tot_beads;
                 nAccept = Move_MultiLocal(i, fMCTemp);
                 break;
 
                 // Pivot
             case MV_PIVOT:
-                i       = rand() % tot_beads_glb;  // Pick random bead
-                i       = bead_info_glb[i][BEAD_CHAINID]; // Get the chainID
+                i       = rand() % g_system.tot_beads;  // Pick random bead
+                i       = g_system.bead_info[i][BEAD_CHAINID]; // Get the chainID
                 nAccept = Move_Pivot(i, fMCTemp);
                 break;
 
                 // Branched Rotation
             case MV_BRROT:
-                i       = rand() % tot_beads_glb;  // Pick random bead
-                i       = bead_info_glb[i][BEAD_CHAINID]; // Get the chainID
+                i       = rand() % g_system.tot_beads;  // Pick random bead
+                i       = g_system.bead_info[i][BEAD_CHAINID]; // Get the chainID
                 nAccept = Move_BranchedRot(i, fMCTemp);
                 break;
             case MV_PR_SMCLSTR:
-                i       = rand() % tot_beads_glb;  // Pick random bead
-                i       = bead_info_glb[i][BEAD_CHAINID]; // Get the chainID
+                i       = rand() % g_system.tot_beads;  // Pick random bead
+                i       = g_system.bead_info[i][BEAD_CHAINID]; // Get the chainID
                 nAccept = Move_SmallClus_Proximity(i, fMCTemp);
                 break;
 
@@ -137,79 +137,79 @@ int MC_Step_Therm(float fMCTemp)
         {
             // translation of a random chain
             case MV_TRANS:
-                i       = rand() % tot_beads_glb;  // Pick random bead
-                i       = bead_info_glb[i][BEAD_CHAINID]; // Get the chainID
+                i       = rand() % g_system.tot_beads;  // Pick random bead
+                i       = g_system.bead_info[i][BEAD_CHAINID]; // Get the chainID
                 nAccept = Move_Trans_Equil(i, fMCTemp);
                 break;
 
                 // cluster translation: moves largest cluster to another spot.
             case MV_CLSTR:                         // In equil, just a translation of the chain
-                i       = rand() % tot_beads_glb;  // Pick random bead
-                i       = bead_info_glb[i][BEAD_CHAINID]; // Get the chainID
+                i       = rand() % g_system.tot_beads;  // Pick random bead
+                i       = g_system.bead_info[i][BEAD_CHAINID]; // Get the chainID
                 nAccept = Move_Trans_Equil(i, fMCTemp);
                 break;
 
             case MV_SMCLSTR:                       // In equil, just a translation of the chain
-                i       = rand() % tot_beads_glb;  // Pick random bead
-                i       = bead_info_glb[i][BEAD_CHAINID]; // Get the chainID
+                i       = rand() % g_system.tot_beads;  // Pick random bead
+                i       = g_system.bead_info[i][BEAD_CHAINID]; // Get the chainID
                 nAccept = Move_Trans_Equil(i, fMCTemp);
                 break;
 
                 // face change
             case MV_STROT: // In equil, just a local move
-                i       = rand() % tot_beads_glb;
+                i       = rand() % g_system.tot_beads;
                 nAccept = Move_Local_Equil(i, fMCTemp);
                 break;
 
                 // local moves
             case MV_LOCAL:
-                i       = rand() % tot_beads_glb;
+                i       = rand() % g_system.tot_beads;
                 nAccept = Move_Local_Equil(i, fMCTemp);
                 break;
 
                 // slithering snake
             case MV_SNAKE:
-                i       = rand() % tot_beads_glb;  // Pick random bead
-                i       = bead_info_glb[i][BEAD_CHAINID]; // Get the chainID
+                i       = rand() % g_system.tot_beads;  // Pick random bead
+                i       = g_system.bead_info[i][BEAD_CHAINID]; // Get the chainID
                 nAccept = Move_Snake_Equil(i, fMCTemp);
                 break;
 
                 // double pivot
             case MV_DBPVT:
-                i       = rand() % tot_beads_glb; // Pick a random bead
+                i       = rand() % g_system.tot_beads; // Pick a random bead
                 nAccept = Move_DbPvt(i, fMCTemp);
                 break;
 
                 // co-local
             case MV_COLOCAL: // In equil, just a local move
-                i       = rand() % tot_beads_glb;
+                i       = rand() % g_system.tot_beads;
                 nAccept = Move_Local_Equil(i, fMCTemp);
                 break;
 
                 // shake
             case MV_MTLOCAL:
-                i       = rand() % tot_beads_glb;
+                i       = rand() % g_system.tot_beads;
                 nAccept = Move_MultiLocal_Equil(i, fMCTemp);
                 break;
 
                 // pivot
             case MV_PIVOT:
-                i       = rand() % tot_beads_glb;  // Pick random bead
-                i       = bead_info_glb[i][BEAD_CHAINID]; // Get the chainID
+                i       = rand() % g_system.tot_beads;  // Pick random bead
+                i       = g_system.bead_info[i][BEAD_CHAINID]; // Get the chainID
                 nAccept = Move_Pivot_Equil(i, fMCTemp);
                 break;
 
                 // branched rotate
             case MV_BRROT:
-                i       = rand() % tot_beads_glb;  // Pick random bead
-                i       = bead_info_glb[i][BEAD_CHAINID]; // Get the chainID
+                i       = rand() % g_system.tot_beads;  // Pick random bead
+                i       = g_system.bead_info[i][BEAD_CHAINID]; // Get the chainID
                 nAccept = Move_BranchedRot_Equil(i, fMCTemp);
                 break;
 
             case MV_PR_SMCLSTR:
                 // In equil, just a translation of the chain
-                i       = rand() % tot_beads_glb;  // Pick random bead
-                i       = bead_info_glb[i][BEAD_CHAINID]; // Get the chainID
+                i       = rand() % g_system.tot_beads;  // Pick random bead
+                i       = g_system.bead_info[i][BEAD_CHAINID]; // Get the chainID
                 nAccept = Move_Trans_Equil(i, fMCTemp);
                 break;
 

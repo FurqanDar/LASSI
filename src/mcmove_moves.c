@@ -19,9 +19,9 @@ int Move_Rot(int beadID, float MyTemp)
     int bAccept;    // Used in MC steps
     int resi, resj; // To track bead types.
     // Firstly -- make sure that bead i can even have rotational states.
-    resi = bead_info_glb[beadID][BEAD_TYPE];
+    resi = g_system.bead_info[beadID][BEAD_TYPE];
     // printf("Beginning ROT\n");
-    if (nBeadTypeIsSticker_glb[resi] == 0)
+    if (g_system.nBeadTypeIsSticker[resi] == 0)
         { // Skip beads that cannot rotate!
             bAccept = 0;
             return bAccept;
@@ -34,9 +34,9 @@ int Move_Rot(int beadID, float MyTemp)
     int yTemp;
     int CandNum;
 
-    if (bead_info_glb[beadID][BEAD_FACE] != -1)
+    if (g_system.bead_info[beadID][BEAD_FACE] != -1)
         {
-            resj  = bead_info_glb[bead_info_glb[beadID][BEAD_FACE]][BEAD_TYPE]; // This is who I'm currently bonded to
+            resj  = g_system.bead_info[g_system.bead_info[beadID][BEAD_FACE]][BEAD_TYPE]; // This is who I'm currently bonded to
             oldEn = (lLDub) faEnergy_glb[resi][resj][E_SC_SC];
         }
     // OP_ShuffleRotIndecies();
@@ -47,7 +47,7 @@ int Move_Rot(int beadID, float MyTemp)
 
     if (yTemp != -1)
         { // There is a bead here
-            resj  = bead_info_glb[yTemp][BEAD_TYPE];
+            resj  = g_system.bead_info[yTemp][BEAD_TYPE];
             newEn = (lLDub) faEnergy_glb[resi][resj][E_SC_SC];
         }
     // See if we can accept this move
@@ -57,14 +57,14 @@ int Move_Rot(int beadID, float MyTemp)
     
     if (MCProb < MHAcc)
         { // Accept this state
-            if (bead_info_glb[beadID][BEAD_FACE] != -1)
+            if (g_system.bead_info[beadID][BEAD_FACE] != -1)
                 {                                                                    // Break old bond
-                    bead_info_glb[bead_info_glb[beadID][BEAD_FACE]][BEAD_FACE] = -1; // Breaking bond with old partner
+                    g_system.bead_info[g_system.bead_info[beadID][BEAD_FACE]][BEAD_FACE] = -1; // Breaking bond with old partner
                 }
-            bead_info_glb[beadID][BEAD_FACE] = yTemp;
+            g_system.bead_info[beadID][BEAD_FACE] = yTemp;
             if (yTemp != -1)
                 { // New bond
-                    bead_info_glb[yTemp][BEAD_FACE] = beadID;
+                    g_system.bead_info[yTemp][BEAD_FACE] = beadID;
                 }
             bAccept = 1;
             return bAccept;
@@ -94,9 +94,9 @@ int Move_Local(int beadID, float MyTemp)
     int r_pos0[POS_MAX], r_posNew[POS_MAX], r_disp[POS_MAX]; // Vectors to stores coordinates.
 
     // Attempt to find an empty lattice point.
-    LatPos_copy(r_pos0, bead_info_glb[beadID]);
+    LatPos_copy(r_pos0, g_system.bead_info[beadID]);
     LatPos_gen_rand_wRad(r_disp, 2);
-    //    LatPos_gen_rand_wRad(r_disp, linker_len_glb[beadID][0]);
+    //    LatPos_gen_rand_wRad(r_disp, g_system.linker_len[beadID][0]);
     LatPos_add_wPBC(r_posNew, r_pos0, r_disp);
 
     // Checking to see validity of new point.
@@ -117,16 +117,16 @@ int Move_Local(int beadID, float MyTemp)
 
     int old_ovlp_num, old_cont_num, new_ovlp_num, new_cont_num;
 
-    const int resi = bead_info_glb[beadID][BEAD_TYPE];
+    const int resi = g_system.bead_info[beadID][BEAD_TYPE];
 
-    lLDub oldEn = nBiasPotential_Mode_glb == -1 ? 0. : Energy_BiasingPotential(beadID);
+    lLDub oldEn = g_system.nBiasPotential_Mode == -1 ? 0. : Energy_BiasingPotential(beadID);
     lLDub newEn = 0.;
 
-    Energy_Iso_ForLocal(beadID, resi, r_pos0, &oldEn, &newEn, &old_ovlp_num, &old_cont_num, naOldOvlpNeighs_glb,
-                        naOldContNeighs_glb);
+    Energy_Iso_ForLocal(beadID, resi, r_pos0, &oldEn, &newEn, &old_ovlp_num, &old_cont_num, g_system.naOldOvlpNeighs,
+                        g_system.naOldContNeighs);
 
     int bondList[MAX_BONDS + 1];
-    int bondNum = bSystemHasTopo_glb ? OP_GetTopoBonds(beadID, bondList) : 0;
+    int bondNum = g_system.bSystemHasTopo ? OP_GetTopoBonds(beadID, bondList) : 0;
 
     bondNum     = BeadList_CanTopoAngle(bondNum, bondList);
 
@@ -136,10 +136,10 @@ int Move_Local(int beadID, float MyTemp)
 
     OP_System_MoveBeadTo(beadID, r_posNew);
 
-    newEn += nBiasPotential_Mode_glb == -1 ? 0.f : Energy_BiasingPotential(beadID);
+    newEn += g_system.nBiasPotential_Mode == -1 ? 0.f : Energy_BiasingPotential(beadID);
 
-    Energy_Iso_ForLocal(beadID, resi, r_posNew, &newEn, &oldEn, &new_ovlp_num, &new_cont_num, naNewOvlpNeighs_glb,
-                        naNewContNeighs_glb);
+    Energy_Iso_ForLocal(beadID, resi, r_posNew, &newEn, &oldEn, &new_ovlp_num, &new_cont_num, g_system.naNewOvlpNeighs,
+                        g_system.naNewContNeighs);
 
     newEn += bondNum ? Energy_Topo_Angle_ForList(bondNum, bondList) : 0.;
 
@@ -150,14 +150,14 @@ int Move_Local(int beadID, float MyTemp)
     // Accept or reject this state
     if (MCProb < MHAcc)
         { // Accept this state
-            if (bead_info_glb[beadID][BEAD_FACE] != -1)
+            if (g_system.bead_info[beadID][BEAD_FACE] != -1)
                 { // Breaking old bond
-                    bead_info_glb[bead_info_glb[beadID][BEAD_FACE]][BEAD_FACE] = -1;
+                    g_system.bead_info[g_system.bead_info[beadID][BEAD_FACE]][BEAD_FACE] = -1;
                 }
-            bead_info_glb[beadID][BEAD_FACE] = yTemp;
+            g_system.bead_info[beadID][BEAD_FACE] = yTemp;
             if (yTemp != -1)
                 { // Making new bond
-                    bead_info_glb[yTemp][BEAD_FACE] = beadID;
+                    g_system.bead_info[yTemp][BEAD_FACE] = beadID;
                 }
             bAccept = 1;
             return bAccept;
@@ -196,8 +196,8 @@ int Move_Snake(int chainID, float MyTemp)
 
     int bAccept = 0; // Used in MC steps
     // Finding the bounds for looping over the molecule/chain
-    const int firstB = chain_info_glb[chainID][CHAIN_START];
-    const int lastB  = firstB + chain_info_glb[chainID][CHAIN_LENGTH];
+    const int firstB = g_system.chain_info[chainID][CHAIN_START];
+    const int lastB  = firstB + g_system.chain_info[chainID][CHAIN_LENGTH];
     if (lastB - firstB == 1)
         { // This means we have a monomer. Reject the
           // move, because Local or Trans
@@ -207,7 +207,7 @@ int Move_Snake(int chainID, float MyTemp)
         }
     else
         {
-            if (nChainTypeIsLinear_glb[chain_info_glb[chainID][CHAIN_TYPE]] != 1)
+            if (g_system.nChainTypeIsLinear[g_system.chain_info[chainID][CHAIN_TYPE]] != 1)
                 {
                     // If chain is not linear. Reject move because slithering will not
                     // work!
@@ -230,8 +230,8 @@ int Move_Snake(int chainID, float MyTemp)
     if (SnakeFwd)
         { // Forwards slither, so lastB-1 (last bead) is anchor
             LatPos_gen_rand_wRad(r_posTmp1,
-                                 linker_len_glb[lastB - 1][0]); // lastB-1 will be replaced by lastB-2
-            LatPos_copy(r_posTmp2, bead_info_glb[lastB - 1]);
+                                 g_system.linker_len[lastB - 1][0]); // lastB-1 will be replaced by lastB-2
+            LatPos_copy(r_posTmp2, g_system.bead_info[lastB - 1]);
             LatPos_add_wPBC(r_posNew, r_posTmp1, r_posTmp2);
             yTemp       = Check_MoveBeadTo(r_posNew); // 0: there is no space, 1: there is space
             angBead_old = firstB + 1;
@@ -240,8 +240,8 @@ int Move_Snake(int chainID, float MyTemp)
     else
         { // Backwards slither, so firstB is anchor
             LatPos_gen_rand_wRad(r_posTmp1,
-                                 linker_len_glb[firstB][0]); // firstB will be replaced by firstB+1
-            LatPos_copy(r_posTmp2, bead_info_glb[firstB]);
+                                 g_system.linker_len[firstB][0]); // firstB will be replaced by firstB+1
+            LatPos_copy(r_posTmp2, g_system.bead_info[firstB]);
             LatPos_add_wPBC(r_posNew, r_posTmp1, r_posTmp2);
             yTemp       = Check_MoveBeadTo(r_posNew); // 0: there is no space, 1: there is space
             angBead_new = firstB + 1;
@@ -259,7 +259,7 @@ int Move_Snake(int chainID, float MyTemp)
 
     lLDub newEn = 0.;
     lLDub oldEn = 0.;
-    if (nBiasPotential_Mode_glb != -1)
+    if (g_system.nBiasPotential_Mode != -1)
         {
             for (i = firstB; i < lastB; i++)
                 {
@@ -272,13 +272,13 @@ int Move_Snake(int chainID, float MyTemp)
     lLDub BSum = 0.;
     for (i = firstB; i < lastB; i++)
         {
-            Energy_Iso_ForChains(i, &oldEn, &newEn, &old_ovlp_num, &old_cont_num, naOldOvlpNeighs_glb,
-                                 naOldContNeighs_glb);
-            resi = bead_info_glb[i][BEAD_TYPE];
+            Energy_Iso_ForChains(i, &oldEn, &newEn, &old_ovlp_num, &old_cont_num, g_system.naOldOvlpNeighs,
+                                 g_system.naOldContNeighs);
+            resi = g_system.bead_info[i][BEAD_TYPE];
             BSum += MC_RosenbluthSampling_ForChains_AtOld(i, resi, &oldEn, old_ovlp_num); // Calculate the Rosenbluth weights. Summation in log space means multiplication in linear space.
         }
 
-    resi = bead_info_glb[angBead_old][BEAD_TYPE];
+    resi = g_system.bead_info[angBead_old][BEAD_TYPE];
     oldEn += faEnergy_glb[resi][resi][E_STIFF] ? Energy_Topo_Angle(angBead_old) : 0.;
 
     if (SnakeFwd)
@@ -293,15 +293,15 @@ int Move_Snake(int chainID, float MyTemp)
     // Have slithered the chain whichever way
     for (i = firstB; i < lastB; i++)
         { // Break the old bonds!
-            yTemp = bead_info_glb[i][BEAD_FACE];
+            yTemp = g_system.bead_info[i][BEAD_FACE];
             if (yTemp != -1)
                 { // Need to break this bond
-                    bead_info_glb[yTemp][BEAD_FACE] = -1;
-                    bead_info_glb[i][BEAD_FACE]     = -1;
+                    g_system.bead_info[yTemp][BEAD_FACE] = -1;
+                    g_system.bead_info[i][BEAD_FACE]     = -1;
                 }
         }
 
-    if (nBiasPotential_Mode_glb != -1)
+    if (g_system.nBiasPotential_Mode != -1)
         {
             for (i = firstB; i < lastB; i++)
                 {
@@ -312,20 +312,20 @@ int Move_Snake(int chainID, float MyTemp)
     lLDub FSum = 0.;
     for (i = firstB; i < lastB; i++)
         {
-            Energy_Iso_ForChains(i, &newEn, &oldEn, &new_ovlp_num, &new_cont_num, naNewOvlpNeighs_glb,
-                                 naNewContNeighs_glb);
-            resi = bead_info_glb[i][BEAD_TYPE];
+            Energy_Iso_ForChains(i, &newEn, &oldEn, &new_ovlp_num, &new_cont_num, g_system.naNewOvlpNeighs,
+                                 g_system.naNewContNeighs);
+            resi = g_system.bead_info[i][BEAD_TYPE];
             FSum += MC_RosenbluthSampling_ForChains_AtNew(i, resi, &yTemp, &newEn, new_ovlp_num);
             if (yTemp != -1)
                 { // An appropriate partner has been selected. Form
                   // the bonds and add the energy
-                    bead_info_glb[i][BEAD_FACE]     = yTemp;
-                    bead_info_glb[yTemp][BEAD_FACE] = i;
+                    g_system.bead_info[i][BEAD_FACE]     = yTemp;
+                    g_system.bead_info[yTemp][BEAD_FACE] = i;
                   // newEn += Energy_Anisotropic_For_Chain(i);
                 }
         }
 
-    resi = bead_info_glb[angBead_new][BEAD_TYPE];
+    resi = g_system.bead_info[angBead_new][BEAD_TYPE];
     newEn += faEnergy_glb[resi][resi][E_STIFF] ? Energy_Topo_Angle(angBead_new) : 0.;
 
     // Doing the Metropolis-Hastings thing
@@ -361,7 +361,7 @@ int Move_Trans(int chainID, float MyTemp)
     int r_disp[POS_MAX]; // Vectors to store coordinates.
 
     // All moves are L/2 radius
-    LatPos_gen_rand_wRad(r_disp, naBoxSize_glb[0] / 2);
+    LatPos_gen_rand_wRad(r_disp, g_system.naBoxSize[0] / 2);
 
     yTemp = Check_ChainDisp(chainID, r_disp); // yTemp=0 means clash
     if (yTemp == 0)
@@ -376,12 +376,12 @@ int Move_Trans(int chainID, float MyTemp)
 
     int resi, resj, firstB, lastB;
     // Finding the bounds for looping over the molecule/chain
-    firstB = chain_info_glb[chainID][CHAIN_START];
-    lastB  = firstB + chain_info_glb[chainID][CHAIN_LENGTH];
+    firstB = g_system.chain_info[chainID][CHAIN_START];
+    lastB  = firstB + g_system.chain_info[chainID][CHAIN_LENGTH];
 
     lLDub newEn = 0.;
     lLDub oldEn = 0.;
-    if (nBiasPotential_Mode_glb != -1)
+    if (g_system.nBiasPotential_Mode != -1)
         {
             for (i = firstB; i < lastB; i++)
                 {
@@ -394,15 +394,15 @@ int Move_Trans(int chainID, float MyTemp)
     lLDub BSum = 0.;
     for (i = firstB; i < lastB; i++)
         {
-            Energy_Iso_ForChains(i, &oldEn, &newEn, &old_ovlp_num, &old_cont_num, naOldOvlpNeighs_glb,
-                                 naOldContNeighs_glb);
-            resi = bead_info_glb[i][BEAD_TYPE];
+            Energy_Iso_ForChains(i, &oldEn, &newEn, &old_ovlp_num, &old_cont_num, g_system.naOldOvlpNeighs,
+                                 g_system.naOldContNeighs);
+            resi = g_system.bead_info[i][BEAD_TYPE];
             BSum += MC_RosenbluthSampling_ForChains_AtOld(i, resi, &oldEn, old_ovlp_num);
         }
 
     OP_System_DispChain_ForTrans(chainID, r_disp); // Moved the chain, broke bonds, and remembered stuff.
 
-    if (nBiasPotential_Mode_glb != -1)
+    if (g_system.nBiasPotential_Mode != -1)
         {
             for (i = firstB; i < lastB; i++)
                 {
@@ -413,15 +413,15 @@ int Move_Trans(int chainID, float MyTemp)
     lLDub FSum = 0.;
     for (i = firstB; i < lastB; i++)
         {
-            Energy_Iso_ForChains(i, &newEn, &oldEn, &new_ovlp_num, &new_cont_num, naNewOvlpNeighs_glb,
-                                 naNewContNeighs_glb);
-            resi = bead_info_glb[i][BEAD_TYPE];
+            Energy_Iso_ForChains(i, &newEn, &oldEn, &new_ovlp_num, &new_cont_num, g_system.naNewOvlpNeighs,
+                                 g_system.naNewContNeighs);
+            resi = g_system.bead_info[i][BEAD_TYPE];
             FSum += MC_RosenbluthSampling_ForChains_AtNew(i, resi, &yTemp, &newEn, new_ovlp_num);
             if (yTemp != -1)
                 { // An appropriate partner has been selected. Form
                   // the bonds and add the energy
-                    bead_info_glb[i][BEAD_FACE]     = yTemp;
-                    bead_info_glb[yTemp][BEAD_FACE] = i;
+                    g_system.bead_info[i][BEAD_FACE]     = yTemp;
+                    g_system.bead_info[yTemp][BEAD_FACE] = i;
                     // newEn += Energy_Anisotropic_For_Chain(i);
                 }
         }
@@ -460,7 +460,7 @@ int Move_Clus_Network(float MyTemp)
     // Attempts to move the second largest cluster
 
     int bAccept     = 0; // Used in MC steps, assume that move fails initially.
-    int* naClusList = (int*) malloc(sizeof(int) * (tot_chains_glb + 1));
+    int* naClusList = (int*) malloc(sizeof(int) * (g_system.tot_chains + 1));
 
     const int ClusSize = ClusUtil_AnisoCluster_OfSystem_SecondLargest_ForMCMove(naClusList);
 
@@ -477,7 +477,7 @@ int Move_Clus_Network(float MyTemp)
     // Radii for translation moves. All moves are L/4 radius
     // I guess moving single chains around as well is not a bad idea
 
-    LatPos_gen_rand_wRad(r_Disp, naBoxSize_glb[0] / 2);
+    LatPos_gen_rand_wRad(r_Disp, g_system.naBoxSize[0] / 2);
     for (i = 0; i < ClusSize; i++)
         {
             yTemp = Check_ChainDisp(naClusList[i], r_Disp); // Checking for steric clash
@@ -497,13 +497,13 @@ int Move_Clus_Network(float MyTemp)
 
     lLDub oldEn = 0.;
     lLDub newEn = 0.;
-    if (nBiasPotential_Mode_glb != -1)
+    if (g_system.nBiasPotential_Mode != -1)
         {
             for (j = 0; j < ClusSize; j++)
                 {
                     thisChain = naClusList[j];
-                    firstB    = chain_info_glb[thisChain][CHAIN_START];
-                    lastB     = firstB + chain_info_glb[thisChain][CHAIN_LENGTH];
+                    firstB    = g_system.chain_info[thisChain][CHAIN_START];
+                    lastB     = firstB + g_system.chain_info[thisChain][CHAIN_LENGTH];
                     for (i = firstB; i < lastB; i++)
                         {
                             oldEn += Energy_BiasingPotential(i);
@@ -511,17 +511,17 @@ int Move_Clus_Network(float MyTemp)
                 }
         }
 
-    if (bSystemHasCont_glb || bSystemHasOvlp_glb || bSystemHasFSol_glb)
+    if (g_system.bSystemHasCont || g_system.bSystemHasOvlp || g_system.bSystemHasFSol)
         {
             for (j = 0; j < ClusSize; j++)
                 {
                     thisChain = naClusList[j];
-                    firstB    = chain_info_glb[thisChain][CHAIN_START];
-                    lastB     = firstB + chain_info_glb[thisChain][CHAIN_LENGTH];
+                    firstB    = g_system.chain_info[thisChain][CHAIN_START];
+                    lastB     = firstB + g_system.chain_info[thisChain][CHAIN_LENGTH];
                     for (i = firstB; i < lastB; i++)
                         {
-                            Energy_Iso_ForChains(i, &oldEn, &newEn, &old_ovlp_num, &old_cont_num, naOldOvlpNeighs_glb,
-                                                 naOldContNeighs_glb);
+                            Energy_Iso_ForChains(i, &oldEn, &newEn, &old_ovlp_num, &old_cont_num, g_system.naOldOvlpNeighs,
+                                                 g_system.naOldContNeighs);
                         }
                 }
         }
@@ -531,13 +531,13 @@ int Move_Clus_Network(float MyTemp)
             OP_System_DispChain(naClusList[j], r_Disp); // Moving the cluster properly
         }
 
-    if (nBiasPotential_Mode_glb != -1)
+    if (g_system.nBiasPotential_Mode != -1)
         {
             for (j = 0; j < ClusSize; j++)
                 {
                     thisChain = naClusList[j];
-                    firstB    = chain_info_glb[thisChain][CHAIN_START];
-                    lastB     = firstB + chain_info_glb[thisChain][CHAIN_LENGTH];
+                    firstB    = g_system.chain_info[thisChain][CHAIN_START];
+                    lastB     = firstB + g_system.chain_info[thisChain][CHAIN_LENGTH];
                     for (i = firstB; i < lastB; i++)
                         {
                             newEn += Energy_BiasingPotential(i);
@@ -545,17 +545,17 @@ int Move_Clus_Network(float MyTemp)
                 }
         }
 
-    if (bSystemHasCont_glb || bSystemHasOvlp_glb || bSystemHasFSol_glb)
+    if (g_system.bSystemHasCont || g_system.bSystemHasOvlp || g_system.bSystemHasFSol)
         {
             for (j = 0; j < ClusSize; j++)
                 {
                     thisChain = naClusList[j];
-                    firstB    = chain_info_glb[thisChain][CHAIN_START];
-                    lastB     = firstB + chain_info_glb[thisChain][CHAIN_LENGTH];
+                    firstB    = g_system.chain_info[thisChain][CHAIN_START];
+                    lastB     = firstB + g_system.chain_info[thisChain][CHAIN_LENGTH];
                     for (i = firstB; i < lastB; i++)
                         {
-                            Energy_Iso_ForChains(i, &newEn, &oldEn, &new_ovlp_num, &new_cont_num, naNewOvlpNeighs_glb,
-                                                 naNewContNeighs_glb);
+                            Energy_Iso_ForChains(i, &newEn, &oldEn, &new_ovlp_num, &new_cont_num, g_system.naNewOvlpNeighs,
+                                                 g_system.naNewContNeighs);
                         }
                 }
         }
@@ -605,8 +605,8 @@ int Move_SmallClus_Network(int chainID, float MyTemp)
     //    const int ClusSize = Clus_Network_LimitedCluster(chainID); // Looking at everything that is connected to
     //    chainID
 
-    char* oldHashTab = calloc(tot_chains_glb, sizeof(char));
-    int* clusList    = calloc(tot_chains_glb, sizeof(int));
+    char* oldHashTab = calloc(g_system.tot_chains, sizeof(char));
+    int* clusList    = calloc(g_system.tot_chains, sizeof(int));
 
     const int ClusSize = ClusUtil_AnisoCluster_OfChain_wMaxSize(chainID, oldHashTab, clusList, nLimitedClusterSize_glb);
     if ((ClusSize < 2))
@@ -623,7 +623,7 @@ int Move_SmallClus_Network(int chainID, float MyTemp)
     // Radii for translation moves. All moves are L/2 radius
     // I guess moving single chains around as well is not a bad idea
 
-    LatPos_gen_rand_wRad(r_Disp, naBoxSize_glb[0] / 2);
+    LatPos_gen_rand_wRad(r_Disp, g_system.naBoxSize[0] / 2);
     for (i = 0; i < ClusSize; i++)
         {
             // printf("%d\n", naList_glb[i]);
@@ -644,13 +644,13 @@ int Move_SmallClus_Network(int chainID, float MyTemp)
 
     lLDub oldEn = 0.;
     lLDub newEn = 0.;
-    if (nBiasPotential_Mode_glb != -1)
+    if (g_system.nBiasPotential_Mode != -1)
         {
             for (j = 0; j < ClusSize; j++)
                 {
                     thisChain = clusList[j];
-                    firstB    = chain_info_glb[thisChain][CHAIN_START];
-                    lastB     = firstB + chain_info_glb[thisChain][CHAIN_LENGTH];
+                    firstB    = g_system.chain_info[thisChain][CHAIN_START];
+                    lastB     = firstB + g_system.chain_info[thisChain][CHAIN_LENGTH];
                     for (i = firstB; i < lastB; i++)
                         {
                             oldEn += Energy_BiasingPotential(i);
@@ -658,17 +658,17 @@ int Move_SmallClus_Network(int chainID, float MyTemp)
                 }
         }
 
-    if (bSystemHasCont_glb || bSystemHasOvlp_glb || bSystemHasFSol_glb)
+    if (g_system.bSystemHasCont || g_system.bSystemHasOvlp || g_system.bSystemHasFSol)
         {
             for (j = 0; j < ClusSize; j++)
                 {
                     thisChain = clusList[j];
-                    firstB    = chain_info_glb[thisChain][CHAIN_START];
-                    lastB     = firstB + chain_info_glb[thisChain][CHAIN_LENGTH];
+                    firstB    = g_system.chain_info[thisChain][CHAIN_START];
+                    lastB     = firstB + g_system.chain_info[thisChain][CHAIN_LENGTH];
                     for (i = firstB; i < lastB; i++)
                         {
-                            Energy_Iso_ForChains(i, &oldEn, &newEn, &old_ovlp_num, &old_cont_num, naOldOvlpNeighs_glb,
-                                                 naOldContNeighs_glb);
+                            Energy_Iso_ForChains(i, &oldEn, &newEn, &old_ovlp_num, &old_cont_num, g_system.naOldOvlpNeighs,
+                                                 g_system.naOldContNeighs);
                         }
                 }
         }
@@ -678,13 +678,13 @@ int Move_SmallClus_Network(int chainID, float MyTemp)
             OP_System_DispChain(clusList[j], r_Disp); // Moving the cluster properly
         }
 
-    if (nBiasPotential_Mode_glb != -1)
+    if (g_system.nBiasPotential_Mode != -1)
         {
             for (j = 0; j < ClusSize; j++)
                 {
                     thisChain = clusList[j];
-                    firstB    = chain_info_glb[thisChain][CHAIN_START];
-                    lastB     = firstB + chain_info_glb[thisChain][CHAIN_LENGTH];
+                    firstB    = g_system.chain_info[thisChain][CHAIN_START];
+                    lastB     = firstB + g_system.chain_info[thisChain][CHAIN_LENGTH];
                     for (i = firstB; i < lastB; i++)
                         {
                             newEn += Energy_BiasingPotential(i);
@@ -692,17 +692,17 @@ int Move_SmallClus_Network(int chainID, float MyTemp)
                 }
         }
 
-    if (bSystemHasCont_glb || bSystemHasOvlp_glb || bSystemHasFSol_glb)
+    if (g_system.bSystemHasCont || g_system.bSystemHasOvlp || g_system.bSystemHasFSol)
         {
             for (j = 0; j < ClusSize; j++)
                 {
                     thisChain = clusList[j];
-                    firstB    = chain_info_glb[thisChain][CHAIN_START];
-                    lastB     = firstB + chain_info_glb[thisChain][CHAIN_LENGTH];
+                    firstB    = g_system.chain_info[thisChain][CHAIN_START];
+                    lastB     = firstB + g_system.chain_info[thisChain][CHAIN_LENGTH];
                     for (i = firstB; i < lastB; i++)
                         {
-                            Energy_Iso_ForChains(i, &newEn, &oldEn, &new_ovlp_num, &new_cont_num, naNewOvlpNeighs_glb,
-                                                 naNewContNeighs_glb);
+                            Energy_Iso_ForChains(i, &newEn, &oldEn, &new_ovlp_num, &new_cont_num, g_system.naNewOvlpNeighs,
+                                                 g_system.naNewContNeighs);
                         }
                 }
         }
@@ -747,25 +747,25 @@ int Move_DbPvt(const int beadID, const float myTemp)
   The move requires selecting a random bead, which is beadID. Then, we'll search
   the lattice in +-min(l,3) sites around beadID. Let i be the position of beadID along
   it's chain. Let i' denote same position along another chain of the same type.
-  We want dist(i,i'+1) < linker_len_glb[i] && Dist_BeadToBead (i',i+1) <
-  linker_len_glb[i']. We'll count how many candidates there are and select one
+  We want dist(i,i'+1) < g_system.linker_len[i] && Dist_BeadToBead (i',i+1) <
+  g_system.linker_len[i']. We'll count how many candidates there are and select one
   randomly. Then we just swap beads from i to then end of the chain. Do a
   Metropolis thing, and decide. In other words, i'+1 becomes i+1, i'+2 becomes
   i+2 until N, and i+1 become i'+1 and so on.
    */
     int bAccept        = 0;                                    // Move acceptance and such LEL
-    const int PChainID = bead_info_glb[beadID][BEAD_CHAINID];  // The proposed chainID
-    const int PType    = chain_info_glb[PChainID][CHAIN_TYPE]; // Type of chain.
+    const int PChainID = g_system.bead_info[beadID][BEAD_CHAINID];  // The proposed chainID
+    const int PType    = g_system.chain_info[PChainID][CHAIN_TYPE]; // Type of chain.
 
-    if (nChainTypeIsLinear_glb[PType] == 0)
+    if (g_system.nChainTypeIsLinear[PType] == 0)
         {
             // Reject the move because the chain is not linear.
             return bAccept;
         }
     // Now make sure that the proposed bead is neither the start or end of a
     // chain.
-    const int PStart = chain_info_glb[PChainID][CHAIN_START];           // Start of this chain.
-    const int PEnd   = PStart + chain_info_glb[PChainID][CHAIN_LENGTH]; // LastBead+1 for this chain.
+    const int PStart = g_system.chain_info[PChainID][CHAIN_START];           // Start of this chain.
+    const int PEnd   = PStart + g_system.chain_info[PChainID][CHAIN_LENGTH]; // LastBead+1 for this chain.
     if (PStart == beadID || PEnd - 1 == beadID)
         {
             return bAccept;
@@ -780,12 +780,12 @@ int Move_DbPvt(const int beadID, const float myTemp)
     const int nextBead         = beadID + 1;
     const int nextBeadChainPos = thisBeadChainPos + 1;
 
-    // The length of the box is min(LARGEST_RADIUS, linker_len_glb[beadID][1])
-    const int n_rad = LARGEST_RADIUS < linker_len_glb[thisBead][1] ?
+    // The length of the box is min(LARGEST_RADIUS, g_system.linker_len[beadID][1])
+    const int n_rad = LARGEST_RADIUS < g_system.linker_len[thisBead][1] ?
                           LARGEST_RADIUS :
-                          linker_len_glb[thisBead][1]; // The length of the box we'll be searching.
+                          g_system.linker_len[thisBead][1]; // The length of the box we'll be searching.
 
-    const int r_pos0[POS_MAX] = {bead_info_glb[thisBead][0], bead_info_glb[thisBead][1], bead_info_glb[thisBead][2]};
+    const int r_pos0[POS_MAX] = {g_system.bead_info[thisBead][0], g_system.bead_info[thisBead][1], g_system.bead_info[thisBead][2]};
     int neigh_num             = NeighborSearch_AroundPoint_wRad_IgnBead(thisBead, r_pos0, n_rad, candList);
 
     BeadListOP_GetChainIDs(neigh_num, candList, filtList);
@@ -809,10 +809,10 @@ int Move_DbPvt(const int beadID, const float myTemp)
 
     const int nextBead_P = candList[rand() % fwd_cand_num];
     const int thisBead_P = nextBead_P - 1;
-    const int PChainID_P = bead_info_glb[thisBead_P][BEAD_CHAINID];
+    const int PChainID_P = g_system.bead_info[thisBead_P][BEAD_CHAINID];
 
-    const int r_pos0_P[POS_MAX] = {bead_info_glb[thisBead_P][0], bead_info_glb[thisBead_P][1],
-                                   bead_info_glb[thisBead_P][2]};
+    const int r_pos0_P[POS_MAX] = {g_system.bead_info[thisBead_P][0], g_system.bead_info[thisBead_P][1],
+                                   g_system.bead_info[thisBead_P][2]};
 
     neigh_num = NeighborSearch_AroundPoint_wRad_IgnBead(thisBead_P, r_pos0_P, n_rad, candList);
 
@@ -841,7 +841,7 @@ int Move_DbPvt(const int beadID, const float myTemp)
         }
     lLDub oldEn, newEn;
 
-    const int resi = bead_info_glb[thisBead][BEAD_TYPE];
+    const int resi = g_system.bead_info[thisBead][BEAD_TYPE];
     oldEn          = 0.;
     if (faEnergy_glb[resi][resi][E_STIFF])
         {
@@ -902,7 +902,7 @@ int Move_CoLocal(int thisBeadID, float MyTemp)
 
     int bAccept = 0; // Used in MC steps
 
-    if (bead_info_glb[thisBeadID][BEAD_FACE] == -1)
+    if (g_system.bead_info[thisBeadID][BEAD_FACE] == -1)
         {
             bAccept = 0;
             return bAccept;
@@ -910,11 +910,11 @@ int Move_CoLocal(int thisBeadID, float MyTemp)
     int r_disp[POS_MAX]; // Random translation vector.
     int r_posNew1[POS_MAX], r_posNew2[POS_MAX];
     int r_pos1[POS_MAX], r_pos2[POS_MAX];
-    const int otherBeadID = bead_info_glb[thisBeadID][BEAD_FACE];
+    const int otherBeadID = g_system.bead_info[thisBeadID][BEAD_FACE];
     int yTemp;
 
-    LatPos_copy(r_pos1, bead_info_glb[thisBeadID]);
-    LatPos_copy(r_pos2, bead_info_glb[otherBeadID]);
+    LatPos_copy(r_pos1, g_system.bead_info[thisBeadID]);
+    LatPos_copy(r_pos2, g_system.bead_info[otherBeadID]);
 
     LatPos_gen_rand_wRad(r_disp, 2);
     LatPos_add_wPBC(r_posNew1, r_disp, r_pos1);
@@ -934,23 +934,23 @@ int Move_CoLocal(int thisBeadID, float MyTemp)
 
     lLDub newEn = 0.;
     lLDub oldEn = 0.;
-    if (nBiasPotential_Mode_glb != -1)
+    if (g_system.nBiasPotential_Mode != -1)
         {
             oldEn += Energy_BiasingPotential(thisBeadID);
             oldEn += Energy_BiasingPotential(otherBeadID);
         }
 
     int ovlp_num, cont_num;
-    Energy_Iso_ForCoLocal(thisBeadID, otherBeadID, r_pos1, &oldEn, &newEn, &ovlp_num, &cont_num, naOldOvlpNeighs_glb,
-                          naOldContNeighs_glb);
-    Energy_Iso_ForCoLocal(otherBeadID, thisBeadID, r_pos2, &oldEn, &newEn, &ovlp_num, &cont_num, naOldOvlpNeighs_glb,
-                          naOldContNeighs_glb);
+    Energy_Iso_ForCoLocal(thisBeadID, otherBeadID, r_pos1, &oldEn, &newEn, &ovlp_num, &cont_num, g_system.naOldOvlpNeighs,
+                          g_system.naOldContNeighs);
+    Energy_Iso_ForCoLocal(otherBeadID, thisBeadID, r_pos2, &oldEn, &newEn, &ovlp_num, &cont_num, g_system.naOldOvlpNeighs,
+                          g_system.naOldContNeighs);
 
     int bondList[2 * (MAX_BONDS + 1)];
     int bond_tmpList[MAX_BONDS + 1];
     int bondNum, bond_tmpNum;
 
-    if (bSystemHasTopo_glb)
+    if (g_system.bSystemHasTopo)
         {
             bond_tmpNum = OP_GetTopoBonds(thisBeadID, bond_tmpList);
             bondNum     = BeadList_AppendBeads(0, bondList, bond_tmpList, bond_tmpNum);
@@ -970,16 +970,16 @@ int Move_CoLocal(int thisBeadID, float MyTemp)
     OP_System_MoveBeadTo(thisBeadID, r_posNew1);
     OP_System_MoveBeadTo(otherBeadID, r_posNew2);
 
-    if (nBiasPotential_Mode_glb != -1)
+    if (g_system.nBiasPotential_Mode != -1)
         {
             newEn += Energy_BiasingPotential(thisBeadID);
             newEn += Energy_BiasingPotential(otherBeadID);
         }
 
-    Energy_Iso_ForCoLocal(thisBeadID, otherBeadID, r_posNew1, &newEn, &oldEn, &ovlp_num, &cont_num, naOldOvlpNeighs_glb,
-                          naOldContNeighs_glb);
-    Energy_Iso_ForCoLocal(otherBeadID, thisBeadID, r_posNew2, &newEn, &oldEn, &ovlp_num, &cont_num, naOldOvlpNeighs_glb,
-                          naOldContNeighs_glb);
+    Energy_Iso_ForCoLocal(thisBeadID, otherBeadID, r_posNew1, &newEn, &oldEn, &ovlp_num, &cont_num, g_system.naOldOvlpNeighs,
+                          g_system.naOldContNeighs);
+    Energy_Iso_ForCoLocal(otherBeadID, thisBeadID, r_posNew2, &newEn, &oldEn, &ovlp_num, &cont_num, g_system.naOldOvlpNeighs,
+                          g_system.naOldContNeighs);
 
     newEn += bondNum ? Energy_Topo_Angle_ForList(bondNum, bondList) : 0.;
 
@@ -1048,7 +1048,7 @@ int Move_MultiLocal(int beadID, float MyTemp)
                     break;
                 }
             tmpBead                                            = beadsList[i];
-            naTotLattice_glb[Lat_Ind_FromVec(beads_posNew[i])] = tmpBead;
+            g_system.naTotLattice[Lat_Ind_FromVec(beads_posNew[i])] = tmpBead;
         }
 
     OP_Lattice_EmptySitesForListOfPos(i, beads_posNew);
@@ -1070,7 +1070,7 @@ int Move_MultiLocal(int beadID, float MyTemp)
 
     lLDub oldEn = 0.;
 
-    if (nBiasPotential_Mode_glb != -1)
+    if (g_system.nBiasPotential_Mode != -1)
         {
             for (i = 0; i < beadNum; i++)
                 {
@@ -1086,14 +1086,14 @@ int Move_MultiLocal(int beadID, float MyTemp)
     for (i = 0; i < beadNum; i++)
         {
             Energy_Iso_ForLists(i, beadNum, beadsList, beads_pos0, &oldEn, &newEn, &old_ovlp_num, &old_cont_num,
-                                naOldOvlpNeighs_glb, naOldContNeighs_glb);
+                                g_system.naOldOvlpNeighs, g_system.naOldContNeighs);
             BSum += MC_RosenbluthSampling_ForLists_AtOld(i, beadNum, beadsList, &oldEn, old_ovlp_num);
         }
 
     int bondAngNum = 0;
     int tmpAngList[MAX_BONDS + 1];
     int bondAngList[(MAX_BONDS + 1) * (MAX_BONDS + 1)];
-    if (bSystemHasTopo_glb)
+    if (g_system.bSystemHasTopo)
         {
             bondAngNum = BeadList_AppendBeads(0, bondAngList, beadsList, beadNum);
             for (i = 1; i < beadNum; i++)
@@ -1115,7 +1115,7 @@ int Move_MultiLocal(int beadID, float MyTemp)
     OP_System_MoveBeadsInListToPos(beadNum, beadsList, beads_posNew);
     OP_Beads_BreakBondsInList(beadNum, beadsList);
 
-    if (nBiasPotential_Mode_glb != -1)
+    if (g_system.nBiasPotential_Mode != -1)
         {
             for (i = 0; i < beadNum; i++)
                 {
@@ -1128,21 +1128,21 @@ int Move_MultiLocal(int beadID, float MyTemp)
     for (i = 0; i < beadNum; i++)
         {
             Energy_Iso_ForLists(i, beadNum, beadsList, beads_posNew, &newEn, &oldEn, &new_ovlp_num, &new_cont_num,
-                                naNewOvlpNeighs_glb, naNewContNeighs_glb);
+                                g_system.naNewOvlpNeighs, g_system.naNewContNeighs);
             FSum += MC_RosenbluthSampling_ForLists_AtNew(i, beadNum, beadsList, &yTemp, &newEn, new_ovlp_num);
             if (yTemp != -1)
                 { // An appropriate partner has been selected. Form
                   // the bonds and add the energy
                     tmpBead = beadsList[i];
 #if DEBUG_BUILD
-                    if (bead_info_glb[tmpBead][BEAD_FACE] != -1)
+                    if (g_system.bead_info[tmpBead][BEAD_FACE] != -1)
                         {
                             printf("HOW?!\n");
                             exit(1);
                         }
 #endif
-                    bead_info_glb[tmpBead][BEAD_FACE] = yTemp;
-                    bead_info_glb[yTemp][BEAD_FACE]   = tmpBead;
+                    g_system.bead_info[tmpBead][BEAD_FACE] = yTemp;
+                    g_system.bead_info[yTemp][BEAD_FACE]   = tmpBead;
                     // newEn += Energy_Anisotropic_For_List(tmpBead, beadNum, beadsList);
                 }
         }
@@ -1197,12 +1197,12 @@ int Move_Pivot(int chainID, float MyTemp)
      * linear chain has been passed!
      */
     int bAccept = 0;
-    if (! nChainTypeIsLinear_glb[chain_info_glb[chainID][CHAIN_TYPE]])
+    if (! g_system.nChainTypeIsLinear[g_system.chain_info[chainID][CHAIN_TYPE]])
         {
             return bAccept;
         }
     // Check if the chain is longer than 3 or if it is linear
-    const int chainLength = chain_info_glb[chainID][CHAIN_LENGTH];
+    const int chainLength = g_system.chain_info[chainID][CHAIN_LENGTH];
     if (chainLength <= 3)
         {
             return bAccept;
@@ -1217,7 +1217,7 @@ int Move_Pivot(int chainID, float MyTemp)
         }
 
     // Get the beadID's for the first and last bead
-    const int firstB = chain_info_glb[chainID][CHAIN_START];
+    const int firstB = g_system.chain_info[chainID][CHAIN_START];
     const int lastB  = firstB + chainLength;
 
     // Randomly select a bead that is neither the first nor last
@@ -1253,7 +1253,7 @@ int Move_Pivot(int chainID, float MyTemp)
     const int smBead = beadsList[0];
     const int lgBead = beadsList[beadNum - 1];
 
-    LatPos_copy(anchorPos, bead_info_glb[anchorBead]);
+    LatPos_copy(anchorPos, g_system.bead_info[anchorBead]);
 
     int tmpBead;
 
@@ -1263,7 +1263,7 @@ int Move_Pivot(int chainID, float MyTemp)
             // Use anchorbead as origin, and check what happens after the rotation
             // to every bead
             OP_Rotation(PivotM, tmpBead, anchorPos);
-            yTemp = Check_MoveBeadTo(naTempR_glb);
+            yTemp = Check_MoveBeadTo(g_system.naTempR);
             if (yTemp == 0)
                 {
                     break;
@@ -1277,7 +1277,7 @@ int Move_Pivot(int chainID, float MyTemp)
 
     lLDub oldEn = 0.;
     lLDub newEn = 0.;
-    if (nBiasPotential_Mode_glb != -1)
+    if (g_system.nBiasPotential_Mode != -1)
         {
             for (i = 0; i < beadNum; i++)
                 {
@@ -1294,24 +1294,24 @@ int Move_Pivot(int chainID, float MyTemp)
         {
             tmpBead = beadsList[i];
             Energy_Iso_ForRange(tmpBead, smBead, lgBead, &oldEn, &newEn, &old_ovlp_num, &old_cont_num,
-                                naOldOvlpNeighs_glb, naOldContNeighs_glb);
-            resi = bead_info_glb[tmpBead][BEAD_TYPE];
+                                g_system.naOldOvlpNeighs, g_system.naOldContNeighs);
+            resi = g_system.bead_info[tmpBead][BEAD_TYPE];
             BSum += MC_RosenbluthSampling_ForRange_AtOld(tmpBead, resi, smBead, lgBead, &oldEn, old_ovlp_num);
         }
 
-    resi = bead_info_glb[anchorBead][BEAD_TYPE];
+    resi = g_system.bead_info[anchorBead][BEAD_TYPE];
     oldEn += faEnergy_glb[resi][resi][E_STIFF] ? Energy_Topo_Angle(anchorBead) : 0.;
 
     for (i = 0; i < beadNum; i++)
         {
             tmpBead = beadsList[i];
             OP_Rotation(PivotM, tmpBead, anchorPos);
-            OP_System_MoveBeadTo(tmpBead, naTempR_glb);
+            OP_System_MoveBeadTo(tmpBead, g_system.naTempR);
         }
 
     OP_Beads_BreakBondsInList(beadNum, beadsList);
 
-    if (nBiasPotential_Mode_glb != -1)
+    if (g_system.nBiasPotential_Mode != -1)
         {
             for (i = 0; i < beadNum; i++)
                 {
@@ -1327,20 +1327,20 @@ int Move_Pivot(int chainID, float MyTemp)
     for (i = 0; i < beadNum; i++)
         {
             tmpBead = beadsList[i];
-            resi    = bead_info_glb[tmpBead][BEAD_TYPE];
+            resi    = g_system.bead_info[tmpBead][BEAD_TYPE];
             Energy_Iso_ForRange(tmpBead, smBead, lgBead, &newEn, &oldEn, &new_ovlp_num, &new_cont_num,
-                                naNewOvlpNeighs_glb, naNewContNeighs_glb);
+                                g_system.naNewOvlpNeighs, g_system.naNewContNeighs);
             FSum += MC_RosenbluthSampling_ForRange_AtNew(tmpBead, resi, smBead, lgBead, &yTemp, &newEn, new_ovlp_num);
             if (yTemp != -1)
                 {
-                    resj                              = bead_info_glb[yTemp][BEAD_TYPE];
-                    bead_info_glb[yTemp][BEAD_FACE]   = tmpBead;
-                    bead_info_glb[tmpBead][BEAD_FACE] = yTemp;
+                    resj                              = g_system.bead_info[yTemp][BEAD_TYPE];
+                    g_system.bead_info[yTemp][BEAD_FACE]   = tmpBead;
+                    g_system.bead_info[tmpBead][BEAD_FACE] = yTemp;
                     // newEn += Energy_Anisotropic_For_Range(tmpBead, smBead, lgBead);
                 }
         }
 
-    resi = bead_info_glb[anchorBead][BEAD_TYPE];
+    resi = g_system.bead_info[anchorBead][BEAD_TYPE];
     newEn += faEnergy_glb[resi][resi][E_STIFF] ? Energy_Topo_Angle(anchorBead) : 0.;
 
     const lLDub MCProb = (lLDub) rand() / (lLDub) RAND_MAX;
@@ -1384,11 +1384,11 @@ int Move_BranchedRot(int chainID, float MyTemp)
       */
     int bAccept = 0;
     // Reject if the molecule is linear
-    if (nChainTypeIsLinear_glb[chain_info_glb[chainID][CHAIN_TYPE]])
+    if (g_system.nChainTypeIsLinear[g_system.chain_info[chainID][CHAIN_TYPE]])
         {
             return bAccept;
         }
-    const int chainLength = chain_info_glb[chainID][CHAIN_LENGTH];
+    const int chainLength = g_system.chain_info[chainID][CHAIN_LENGTH];
 
     int PivotM;
     PivotM = rand() % 10;
@@ -1399,7 +1399,7 @@ int Move_BranchedRot(int chainID, float MyTemp)
         }
 
     // Get the beadID's for the first and last bead
-    const int firstB = chain_info_glb[chainID][CHAIN_START];
+    const int firstB = g_system.chain_info[chainID][CHAIN_START];
     const int lastB  = firstB + chainLength;
 
     // FirstB is the anchor.
@@ -1419,7 +1419,7 @@ int Move_BranchedRot(int chainID, float MyTemp)
     const int smBead = beadsList[0];
     const int lgBead = beadsList[beadNum - 1];
 
-    LatPos_copy(anchorPos, bead_info_glb[anchorBead]);
+    LatPos_copy(anchorPos, g_system.bead_info[anchorBead]);
 
     int tmpBead;
 
@@ -1429,7 +1429,7 @@ int Move_BranchedRot(int chainID, float MyTemp)
             // Use anchorbead as origin, and check what happens after the rotation
             // to every bead
             OP_Rotation(PivotM, tmpBead, anchorPos);
-            yTemp = Check_MoveBeadTo(naTempR_glb);
+            yTemp = Check_MoveBeadTo(g_system.naTempR);
             if (yTemp == 0)
                 {
                     break;
@@ -1443,7 +1443,7 @@ int Move_BranchedRot(int chainID, float MyTemp)
 
     lLDub oldEn = 0.;
     lLDub newEn = 0.;
-    if (nBiasPotential_Mode_glb != -1)
+    if (g_system.nBiasPotential_Mode != -1)
         {
             for (i = 0; i < beadNum; i++)
                 {
@@ -1460,8 +1460,8 @@ int Move_BranchedRot(int chainID, float MyTemp)
         {
             tmpBead = beadsList[i];
             Energy_Iso_ForRange(tmpBead, smBead, lgBead, &oldEn, &newEn, &old_ovlp_num, &old_cont_num,
-                                naOldOvlpNeighs_glb, naOldContNeighs_glb);
-            resi = bead_info_glb[tmpBead][BEAD_TYPE];
+                                g_system.naOldOvlpNeighs, g_system.naOldContNeighs);
+            resi = g_system.bead_info[tmpBead][BEAD_TYPE];
             BSum += MC_RosenbluthSampling_ForRange_AtOld(tmpBead, resi, smBead, lgBead, &oldEn, old_ovlp_num);
         }
 
@@ -1469,12 +1469,12 @@ int Move_BranchedRot(int chainID, float MyTemp)
         {
             tmpBead = beadsList[i];
             OP_Rotation(PivotM, tmpBead, anchorPos);
-            OP_System_MoveBeadTo(tmpBead, naTempR_glb);
+            OP_System_MoveBeadTo(tmpBead, g_system.naTempR);
         }
 
     OP_Beads_BreakBondsInList(beadNum, beadsList);
 
-    if (nBiasPotential_Mode_glb != -1)
+    if (g_system.nBiasPotential_Mode != -1)
         {
             for (i = 0; i < beadNum; i++)
                 {
@@ -1490,15 +1490,15 @@ int Move_BranchedRot(int chainID, float MyTemp)
     for (i = 0; i < beadNum; i++)
         {
             tmpBead = beadsList[i];
-            resi    = bead_info_glb[tmpBead][BEAD_TYPE];
+            resi    = g_system.bead_info[tmpBead][BEAD_TYPE];
             Energy_Iso_ForRange(tmpBead, smBead, lgBead, &newEn, &oldEn, &new_ovlp_num, &new_cont_num,
-                                naNewOvlpNeighs_glb, naNewContNeighs_glb);
+                                g_system.naNewOvlpNeighs, g_system.naNewContNeighs);
             FSum += MC_RosenbluthSampling_ForRange_AtNew(tmpBead, resi, smBead, lgBead, &yTemp, &newEn, new_ovlp_num);
             if (yTemp != -1)
                 {
-                    resj                              = bead_info_glb[yTemp][BEAD_TYPE];
-                    bead_info_glb[yTemp][BEAD_FACE]   = tmpBead;
-                    bead_info_glb[tmpBead][BEAD_FACE] = yTemp;
+                    resj                              = g_system.bead_info[yTemp][BEAD_TYPE];
+                    g_system.bead_info[yTemp][BEAD_FACE]   = tmpBead;
+                    g_system.bead_info[tmpBead][BEAD_FACE] = yTemp;
                     // newEn += Energy_Anisotropic_For_Range(tmpBead, smBead, lgBead);
                 }
         }
@@ -1534,8 +1534,8 @@ int Move_SmallClus_Proximity(const int chainID, const float myTemp)
 
     int bAccept = 0; // Used in MC steps, assume that move fails initially.
 
-    int* oldClusList = calloc(tot_chains_glb, sizeof(int));
-    char* oldHashTab = calloc(tot_chains_glb, sizeof(char));
+    int* oldClusList = calloc(g_system.tot_chains, sizeof(int));
+    char* oldHashTab = calloc(g_system.tot_chains, sizeof(char));
     const int ClusSize =
         ClusUtil_OvlpCluster_OfChain_wMaxSize(chainID, oldHashTab, oldClusList, nLimitedClusterSize_glb);
 
@@ -1552,7 +1552,7 @@ int Move_SmallClus_Proximity(const int chainID, const float myTemp)
     int r_Disp[POS_MAX];
     int yTemp;
     int i, j;
-    LatPos_gen_rand_wRad(r_Disp, naBoxSize_glb[0] / 2);
+    LatPos_gen_rand_wRad(r_Disp, g_system.naBoxSize[0] / 2);
 
     for (i = 0; i < ClusSize; i++)
         {
@@ -1572,13 +1572,13 @@ int Move_SmallClus_Proximity(const int chainID, const float myTemp)
 
     lLDub oldEn = 0.;
     lLDub newEn = 0.;
-    if (nBiasPotential_Mode_glb != -1)
+    if (g_system.nBiasPotential_Mode != -1)
         {
             for (j = 0; j < ClusSize; j++)
                 {
                     thisChain = oldClusList[j];
-                    firstB    = chain_info_glb[thisChain][CHAIN_START];
-                    lastB     = firstB + chain_info_glb[thisChain][CHAIN_LENGTH];
+                    firstB    = g_system.chain_info[thisChain][CHAIN_START];
+                    lastB     = firstB + g_system.chain_info[thisChain][CHAIN_LENGTH];
                     for (i = firstB; i < lastB; i++)
                         {
                             oldEn += Energy_BiasingPotential(i);
@@ -1589,17 +1589,17 @@ int Move_SmallClus_Proximity(const int chainID, const float myTemp)
     // If no CONT interactions, then just checking the cluster is enough. If we have a different cluster, we immediately
     // reject. Therefore, the clusters are moved as rigid bodies and will have the same OVLP energies before and after.
     // If we have CONT interactions, we could have different energies. Therefore, we should calculate the energies.
-    if (bSystemHasCont_glb)
+    if (g_system.bSystemHasCont)
         {
             for (j = 0; j < ClusSize; j++)
                 {
                     thisChain = oldClusList[j];
-                    firstB    = chain_info_glb[thisChain][CHAIN_START];
-                    lastB     = firstB + chain_info_glb[thisChain][CHAIN_LENGTH];
+                    firstB    = g_system.chain_info[thisChain][CHAIN_START];
+                    lastB     = firstB + g_system.chain_info[thisChain][CHAIN_LENGTH];
                     for (i = firstB; i < lastB; i++)
                         {
-                            Energy_Iso_ForChains(i, &oldEn, &newEn, &old_ovlp_num, &old_cont_num, naOldOvlpNeighs_glb,
-                                                 naOldContNeighs_glb);
+                            Energy_Iso_ForChains(i, &oldEn, &newEn, &old_ovlp_num, &old_cont_num, g_system.naOldOvlpNeighs,
+                                                 g_system.naOldContNeighs);
                         }
                 }
         }
@@ -1624,13 +1624,13 @@ int Move_SmallClus_Proximity(const int chainID, const float myTemp)
             return bAccept;
         }
 
-    if (nBiasPotential_Mode_glb != -1)
+    if (g_system.nBiasPotential_Mode != -1)
         {
             for (j = 0; j < ClusSize; j++)
                 {
                     thisChain = oldClusList[j];
-                    firstB    = chain_info_glb[thisChain][CHAIN_START];
-                    lastB     = firstB + chain_info_glb[thisChain][CHAIN_LENGTH];
+                    firstB    = g_system.chain_info[thisChain][CHAIN_START];
+                    lastB     = firstB + g_system.chain_info[thisChain][CHAIN_LENGTH];
                     for (i = firstB; i < lastB; i++)
                         {
                             newEn += Energy_BiasingPotential(i);
@@ -1638,17 +1638,17 @@ int Move_SmallClus_Proximity(const int chainID, const float myTemp)
                 }
         }
 
-    if (bSystemHasCont_glb)
+    if (g_system.bSystemHasCont)
         {
             for (j = 0; j < ClusSize; j++)
                 {
                     thisChain = oldClusList[j];
-                    firstB    = chain_info_glb[thisChain][CHAIN_START];
-                    lastB     = firstB + chain_info_glb[thisChain][CHAIN_LENGTH];
+                    firstB    = g_system.chain_info[thisChain][CHAIN_START];
+                    lastB     = firstB + g_system.chain_info[thisChain][CHAIN_LENGTH];
                     for (i = firstB; i < lastB; i++)
                         {
-                            Energy_Iso_ForChains(i, &newEn, &oldEn, &new_ovlp_num, &new_cont_num, naNewOvlpNeighs_glb,
-                                                 naNewContNeighs_glb);
+                            Energy_Iso_ForChains(i, &newEn, &oldEn, &new_ovlp_num, &new_cont_num, g_system.naNewOvlpNeighs,
+                                                 g_system.naNewContNeighs);
                         }
                 }
         }
@@ -1685,7 +1685,7 @@ int Move_Clus_Proximity(const float myTemp)
 
     int bAccept = 0; // Used in MC steps, assume that move fails initially.
 
-    int* naClusList    = (int*) malloc(sizeof(int) * (tot_chains_glb + 1));
+    int* naClusList    = (int*) malloc(sizeof(int) * (g_system.tot_chains + 1));
     const int ClusSize = ClusUtil_OvlpCluster_OfSystem_SecondLargest_ForMCMove(naClusList);
     if (ClusSize < 2)
         {
@@ -1698,7 +1698,7 @@ int Move_Clus_Proximity(const float myTemp)
     int r_Disp[POS_MAX];
     int yTemp;
     int i, j;
-    LatPos_gen_rand_wRad(r_Disp, naBoxSize_glb[0] / 2);
+    LatPos_gen_rand_wRad(r_Disp, g_system.naBoxSize[0] / 2);
 
     for (i = 0; i < ClusSize; i++)
         {
@@ -1712,7 +1712,7 @@ int Move_Clus_Proximity(const float myTemp)
         }
     // No  clash
 
-    char* oldHashTab = calloc(tot_chains_glb, sizeof(char));
+    char* oldHashTab = calloc(g_system.tot_chains, sizeof(char));
 
     for (i = 0; i < ClusSize; i++)
         {
@@ -1724,13 +1724,13 @@ int Move_Clus_Proximity(const float myTemp)
 
     lLDub oldEn = 0.;
     lLDub newEn = 0.;
-    if (nBiasPotential_Mode_glb != -1)
+    if (g_system.nBiasPotential_Mode != -1)
         {
             for (j = 0; j < ClusSize; j++)
                 {
                     thisChain = naClusList[j];
-                    firstB    = chain_info_glb[thisChain][CHAIN_START];
-                    lastB     = firstB + chain_info_glb[thisChain][CHAIN_LENGTH];
+                    firstB    = g_system.chain_info[thisChain][CHAIN_START];
+                    lastB     = firstB + g_system.chain_info[thisChain][CHAIN_LENGTH];
                     for (i = firstB; i < lastB; i++)
                         {
                             oldEn += Energy_BiasingPotential(i);
@@ -1741,17 +1741,17 @@ int Move_Clus_Proximity(const float myTemp)
     // If no CONT interactions, then just checking the cluster is enough. If we have a different cluster, we immediately
     // reject. Therefore, the clusters are moved as rigid bodies and will have the same OVLP energies before and after.
     // If we have CONT interactions, we could have different energies. Therefore, we should calculate the energies.
-    if (bSystemHasCont_glb)
+    if (g_system.bSystemHasCont)
         {
             for (j = 0; j < ClusSize; j++)
                 {
                     thisChain = naClusList[j];
-                    firstB    = chain_info_glb[thisChain][CHAIN_START];
-                    lastB     = firstB + chain_info_glb[thisChain][CHAIN_LENGTH];
+                    firstB    = g_system.chain_info[thisChain][CHAIN_START];
+                    lastB     = firstB + g_system.chain_info[thisChain][CHAIN_LENGTH];
                     for (i = firstB; i < lastB; i++)
                         {
-                            Energy_Iso_ForChains(i, &oldEn, &newEn, &old_ovlp_num, &old_cont_num, naOldOvlpNeighs_glb,
-                                                 naOldContNeighs_glb);
+                            Energy_Iso_ForChains(i, &oldEn, &newEn, &old_ovlp_num, &old_cont_num, g_system.naOldOvlpNeighs,
+                                                 g_system.naOldContNeighs);
                         }
                 }
         }
@@ -1775,13 +1775,13 @@ int Move_Clus_Proximity(const float myTemp)
             return bAccept;
         }
 
-    if (nBiasPotential_Mode_glb != -1)
+    if (g_system.nBiasPotential_Mode != -1)
         {
             for (j = 0; j < ClusSize; j++)
                 {
                     thisChain = naClusList[j];
-                    firstB    = chain_info_glb[thisChain][CHAIN_START];
-                    lastB     = firstB + chain_info_glb[thisChain][CHAIN_LENGTH];
+                    firstB    = g_system.chain_info[thisChain][CHAIN_START];
+                    lastB     = firstB + g_system.chain_info[thisChain][CHAIN_LENGTH];
                     for (i = firstB; i < lastB; i++)
                         {
                             newEn += Energy_BiasingPotential(i);
@@ -1789,17 +1789,17 @@ int Move_Clus_Proximity(const float myTemp)
                 }
         }
 
-    if (bSystemHasCont_glb)
+    if (g_system.bSystemHasCont)
         {
             for (j = 0; j < ClusSize; j++)
                 {
                     thisChain = naClusList[j];
-                    firstB    = chain_info_glb[thisChain][CHAIN_START];
-                    lastB     = firstB + chain_info_glb[thisChain][CHAIN_LENGTH];
+                    firstB    = g_system.chain_info[thisChain][CHAIN_START];
+                    lastB     = firstB + g_system.chain_info[thisChain][CHAIN_LENGTH];
                     for (i = firstB; i < lastB; i++)
                         {
-                            Energy_Iso_ForChains(i, &newEn, &oldEn, &new_ovlp_num, &new_cont_num, naNewOvlpNeighs_glb,
-                                                 naNewContNeighs_glb);
+                            Energy_Iso_ForChains(i, &newEn, &oldEn, &new_ovlp_num, &new_cont_num, g_system.naNewOvlpNeighs,
+                                                 g_system.naNewContNeighs);
                         }
                 }
         }
