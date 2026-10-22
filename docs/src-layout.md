@@ -1,16 +1,15 @@
-# Source layout (after Phase 1 splits)
+#Source layout(after Phase 1 splits)
 
-Brief map of where C modules live under `src/`. Public APIs stay in the
-existing headers (`mcmove.h`, `structure.h`, `print.h`, …). No behavior change
-is implied by this split.
+Brief map of where C modules live under `src /`.Public APIs stay in the existing
+                                                  headers(`mcmove.h`, `structure.h`, `print.h`, …)
+                                                      .No behavior change is implied by this split.
 
-## Entry / config
+                                              ##Entry
+        / config
 
-| Files | Role |
-|-------|------|
-| `main.c` | Program entry and run loop |
-| `parsekey.c` / `parsekey.h` | Keyfile parsing → `SimulationConfig` (`g_config`); `Config_ApplyToRuntime` shims into domain globals |
-| `initialize.c` / `initialize.h` | System setup (still reads `g_*` runtime domains in 6.1) |
+    | Files | Role | | -- -- -- - | -- -- -- | | `main.c` | Program entry and run loop |
+    | `parsekey.c` / `parsekey.h` | Keyfile parsing → `SimulationConfig` (`g_config`);
+`Config_ApplyToRuntime` shims into domain globals | | `initialize.c` / `initialize.h` | System setup; AtStart / initial-conditions entrypoints take `const SimulationConfig*` |
 | `global.h` / `globals.c` | Shared globals, domain structs, `SimulationConfig` |
 
 ## Monte Carlo moves (`mcmove.h`)

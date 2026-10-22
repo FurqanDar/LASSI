@@ -3,14 +3,14 @@
 #include "structure.h"
 
 /// Memory_Initialization_AtStart - allocates memory, and initializes the
-/// various global arrays.
-void Memory_Initialization_AtStart(void)
+/// various global arrays. Keyfile-derived sizes/freqs come from cfg.
+void Memory_Initialization_AtStart(const SimulationConfig* cfg)
 {
     char arr_name[100];
+    const int rdf_bins = cfg->naBoxSize[0] * 4;
 
     strcpy(arr_name, "g_system.naTotLattice");
-    g_system.naTotLattice =
-        Create1DInt(g_system.naBoxSize[0] * g_system.naBoxSize[1] * g_system.naBoxSize[2], arr_name);
+    g_system.naTotLattice = Create1DInt(cfg->naBoxSize[0] * cfg->naBoxSize[1] * cfg->naBoxSize[2], arr_name);
 
     Memory_Allocate_NeighborLists();
 
@@ -21,7 +21,7 @@ void Memory_Initialization_AtStart(void)
     g_analysis.naChainCheckList = Create1DInt(2 + g_system.tot_chains, arr_name);
 
     strcpy(arr_name, "fKTCycle");
-    g_mc.faKT_Cycle = Create1DFloat(1 + g_mc.nTotCycleNum, arr_name);
+    g_mc.faKT_Cycle = Create1DFloat(1 + cfg->nTotCycleNum, arr_name);
 
     strcpy(arr_name, "g_analysis.naList");
     g_analysis.naList = Create1DInt(2 + g_system.tot_chains, arr_name);
@@ -29,10 +29,10 @@ void Memory_Initialization_AtStart(void)
     strcpy(arr_name, "g_analysis.naClusterMatrix");
     g_analysis.naClusterMatrix = Create2DInt(g_system.tot_chains + 2, g_system.tot_chains + 2, arr_name);
 
-    if (g_reports.naReportFreqs[REPORT_NETWORK] != 0)
+    if (cfg->naReportFreqs[REPORT_NETWORK] != 0)
     {
         strcpy(arr_name, "ldTotClusArr");
-        g_analysis.ldaTOTCLUS_Arr = Create2DLongdouble(2 + g_system.tot_chains, g_mc.nTotCycleNum, arr_name);
+        g_analysis.ldaTOTCLUS_Arr = Create2DLongdouble(2 + g_system.tot_chains, cfg->nTotCycleNum, arr_name);
 
         strcpy(arr_name, "ldMolClusArr");
         g_analysis.ldaMOLCLUS_Arr =
@@ -40,39 +40,41 @@ void Memory_Initialization_AtStart(void)
 
         strcpy(arr_name, "ldTotMolClusArr");
         g_analysis.ldaTOTMOLCLUS_Arr =
-            Create1DLongdouble((g_system.tot_chains * g_system.tot_chain_types * g_mc.nTotCycleNum), arr_name);
+            Create1DLongdouble((g_system.tot_chains * g_system.tot_chain_types * cfg->nTotCycleNum), arr_name);
 
         strcpy(arr_name, "ldTotGyrRad");
-        g_analysis.ldaTOTRg_Arr = Create2DLongdouble(2, g_mc.nTotCycleNum, arr_name);
+        g_analysis.ldaTOTRg_Arr = Create2DLongdouble(2, cfg->nTotCycleNum, arr_name);
     }
     g_analysis.nRDF_TotComps = 2 + g_energy.nBeadTypes + g_energy.nBeadTypes * g_energy.nBeadTypes;
     g_analysis.nRDF_TotComps /= 2;
-    if (g_reports.naReportFreqs[REPORT_RDFTOT] != 0)
+    /* Keep analysis bins in sync with cfg-derived box (same as Config_ApplyToRuntime). */
+    g_analysis.nRDF_TotBins = rdf_bins;
+    if (cfg->naReportFreqs[REPORT_RDFTOT] != 0)
     {
         strcpy(arr_name, "ldTotRDFArr");
         g_analysis.ldaTOTRDF_Arr =
-            Create1DLongdouble((g_mc.nTotCycleNum * g_analysis.nRDF_TotComps * g_analysis.nRDF_TotBins), arr_name);
+            Create1DLongdouble((cfg->nTotCycleNum * g_analysis.nRDF_TotComps * rdf_bins), arr_name);
 
         strcpy(arr_name, "ldRDFArr");
-        g_analysis.ldaRDF_Arr = Create1DLongdouble((g_analysis.nRDF_TotComps * g_analysis.nRDF_TotBins), arr_name);
+        g_analysis.ldaRDF_Arr = Create1DLongdouble((g_analysis.nRDF_TotComps * rdf_bins), arr_name);
     }
 
-    if (g_reports.naReportFreqs[REPORT_COMDEN] != 0)
+    if (cfg->naReportFreqs[REPORT_COMDEN] != 0)
     {
         g_analysis.nRadDen_TotComps = 2 * g_system.tot_chain_types * (g_system.tot_chain_types + 1);
         g_analysis.nRadDen_CompShift = g_system.tot_chain_types * (g_system.tot_chain_types + 1);
 
         strcpy(arr_name, "ldRadDenArr");
-        g_analysis.ldaRadDen_Arr = Create1DLongdouble(g_analysis.nRadDen_TotComps * g_analysis.nRDF_TotBins, arr_name);
+        g_analysis.ldaRadDen_Arr = Create1DLongdouble(g_analysis.nRadDen_TotComps * rdf_bins, arr_name);
 
         strcpy(arr_name, "ldTotRadDenArr");
         g_analysis.ldaTOTRadDen_Arr =
-            Create1DLongdouble(g_analysis.nRadDen_TotComps * g_mc.nTotCycleNum * g_analysis.nRDF_TotBins, arr_name);
+            Create1DLongdouble(g_analysis.nRadDen_TotComps * cfg->nTotCycleNum * rdf_bins, arr_name);
     }
 
-    if (g_reports.nTrajMode == -1)
+    if (cfg->nTrajMode == -1)
     {
-        g_reports.nTraj_FramesPerCycle = g_mc.nMCStepsPerCycle / g_reports.naReportFreqs[REPORT_CONFIG] + 1;
+        g_reports.nTraj_FramesPerCycle = cfg->nMCStepsPerCycle / cfg->naReportFreqs[REPORT_CONFIG] + 1;
         printf("\n***********************************************\n");
         printf("This feature is still experimental!\n");
         printf("\n***********************************************\n");
@@ -275,12 +277,12 @@ void Check_BeadTypewiseInteractions(void)
     }
 }
 
-void Global_Array_Initialization_AtStart(void)
+void Global_Array_Initialization_AtStart(const SimulationConfig* cfg)
 {
     int i, j, k, xTemp, yTemp, zTemp; // Indecies
     int myCubeLen = 3;
 
-    for (i = 0; i < g_system.naBoxSize[0] * g_system.naBoxSize[1] * g_system.naBoxSize[2]; i++)
+    for (i = 0; i < cfg->naBoxSize[0] * cfg->naBoxSize[1] * cfg->naBoxSize[2]; i++)
     {                                  // Initializing the lattice
         g_system.naTotLattice[i] = -1; // If -1, then there is no bead there.
     }
@@ -328,25 +330,25 @@ void Global_Array_Initialization_AtStart(void)
         }
     }
 
-    if (g_reports.naReportFreqs[REPORT_NETWORK] != 0)
+    if (cfg->naReportFreqs[REPORT_NETWORK] != 0)
     {
         for (i = 0; i < g_system.tot_chains; i++)
         { // For MolWise Clus arrays
             for (j = 0; j < g_system.tot_chain_types; j++)
             {
                 g_analysis.ldaMOLCLUS_Arr[MolClusArr_Index(0, j, i)] = 0.;
-                for (k = 0; k < g_mc.nTotCycleNum; k++)
+                for (k = 0; k < cfg->nTotCycleNum; k++)
                 {
                     g_analysis.ldaTOTMOLCLUS_Arr[MolClusArr_Index(k, j, i)] = 0.;
                 }
             }
         }
-        for (k = 0; k < g_mc.nTotCycleNum; k++)
+        for (k = 0; k < cfg->nTotCycleNum; k++)
         { // For GyrRad
             g_analysis.ldaTOTRg_Arr[k][0] = 0.;
             g_analysis.ldaTOTRg_Arr[k][1] = 0.;
         }
-        for (k = 0; k < g_mc.nTotCycleNum; k++)
+        for (k = 0; k < cfg->nTotCycleNum; k++)
         { // For ClusterDists
             for (i = 0; i <= g_system.tot_chains; i++)
             {
@@ -355,14 +357,14 @@ void Global_Array_Initialization_AtStart(void)
         }
     }
 
-    if (g_reports.naReportFreqs[REPORT_RDFTOT] != 0)
+    if (cfg->naReportFreqs[REPORT_RDFTOT] != 0)
     {
         for (i = 0; i < g_analysis.nRDF_TotBins; i++)
         { // For Radial distributions
             for (j = 0; j < g_analysis.nRDF_TotComps; j++)
             { // For RDFs
                 g_analysis.ldaTOTRDF_Arr[RDFArr_Index(0, j, i)] = 0.;
-                for (k = 0; k < g_mc.nTotCycleNum; k++)
+                for (k = 0; k < cfg->nTotCycleNum; k++)
                 {
                     g_analysis.ldaTOTRDF_Arr[RDFArr_Index(k, j, i)] = 0.;
                 }
@@ -370,14 +372,14 @@ void Global_Array_Initialization_AtStart(void)
         }
     }
 
-    if (g_reports.naReportFreqs[REPORT_COMDEN] != 0)
+    if (cfg->naReportFreqs[REPORT_COMDEN] != 0)
     {
         for (j = 0; j < g_analysis.nRadDen_TotComps; j++)
         { // For Density Dists wrt COM
             for (i = 0; i < g_analysis.nRDF_TotBins; i++)
             { // For Radial distributions
                 g_analysis.ldaRadDen_Arr[RadDenArr_Index(0, j, i)] = 0.;
-                for (k = 0; k < g_mc.nTotCycleNum; k++)
+                for (k = 0; k < cfg->nTotCycleNum; k++)
                 {
                     g_analysis.ldaTOTRadDen_Arr[RadDenArr_Index(k, j, i)] = 0.;
                 }
@@ -392,6 +394,11 @@ void Global_Array_Initialization_AtStart(void)
 
     Check_BeadTypewiseInteractions();
 
+    /* Rebuild cumulative MC frequencies from cfg (source of truth). */
+    for (i = 0; i < MAX_MV; i++)
+    {
+        g_mc.faMCFreq[i] = cfg->faMCFreq[i];
+    }
     for (i = MV_NULL + 2; i < MAX_MV; i++)
     {
         g_mc.faMCFreq[i] += g_mc.faMCFreq[i - 1]; // Cumulative Frequencies
@@ -402,20 +409,20 @@ void Global_Array_Initialization_AtStart(void)
         g_mc.naMCAccepMat[1][i] = 0;
     }
 
-    for (i = 0; i < g_mc.nTotCycleNum; i++)
+    for (i = 0; i < cfg->nTotCycleNum; i++)
     {
-        g_mc.faKT_Cycle[i] = g_mc.fKT + (float)i * g_mc.fDeltaTemp;
+        g_mc.faKT_Cycle[i] = cfg->fKT + (float)i * cfg->fDeltaTemp;
     }
 
-    if (g_system.nTemp_inv == 1)
+    if (cfg->nTemp_inv == 1)
     {
-        for (i = 0; i < g_mc.nTotCycleNum; i++)
+        for (i = 0; i < cfg->nTotCycleNum; i++)
         {
             g_mc.faKT_Cycle[i] = 1.f / g_mc.faKT_Cycle[i];
         }
     }
 
-    g_mc.fSquishRad_Sq = g_mc.fSquishRad * g_mc.fSquishRad;
+    g_mc.fSquishRad_Sq = cfg->fSquishRad * cfg->fSquishRad;
     g_energy.ldLogOfSmallestPossibleProb = logl((lLDub)1. / (lLDub)RAND_MAX);
     g_analysis.nLimitedClusterSize = (int)g_system.tot_chains / 2;
 
@@ -488,7 +495,7 @@ void Reset_Global_Arrays(void)
 }
 
 /// Initial_Conditions_Simple - randomly place all the molecules.
-void Initial_Conditions_Simple(void)
+void Initial_Conditions_Simple(const SimulationConfig* cfg)
 {
     /*
     Generates initial conditions for a system with topology information. The
@@ -522,7 +529,7 @@ void Initial_Conditions_Simple(void)
     }
     for (j = 0; j < POS_MAX; j++)
     { // Initialize the coordinate arrays to some numbers.
-        tmpR[j] = rand() % g_system.naBoxSize[j];
+        tmpR[j] = rand() % cfg->naBoxSize[j];
         tmpR2[j] = tmpR[j];
     }
 
@@ -592,7 +599,7 @@ void Initial_Conditions_Simple(void)
                     for (j = 0; j < POS_MAX; j++)
                     {
                         tmpR2[j] = (rand() % radUp) - radLow;
-                        tmpR2[j] = (tmpR[j] + tmpR2[j] + g_system.naBoxSize[j]) % g_system.naBoxSize[j];
+                        tmpR2[j] = (tmpR[j] + tmpR2[j] + cfg->naBoxSize[j]) % cfg->naBoxSize[j];
                     }
                     TlCnt++;
                 }
@@ -617,7 +624,7 @@ void Initial_Conditions_Simple(void)
               // wherever.
                 for (j = 0; j < POS_MAX; j++)
                 {
-                    tmpR[j] = rand() % g_system.naBoxSize[j];
+                    tmpR[j] = rand() % cfg->naBoxSize[j];
                 }
                 // This usually means this is the first bead in the chain.
                 TlCnt = 0;
@@ -627,7 +634,7 @@ void Initial_Conditions_Simple(void)
                     TlCnt++;
                     for (j = 0; j < POS_MAX; j++)
                     { // Generate a random point in the lattice.
-                        tmpR[j] = rand() % g_system.naBoxSize[j];
+                        tmpR[j] = rand() % cfg->naBoxSize[j];
                     }
                 }
                 if (TlCnt == 5000000)
@@ -683,7 +690,7 @@ void Initial_Conditions_Simple(void)
                     for (j = 0; j < POS_MAX; j++)
                     {
                         tmpR2[j] = (rand() % radUp) - radLow;
-                        tmpR2[j] = (tmpR[j] + tmpR2[j] + g_system.naBoxSize[j]) % g_system.naBoxSize[j];
+                        tmpR2[j] = (tmpR[j] + tmpR2[j] + cfg->naBoxSize[j]) % cfg->naBoxSize[j];
                     }
                     // printf("%d %d %d\n", tmpR2[0], tmpR2[1], tmpR2[2]);
                     TlCnt++;
@@ -724,14 +731,14 @@ void Initial_Conditions_Simple(void)
 
 /// Initial_Conditions_FromFile - reads the restart file and sets the initial
 /// conditions for the system
-void Initial_Conditions_FromFile(void)
+void Initial_Conditions_FromFile(const SimulationConfig* cfg)
 {
     printf("Reading file to generate initial configuration\n");
     char strLine[1000];
     int i, j;
     int tmp_beadinfo[BEADINFO_MAX];
     FILE* infile;
-    infile = fopen(g_reports.strRestartFile, "r");
+    infile = fopen(cfg->strRestartFile, "r");
     int tmpBeads = 0;
     while (fgets(strLine, sizeof(strLine), infile) != NULL)
     {
