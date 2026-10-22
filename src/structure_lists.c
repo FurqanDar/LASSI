@@ -17,7 +17,7 @@ void BeadListOP_GetChainIDs(const int beadNum, const int* restrict beadList, int
     for (i = 0; i < beadNum; ++i)
         {
             tmp_bead     = beadList[i];
-            dum_chain    = bead_info_glb[tmp_bead][BEAD_CHAINID];
+            dum_chain    = g_system.bead_info[tmp_bead][BEAD_CHAINID];
             chainList[i] = dum_chain;
         }
 
@@ -38,8 +38,8 @@ void BeadListOP_GetChainTypes(const int beadNum, const int* beadList, int* chain
     for (i = 0; i < beadNum; ++i)
         {
             tmp_bead     = beadList[i];
-            dum_chain    = bead_info_glb[tmp_bead][BEAD_CHAINID];
-            chainList[i] = chain_info_glb[dum_chain][CHAIN_TYPE];
+            dum_chain    = g_system.bead_info[tmp_bead][BEAD_CHAINID];
+            chainList[i] = g_system.chain_info[dum_chain][CHAIN_TYPE];
         }
 
     chainList[i] = -1;
@@ -109,8 +109,8 @@ void BeadListOP_GetIntraChainID(const int beadNum, const int* beadList, int* cha
     for (i = 0; i < beadNum; ++i)
         {
             tmp_bead     = beadList[i];
-            dum_chain    = bead_info_glb[tmp_bead][BEAD_CHAINID];
-            dum_len      = chain_info_glb[dum_chain][CHAIN_START];
+            dum_chain    = g_system.bead_info[tmp_bead][BEAD_CHAINID];
+            dum_len      = g_system.chain_info[dum_chain][CHAIN_START];
             chainList[i] = tmp_bead - dum_len;
         }
     chainList[i] = -1;
@@ -128,7 +128,7 @@ int BeadListOP_Filter_DbPvtLinkerConFwd(const int beadNum, int* beadList, const 
 {
     int newSize = 0;
     int i, tmpBead;
-    const float linker_cons = (float) linker_len_glb[thisBead][0] * LINKER_RSCALE;
+    const float linker_cons = (float) g_system.linker_len[thisBead][0] * LINKER_RSCALE;
 
     float xDis;
 
@@ -159,7 +159,7 @@ int BeadListOP_Filter_DbPvtLinkerConBck(const int beadNum, int* beadList, const 
 {
     int newSize = 0;
     int i, tmpBead;
-    const float linker_cons = (float) linker_len_glb[thisBead][1] * LINKER_RSCALE;
+    const float linker_cons = (float) g_system.linker_len[thisBead][1] * LINKER_RSCALE;
 
     float xDis = 0.f;
 
@@ -241,7 +241,7 @@ int BeadList_CanTopoAngle(const int size, int* beadList)
     for (i = 0; i < size; i++)
         {
             tmpBead = beadList[i];
-            resi    = bead_info_glb[tmpBead][BEAD_TYPE];
+            resi    = g_system.bead_info[tmpBead][BEAD_TYPE];
             if (faEnergy_glb[resi][resi][E_STIFF])
                 {
                     beadList[newSize++] = tmpBead;
@@ -320,7 +320,7 @@ void ChainListOP_GetChainTypes(int* const naTypesList, const int* const naChainI
     for (i = 0; i < nListSize; i++)
         {
             tmpChain       = naChainIDs[i];
-            naTypesList[i] = chain_info_glb[tmpChain][CHAIN_TYPE];
+            naTypesList[i] = g_system.chain_info[tmpChain][CHAIN_TYPE];
         }
 }
 

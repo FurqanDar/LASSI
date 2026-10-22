@@ -121,7 +121,7 @@ void ScreenIOUtil_PrintTemperatures(void)
 {
     printf("Thermalizing Temperature       = %.2f\n", g_mc.fPreKT);
 
-    if (nTemp_inv_glb == 1)
+    if (g_system.nTemp_inv == 1)
         {
             puts("Temperature Inverted           = YES");
             printf("MC Temperatures: (First, Last) = (%.2f, %.2f)\n", g_mc.fKT,
@@ -134,7 +134,7 @@ void ScreenIOUtil_PrintTemperatures(void)
                    g_mc.fKT + (float) (g_mc.nTotCycleNum - 1) * g_mc.fDeltaTemp);
         }
 
-    printf("Temperature Annealing Mode     = %d\n", nAnnealing_Mode_glb);
+    printf("Temperature Annealing Mode     = %d\n", g_system.nAnnealing_Mode);
 }
 
 
@@ -147,12 +147,12 @@ void ScreenIO_Print_KeyFile(void)
     const char rBrace[] = "      ======>";
     printf("%s System Settings %s\n", lBrace, rBrace);
     printf("Number of Bead Types = %d\n", nBeadTypes_glb);
-    printf("Number of Beads      = %ld\n", (size_t) tot_beads_glb);
-    printf("Number of Chains     = %ld\n", (size_t) tot_chains_glb);
-    printf("Number of Components = %ld\n", (size_t) tot_chain_types_glb);
-    printf("Lattice Dimensions   = %3d %3d %3d\n", naBoxSize_glb[0], naBoxSize_glb[1], naBoxSize_glb[2]);
+    printf("Number of Beads      = %ld\n", (size_t) g_system.tot_beads);
+    printf("Number of Chains     = %ld\n", (size_t) g_system.tot_chains);
+    printf("Number of Components = %ld\n", (size_t) g_system.tot_chain_types);
+    printf("Lattice Dimensions   = %3d %3d %3d\n", g_system.naBoxSize[0], g_system.naBoxSize[1], g_system.naBoxSize[2]);
     printf("Monomer Density      = %1.2e\n",
-           (float) tot_beads_glb / (float) naBoxSize_glb[0] / (float) naBoxSize_glb[1] / (float) naBoxSize_glb[2]);
+           (float) g_system.tot_beads / (float) g_system.naBoxSize[0] / (float) g_system.naBoxSize[1] / (float) g_system.naBoxSize[2]);
     printf("\n");
 
     PrintToScreen_AllEnergyMatrices();
@@ -160,16 +160,16 @@ void ScreenIO_Print_KeyFile(void)
     printf("\n");
 
     printf("%s Linker Info %s\n", lBrace, rBrace);
-    printf("Linker length             = %.2f\n", fLinkerLength_glb);
-    printf("Linker spring constant    = %.2f\n", fLinkerSprCon_glb);
-    printf("Linker equilibrium length = %.2f\n", fLinkerEqLen_glb);
+    printf("Linker length             = %.2f\n", g_system.fLinkerLength);
+    printf("Linker spring constant    = %.2f\n", g_system.fLinkerSprCon);
+    printf("Linker equilibrium length = %.2f\n", g_system.fLinkerEqLen);
     printf("\n");
 
     printf("%s MC Setup %s\n", lBrace, rBrace);
     ScreenIOUtil_PrintTemperatures();
 
-    printf("Indent Mode                    = %d\n", nBiasPotential_Mode_glb);
-    //    printf("Rotational Bias Mode           = %d\n", RotBias_Mode_glb);
+    printf("Indent Mode                    = %d\n", g_system.nBiasPotential_Mode);
+    //    printf("Rotational Bias Mode           = %d\n", g_system.RotBias_Mode);
     printf("Number of MC Cycles            = %d\n", g_mc.nTotCycleNum);
     printf("Number of MC Steps/Cycle       = %e\n", (float) g_mc.nMCStepsPerCycle);
     printf("Number of Thermalizing Steps   = %e\n", (float) g_mc.nMCStepsForTherm);
@@ -261,7 +261,7 @@ void ScreenIO_Print_Log_Thermalization(const long nGen)
     if (nTotClusCounter_glb > 0)
         {
             printf("Perc Phi : %8.3f\n",
-                   ((float) nLargestClusterRightNow_glb) / ((float) nTotClusCounter_glb) / (float) tot_chains_glb);
+                   ((float) nLargestClusterRightNow_glb) / ((float) nTotClusCounter_glb) / (float) g_system.tot_chains);
         }
 
     ScreenIO_Print_SystemEnergy();
@@ -281,7 +281,7 @@ void ScreenIO_Print_Log_FullRun(const long nGen, const int run_cycle)
     if (nTotClusCounter_glb > 0)
         {
             printf("Perc Phi : %8.3f\n",
-                   ((float) nLargestClusterRightNow_glb) / ((float) nTotClusCounter_glb) / (float) tot_chains_glb);
+                   ((float) nLargestClusterRightNow_glb) / ((float) nTotClusCounter_glb) / (float) g_system.tot_chains);
         }
 
     ScreenIO_Print_SystemEnergy();
@@ -294,9 +294,9 @@ void ScreenIO_Print_Log_FullRun(const long nGen, const int run_cycle)
 /// \param beadID
 void ScreenIO_PrintStdErr_BeadPosition(const int beadID)
 {
-    const int x = bead_info_glb[beadID][POS_X];
-    const int y = bead_info_glb[beadID][POS_Y];
-    const int z = bead_info_glb[beadID][POS_Z];
+    const int x = g_system.bead_info[beadID][POS_X];
+    const int y = g_system.bead_info[beadID][POS_Y];
+    const int z = g_system.bead_info[beadID][POS_Z];
     fprintf(stderr, "bead: %d is a position: <%d, %d, %d>\n", beadID, x, y, z);
 }
 
@@ -320,13 +320,13 @@ void ScreenIO_Print_SanityCheckFailurePreamble(const long nGen, const int run_cy
 void ScreenIO_Print_SanityFail_BeadPosAndLattPos(const int badBead)
 {
 
-    const int x = bead_info_glb[badBead][POS_X];
-    const int y = bead_info_glb[badBead][POS_Y];
-    const int z = bead_info_glb[badBead][POS_Z];
+    const int x = g_system.bead_info[badBead][POS_X];
+    const int y = g_system.bead_info[badBead][POS_Y];
+    const int z = g_system.bead_info[badBead][POS_Z];
     fprintf(stderr, "bead: %d should be at: <%d, %d, %d>\n", badBead, x, y, z);
 
     const int latInd = Lat_Ind_OfBead(badBead);
-    const int latVal = naTotLattice_glb[latInd];
+    const int latVal = g_system.naTotLattice[latInd];
 
     fprintf(stderr, "while\nlattice: <%d, %d, %d> (ind: %d) has: %d\n", x, y, z, latInd, latVal);
 }
@@ -339,24 +339,24 @@ void ScreenIO_Print_SanityFail_BeadPosAndLattPos(const int badBead)
 void ScreenIO_Print_SanityFail_MolecularStructure(const int badBead)
 {
 
-    const int badChain = bead_info_glb[badBead][BEAD_CHAINID];
+    const int badChain = g_system.bead_info[badBead][BEAD_CHAINID];
 
     fprintf(stderr, "chain: %d has broken structure\n", badChain);
     fprintf(stderr, "bead:  %d has broken linkers\n", badBead);
     ScreenIO_PrintStdErr_BeadPosition(badBead);
     fprintf(stderr, "\nbead:  %d has partners:\n", badBead);
     int idx      = 0;
-    int bondPart = topo_info_glb[badBead][idx];
+    int bondPart = g_system.topo_info[badBead][idx];
     while (bondPart != -1)
         {
             ScreenIO_PrintStdErr_BeadPosition(bondPart);
             idx++;
-            bondPart = topo_info_glb[badBead][idx];
+            bondPart = g_system.topo_info[badBead][idx];
         }
     fputs("\n\nThe beads have the following distances and linker constraints:\n", stderr);
 
     idx             = 0;
-    bondPart        = topo_info_glb[badBead][idx];
+    bondPart        = g_system.topo_info[badBead][idx];
     float bdDist   = 0.;
     float linkCons = 0.;
 
@@ -364,12 +364,12 @@ void ScreenIO_Print_SanityFail_MolecularStructure(const int badBead)
         {
 
             bdDist   = Dist_BeadToBead(badBead, bondPart);
-            linkCons = (float) linker_len_glb[badBead][idx] * LINKER_RSCALE;
+            linkCons = (float) g_system.linker_len[badBead][idx] * LINKER_RSCALE;
 
             fprintf(stderr, "beads: (%d, %d) have dist: %5.3f with linker-constraint: %5.3f\n", badBead, bondPart,
                     bdDist, linkCons);
             idx++;
-            bondPart = topo_info_glb[badBead][idx];
+            bondPart = g_system.topo_info[badBead][idx];
         }
 }
 
@@ -389,11 +389,11 @@ void ScreenIO_Print_SanityFail_SelfBond(const int badBead)
 /// \param badBead The bead for which to print the information.
 void ScreenIO_Print_SanityFail_BeadBondSymmetry(const int badBead)
 {
-    const int beadPart = bead_info_glb[badBead][BEAD_FACE];
+    const int beadPart = g_system.bead_info[badBead][BEAD_FACE];
 
     fprintf(stderr, "bead: %d is bonded to bead: %d\n", badBead, beadPart);
 
-    const int partBond = bead_info_glb[beadPart][BEAD_FACE];
+    const int partBond = g_system.bead_info[beadPart][BEAD_FACE];
 
     fprintf(stderr, "while\nbead: %d is bonded to bead: %d\n", beadPart, partBond);
 
@@ -407,7 +407,7 @@ void ScreenIO_Print_SanityFail_BeadBondSymmetry(const int badBead)
 /// \param badBead The bead for which to print the information.
 void ScreenIO_Print_SanityFail_BeadBondDistance(const int badBead)
 {
-    const int beadPart = bead_info_glb[badBead][BEAD_FACE];
+    const int beadPart = g_system.bead_info[badBead][BEAD_FACE];
 
     fprintf(stderr, "bead: %d is bonded to bead: %d\n", badBead, beadPart);
 

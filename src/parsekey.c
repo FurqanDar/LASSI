@@ -35,8 +35,8 @@ int Parse_Keyfile(char* filename)
         {
             g_mc.faMCFreq[i] = 0.0f; // initialization; to be normalized
         }
-    nBiasPotential_Mode_glb    = 0;
-    nAnnealing_Mode_glb        = -1;
+    g_system.nBiasPotential_Mode    = 0;
+    g_system.nAnnealing_Mode        = -1;
     while (fgets(strLine, sizeof(strLine), infile) != NULL)
         {
             nLine++;
@@ -64,26 +64,26 @@ int Parse_Keyfile(char* filename)
                             sscanf(strLine, "%*s %s %s %s", strTempArr[0], strTempArr[1], strTempArr[2]);
                             if (strTempArr[1][0] < '0' || strTempArr[1][0] > '9')
                                 {
-                                    naBoxSize_glb[0] = atoi(strTempArr[0]);
-                                    naBoxSize_glb[1] = naBoxSize_glb[0];
-                                    naBoxSize_glb[2] = naBoxSize_glb[0];
+                                    g_system.naBoxSize[0] = atoi(strTempArr[0]);
+                                    g_system.naBoxSize[1] = g_system.naBoxSize[0];
+                                    g_system.naBoxSize[2] = g_system.naBoxSize[0];
                                 }
                             else
                                 {
                                     if (strTempArr[2][0] < '0' || strTempArr[2][0] > '9')
                                         {
-                                            naBoxSize_glb[0] = atoi(strTempArr[0]);
-                                            naBoxSize_glb[1] = atoi(strTempArr[1]);
-                                            naBoxSize_glb[2] = 0; // error handling required
+                                            g_system.naBoxSize[0] = atoi(strTempArr[0]);
+                                            g_system.naBoxSize[1] = atoi(strTempArr[1]);
+                                            g_system.naBoxSize[2] = 0; // error handling required
                                         }
                                     else
                                         {
-                                            naBoxSize_glb[0] = atoi(strTempArr[0]);
-                                            naBoxSize_glb[1] = atoi(strTempArr[1]);
-                                            naBoxSize_glb[2] = atoi(strTempArr[2]);
+                                            g_system.naBoxSize[0] = atoi(strTempArr[0]);
+                                            g_system.naBoxSize[1] = atoi(strTempArr[1]);
+                                            g_system.naBoxSize[2] = atoi(strTempArr[2]);
                                         }
                                 }
-                            nRDF_TotBins_glb = naBoxSize_glb[0] * 4;
+                            nRDF_TotBins_glb = g_system.naBoxSize[0] * 4;
                         }
                     else if (strcmp(strKeyword, "MC_TEMP") == 0)
                         {
@@ -107,7 +107,7 @@ int Parse_Keyfile(char* filename)
                         }
                     else if (strcmp(strKeyword, "MC_TEMP_MODE") == 0)
                         {
-                            sscanf(strLine, "%*s %d", &nAnnealing_Mode_glb);
+                            sscanf(strLine, "%*s %d", &g_system.nAnnealing_Mode);
                         }
                     else if (strcmp(strKeyword, "MC_DELTA_TEMP") == 0)
                         {
@@ -115,7 +115,7 @@ int Parse_Keyfile(char* filename)
                         }
                     else if (strcmp(strKeyword, "MC_INVERT_TEMP") == 0)
                         {
-                            sscanf(strLine, "%*s %d", &nTemp_inv_glb);
+                            sscanf(strLine, "%*s %d", &g_system.nTemp_inv);
                         }
                     else if (strcmp(strKeyword, "MC_CYCLE_NUM") == 0)
                         {
@@ -123,7 +123,7 @@ int Parse_Keyfile(char* filename)
                         }
                     else if (strcmp(strKeyword, "MC_INDENT_MODE") == 0)
                         {
-                            sscanf(strLine, "%*s %d", &nBiasPotential_Mode_glb);
+                            sscanf(strLine, "%*s %d", &g_system.nBiasPotential_Mode);
                         }
                     else if (strcmp(strKeyword, "MV_TRANS_FREQ") == 0)
                         {
@@ -248,11 +248,11 @@ int Parse_Keyfile(char* filename)
                         }
                     else if (strcmp(strKeyword, "BIAS_KEEP_ON") == 0)
                         {
-                            sscanf(strLine, "%*s %d", &nBiasPotential_KeepON_glb);
+                            sscanf(strLine, "%*s %d", &g_system.nBiasPotential_KeepON);
                         }
                     else if (strcmp(strKeyword, "BIAS_COUPLED_TO_TEMP") == 0)
                         {
-                            sscanf(strLine, "%*s %d", &nBiasPotential_CoupledToTemp_glb);
+                            sscanf(strLine, "%*s %d", &g_system.nBiasPotential_CoupledToTemp);
                         }
                     else
                         {
@@ -264,10 +264,10 @@ int Parse_Keyfile(char* filename)
 
     fclose(infile);
 
-    nBiasPotential_KeepON_glb       = nBiasPotential_KeepON_glb == 1 ? 1 : 0;
-    nBiasPotential_CoupledToTemp_glb = nBiasPotential_CoupledToTemp_glb == 1 ? 1 : 0;
+    g_system.nBiasPotential_KeepON       = g_system.nBiasPotential_KeepON == 1 ? 1 : 0;
+    g_system.nBiasPotential_CoupledToTemp = g_system.nBiasPotential_CoupledToTemp == 1 ? 1 : 0;
 
-    if (nBiasPotential_CoupledToTemp_glb && nBiasPotential_KeepON_glb)
+    if (g_system.nBiasPotential_CoupledToTemp && g_system.nBiasPotential_KeepON)
         {
             fprintf(stderr, "KeyFile error <%s>: Cannot have BIAS_COUPLED_TO_TEMP=1 and BIAS_KEEP_ON=1\n", filename);
             exit(1);
@@ -302,22 +302,22 @@ int Parse_Keyfile(char* filename)
     if (strStructFile[0] != '\0')
         {
 
-            Parse_StructureFile_CalcBeadsAndChains(strStructFile, &tot_beads_glb, &tot_chains_glb,
-                                                   &tot_chain_types_glb);
+            Parse_StructureFile_CalcBeadsAndChains(strStructFile, &g_system.tot_beads, &g_system.tot_chains,
+                                                   &g_system.tot_chain_types);
 
-            CreateBeadsAndChains(tot_beads_glb, tot_chains_glb);
+            CreateBeadsAndChains(g_system.tot_beads, g_system.tot_chains);
 
             Parse_StructureFile(strStructFile);
 
             if (nStructFiletype == 0)
                 {
-                    bReadConf_glb = 0;
+                    g_system.bReadConf = 0;
                 }
             else if (nStructFiletype == 1)
                 {
                     printf("Reading restart file provided to generate initial "
                            "configuration.\n");
-                    bReadConf_glb = 1;
+                    g_system.bReadConf = 1;
                 }
             else
                 {
@@ -327,9 +327,9 @@ int Parse_Keyfile(char* filename)
         }
     else
         {
-            bReadConf_glb = -1;
+            g_system.bReadConf = -1;
         }
-    if (bReadConf_glb == 1)
+    if (g_system.bReadConf == 1)
         {
             if (strRestartFile_glb[0] != '\0')
                 {
@@ -469,15 +469,15 @@ int Parse_EnergyFile(char* strEnFile)
                         }
                     else if (nFlag == -3)
                         { // linker_length
-                            sscanf(strLine, "%f", &fLinkerLength_glb);
+                            sscanf(strLine, "%f", &g_system.fLinkerLength);
                         }
                     else if (nFlag == -4)
                         { // linker_sprcon
-                            sscanf(strLine, "%f", &fLinkerSprCon_glb);
+                            sscanf(strLine, "%f", &g_system.fLinkerSprCon);
                         }
                     else if (nFlag == -5)
                         { // linker_eqlen
-                            sscanf(strLine, "%f", &fLinkerEqLen_glb);
+                            sscanf(strLine, "%f", &g_system.fLinkerEqLen);
                         }
                     else if (nFlag == 0)
                         {
@@ -617,8 +617,8 @@ void Parse_StructureFile(char* filename)
     }END
     ####
     As such, each molecule is independent and all molecule beads start from 0!
-    For each listed bead, linker_len_glb[i][j] corresponds to the linker constraint
-    between bead i, and bead (topo_info_glb[i][j]). After each molecule is read,
+    For each listed bead, g_system.linker_len[i][j] corresponds to the linker constraint
+    between bead i, and bead (g_system.topo_info[i][j]). After each molecule is read,
     nCopies copies are made, and THEN, the next line in the file is read.
     */
     FILE* inFile;
@@ -640,25 +640,25 @@ void Parse_StructureFile(char* filename)
     int nFlag;      // Internal flag used to see which keyword is being read!
     int nBEADS;     // Internal counter to count unique beads in each chain!
 
-    // Initialize the bead_info_glb and chain_info_glb
-    for (i = 0; i < tot_beads_glb; i++)
+    // Initialize the g_system.bead_info and g_system.chain_info
+    for (i = 0; i < g_system.tot_beads; i++)
         {
             for (j = 0; j < BEADINFO_MAX; j++)
                 {
-                    bead_info_glb[i][j] = -1;
+                    g_system.bead_info[i][j] = -1;
                 }
             for (j = 0; j < MAX_BONDS; j++)
                 {
-                    topo_info_glb[i][j]  = -1;
-                    linker_len_glb[i][j] = -1;
+                    g_system.topo_info[i][j]  = -1;
+                    g_system.linker_len[i][j] = -1;
                 }
         }
 
-    for (i = 0; i < tot_chains_glb; i++)
+    for (i = 0; i < g_system.tot_chains; i++)
         {
             for (j = 0; j < CHAININFO_MAX; j++)
                 {
-                    chain_info_glb[i][j] = -1;
+                    g_system.chain_info[i][j] = -1;
                 }
         }
 
@@ -705,7 +705,7 @@ void Parse_StructureFile(char* filename)
                     // It's assumed that the next line contains the number of copies for
                     // this molecule.
                     nChainType++;
-                    nChainTypeIsLinear_glb[nChainType] = 1; // Assume all chains are linear to begin with.
+                    g_system.nChainTypeIsLinear[nChainType] = 1; // Assume all chains are linear to begin with.
                     nChainStart += nBEADS;
                     nChainID++;
                     nBEADS = 0;
@@ -723,12 +723,12 @@ void Parse_StructureFile(char* filename)
                                 }
                             sscanf(strLine, "%d %d %d %d", &curID, &curType, &curLinker, &curPartner);
                             curID += nChainStart; // Accounting for previously defined beads
-                            if (bead_info_glb[curID][BEAD_TYPE] == -1)
+                            if (g_system.bead_info[curID][BEAD_TYPE] == -1)
                                 { // This is to make sure that each bead is counted
                                   // once only even if it has many bonds.
                                     nBEADS++;
-                                    bead_info_glb[curID][BEAD_TYPE]    = curType;
-                                    bead_info_glb[curID][BEAD_CHAINID] = nChainID;
+                                    g_system.bead_info[curID][BEAD_TYPE]    = curType;
+                                    g_system.bead_info[curID][BEAD_CHAINID] = nChainID;
                                     nCursor = 0; // This is a counter for number of bonds, which
                                                  // should reset when you have a 'new' bead.
                                 }
@@ -739,42 +739,42 @@ void Parse_StructureFile(char* filename)
                                         { // This signifies that the chain is not
                                           // linear because a bead has more than two bonds
                                           // because indicies start at 0.
-                                            nChainTypeIsLinear_glb[nChainType] = 0;
+                                            g_system.nChainTypeIsLinear[nChainType] = 0;
                                         }
                                     curPartner += nChainStart;                  // Accounts for all beads before,
                                                                                 // like above.
-                                    topo_info_glb[curID][nCursor] = curPartner; // Adding the ID of the partner
-                                    linker_len_glb[curID][nCursor] =
-                                        curLinker * (int) fLinkerLength_glb; // Adding the linker constraint.
+                                    g_system.topo_info[curID][nCursor] = curPartner; // Adding the ID of the partner
+                                    g_system.linker_len[curID][nCursor] =
+                                        curLinker * (int) g_system.fLinkerLength; // Adding the linker constraint.
                                     nCursor++;
                                 }
                         }
-                    chain_info_glb[nChainID][CHAIN_START]  = nChainStart;
-                    chain_info_glb[nChainID][CHAIN_LENGTH] = nBEADS;
-                    chain_info_glb[nChainID][CHAIN_TYPE]   = nChainType;
+                    g_system.chain_info[nChainID][CHAIN_START]  = nChainStart;
+                    g_system.chain_info[nChainID][CHAIN_LENGTH] = nBEADS;
+                    g_system.chain_info[nChainID][CHAIN_TYPE]   = nChainType;
                     // We just fully store the first chain 'manually'. Now we just copy
                     // the chain nCopies times.
                     for (k = 1; k < nCopies; k++)
                         {                          // Now we just copy this molecule nMOL-1 times
                             nChainStart += nBEADS; // This accounts for chain lengths.
                             nChainID++;            // Going to the next chainID
-                            chain_info_glb[nChainID][CHAIN_START]  = nChainStart;
-                            chain_info_glb[nChainID][CHAIN_LENGTH] = nBEADS;
-                            chain_info_glb[nChainID][CHAIN_TYPE]   = nChainType;
+                            g_system.chain_info[nChainID][CHAIN_START]  = nChainStart;
+                            g_system.chain_info[nChainID][CHAIN_LENGTH] = nBEADS;
+                            g_system.chain_info[nChainID][CHAIN_TYPE]   = nChainType;
 
                             for (i = 0; i < nBEADS; i++)
                                 {
                                     curID                              = i + nChainStart;
                                     nTemp                              = curID - nBEADS;
-                                    bead_info_glb[curID][BEAD_TYPE]    = bead_info_glb[nTemp][BEAD_TYPE];
-                                    bead_info_glb[curID][BEAD_CHAINID] = nChainID;
+                                    g_system.bead_info[curID][BEAD_TYPE]    = g_system.bead_info[nTemp][BEAD_TYPE];
+                                    g_system.bead_info[curID][BEAD_CHAINID] = nChainID;
                                     for (j = 0; j < MAX_BONDS; j++)
                                         {
-                                            linker_len_glb[curID][j] = linker_len_glb[nTemp][j];
-                                            if (topo_info_glb[nTemp][j] != -1)
+                                            g_system.linker_len[curID][j] = g_system.linker_len[nTemp][j];
+                                            if (g_system.topo_info[nTemp][j] != -1)
                                                 {
-                                                    topo_info_glb[curID][j] =
-                                                        topo_info_glb[nTemp][j] + nBEADS; // Because we must account for
+                                                    g_system.topo_info[curID][j] =
+                                                        g_system.topo_info[nTemp][j] + nBEADS; // Because we must account for
                                                                                           // chain lengths
                                                 }
                                         }
@@ -902,17 +902,17 @@ void CreateBeadsAndChains(size_t n_bead_num, size_t n_chain_num)
     char strTemp[100];
 
     strcpy(strTemp, "Chain Info.");
-    chain_info_glb = Create2DInt(CHAININFO_MAX, n_chain_num, strTemp);
+    g_system.chain_info = Create2DInt(CHAININFO_MAX, n_chain_num, strTemp);
 
     strcpy(strTemp, "Topo Info.");
-    topo_info_glb = Create2DInt(MAX_BONDS, n_bead_num, strTemp);
+    g_system.topo_info = Create2DInt(MAX_BONDS, n_bead_num, strTemp);
 
     strcpy(strTemp, "Linker Len.");
-    linker_len_glb = Create2DInt(MAX_BONDS, n_bead_num, strTemp);
+    g_system.linker_len = Create2DInt(MAX_BONDS, n_bead_num, strTemp);
 
     strcpy(strTemp, "Bead Info.");
-    bead_info_glb = Create2DInt(BEADINFO_MAX, n_bead_num, strTemp);
+    g_system.bead_info = Create2DInt(BEADINFO_MAX, n_bead_num, strTemp);
 
     strcpy(strTemp, "Old Bead.");
-    old_bead_glb = Create2DInt(BEADINFO_MAX, n_bead_num, strTemp);
+    g_system.old_bead = Create2DInt(BEADINFO_MAX, n_bead_num, strTemp);
 }

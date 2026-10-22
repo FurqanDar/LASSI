@@ -226,44 +226,7 @@ extern AnalysisState g_analysis;
  * Do not take the address of a shim macro expecting a distinct global object
  * beyond the underlying struct field (same storage as before, now nested).
  */
-#define bead_info_glb                      g_system.bead_info
-#define old_bead_glb                       g_system.old_bead
-#define chain_info_glb                     g_system.chain_info
-#define topo_info_glb                      g_system.topo_info
-#define linker_len_glb                     g_system.linker_len
-#define tot_beads_glb                      g_system.tot_beads
-#define tot_chains_glb                     g_system.tot_chains
-#define tot_chain_types_glb                g_system.tot_chain_types
-#define nAnnealing_Mode_glb                g_system.nAnnealing_Mode
-#define nTemp_inv_glb                      g_system.nTemp_inv
-#define nBiasPotential_Mode_glb            g_system.nBiasPotential_Mode
-#define RotBias_Mode_glb                   g_system.RotBias_Mode
-#define nBiasPotential_KeepON_glb          g_system.nBiasPotential_KeepON
-#define nBiasPotential_CoupledToTemp_glb   g_system.nBiasPotential_CoupledToTemp
-#define naBoxSize_glb                      g_system.naBoxSize
-#define naLocalArr_glb                     g_system.naLocalArr
-#define naRot_IndArr_glb                   g_system.naRot_IndArr
-#define bReadConf_glb                      g_system.bReadConf
-#define bSystemHasTopo_glb                 g_system.bSystemHasTopo
-#define bSystemHasCont_glb                 g_system.bSystemHasCont
-#define bSystemHasOvlp_glb                 g_system.bSystemHasOvlp
-#define bSystemHasFSol_glb                 g_system.bSystemHasFSol
-#define bSystemHasSCSC_glb                 g_system.bSystemHasSCSC
-#define nBeadTypeIsSticker_glb             g_system.nBeadTypeIsSticker
-#define nChainTypeIsLinear_glb             g_system.nChainTypeIsLinear
-#define nBeadTypeCanOvlp_glb               g_system.nBeadTypeCanOvlp
-#define nBeadTypeCanCont_glb               g_system.nBeadTypeCanCont
-#define nBeadTypeCanFSol_glb               g_system.nBeadTypeCanFSol
-#define nBeadTypeCanTInd_glb               g_system.nBeadTypeCanTInd
-#define fLinkerLength_glb                  g_system.fLinkerLength
-#define fLinkerSprCon_glb                  g_system.fLinkerSprCon
-#define fLinkerEqLen_glb                   g_system.fLinkerEqLen
-#define naOldOvlpNeighs_glb                g_system.naOldOvlpNeighs
-#define naNewOvlpNeighs_glb                g_system.naNewOvlpNeighs
-#define naOldContNeighs_glb                g_system.naOldContNeighs
-#define naNewContNeighs_glb                g_system.naNewContNeighs
-#define naTempR_glb                        g_system.naTempR
-#define naTotLattice_glb                   g_system.naTotLattice
+/* SystemState *_glb shims removed after Phase 2.2 call-site migration to g_system.* */
 
 #define nBeadTypes_glb                     g_energy.nBeadTypes
 #define faEnergy_glb                       g_energy.faEnergy

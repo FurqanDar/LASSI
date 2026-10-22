@@ -46,11 +46,11 @@ int main(int argc, char* argv[])
     Global_Array_Initialization_AtStart();
 
     // Reading in the structure file, and figuring out initial conditions.
-    if (bReadConf_glb == 0)
+    if (g_system.bReadConf == 0)
         {
             Initial_Conditions_Simple();
         }
-    else if (bReadConf_glb == 1)
+    else if (g_system.bReadConf == 1)
         {
             Initial_Conditions_FromFile();
             if (g_mc.nMCStepsForTherm > 0)
@@ -106,7 +106,7 @@ int main(int argc, char* argv[])
     puts("System has been thermalized!");
     puts("----------------------------\n");
 
-    if ((nAnnealing_Mode_glb == -1) && (nBiasPotential_CoupledToTemp_glb))
+    if ((g_system.nAnnealing_Mode == -1) && (g_system.nBiasPotential_CoupledToTemp))
         {
             BiasPotential_TurnOFF();
         }
@@ -126,7 +126,7 @@ int main(int argc, char* argv[])
             FileIOUtil_PreCycle_Init(run_cycle);
             for (nGen = 0; nGen < g_mc.nMCStepsPerCycle / 2; nGen++)
                 {
-                    g_mc.fCuTemp = nAnnealing_Mode_glb == -1 ? g_mc.fKT : Temperature_Function(nAnnealing_Mode_glb, nGen);
+                    g_mc.fCuTemp = g_system.nAnnealing_Mode == -1 ? g_mc.fKT : Temperature_Function(g_system.nAnnealing_Mode, nGen);
                     nMCInfo     = MC_Step(g_mc.fCuTemp);
                     //            printf("(%d,%d)\n", nMCInfo / 12, nMCInfo % 2);
                     DataPrinting_DuringRunCycles(nGen, run_cycle);
@@ -134,7 +134,7 @@ int main(int argc, char* argv[])
 
             for (nGen = g_mc.nMCStepsPerCycle / 2; nGen <= g_mc.nMCStepsPerCycle; nGen++)
                 {
-                    g_mc.fCuTemp = nAnnealing_Mode_glb == -1 ? g_mc.fKT : Temperature_Function(nAnnealing_Mode_glb, nGen);
+                    g_mc.fCuTemp = g_system.nAnnealing_Mode == -1 ? g_mc.fKT : Temperature_Function(g_system.nAnnealing_Mode, nGen);
                     nMCInfo     = MC_Step(g_mc.fCuTemp);
                     //            printf("(%d,%d)\n", nMCInfo / 12, nMCInfo % 2);
                     DataPrinting_DuringRunCycles(nGen, run_cycle);
@@ -143,8 +143,8 @@ int main(int argc, char* argv[])
             /*
              * Post run-cycle specific cleanup.
              */
-            nAnnealing_Mode_glb        = -1;
-            if ((! nBiasPotential_KeepON_glb) && (nBiasPotential_Mode_glb != -1))
+            g_system.nAnnealing_Mode        = -1;
+            if ((! g_system.nBiasPotential_KeepON) && (g_system.nBiasPotential_Mode != -1))
                 {
                     BiasPotential_TurnOFF();
                 }

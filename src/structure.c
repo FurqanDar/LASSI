@@ -12,7 +12,7 @@
 /// \return the 1D index location for (i,j,k) position
 int Lat_Ind_FromCoords(const int i, const int j, const int k)
 { // Lattice index from 3D to 1D array
-    return i + naBoxSize_glb[POS_X] * (j + naBoxSize_glb[POS_Y] * k);
+    return i + g_system.naBoxSize[POS_X] * (j + g_system.naBoxSize[POS_Y] * k);
 }
 
 
@@ -21,7 +21,7 @@ int Lat_Ind_FromCoords(const int i, const int j, const int k)
 /// \return
 int Lat_Ind_FromVec(const int* const xArr)
 { // Just the vector form of the above function. Easier to read sometimes.
-    return xArr[POS_X] + naBoxSize_glb[POS_X] * (xArr[POS_Y] + naBoxSize_glb[POS_Y] * xArr[POS_Z]);
+    return xArr[POS_X] + g_system.naBoxSize[POS_X] * (xArr[POS_Y] + g_system.naBoxSize[POS_Y] * xArr[POS_Z]);
 }
 
 
@@ -30,8 +30,8 @@ int Lat_Ind_FromVec(const int* const xArr)
 /// \return
 int Lat_Ind_OfBead(const int beadID)
 {
-    return bead_info_glb[beadID][POS_X] +
-           naBoxSize_glb[POS_X] * (bead_info_glb[beadID][POS_Y] + naBoxSize_glb[POS_Y] * bead_info_glb[beadID][POS_Z]);
+    return g_system.bead_info[beadID][POS_X] +
+           g_system.naBoxSize[POS_X] * (g_system.bead_info[beadID][POS_Y] + g_system.naBoxSize[POS_Y] * g_system.bead_info[beadID][POS_Z]);
 }
 
 
@@ -48,7 +48,7 @@ float Dist_PointToPoint_Float(const float* f1, const float* f2)
     for (i = 0; i < POS_MAX; i++)
         {
             d[i] = fabsf(f1[i] - f2[i]);
-            d[i] = d[i] > (float) naBoxSize_glb[i] / 2. ? (float) naBoxSize_glb[i] - d[i] : d[i];
+            d[i] = d[i] > (float) g_system.naBoxSize[i] / 2. ? (float) g_system.naBoxSize[i] - d[i] : d[i];
         }
 
     return sqrtf(d[POS_X] * d[POS_X] + d[POS_Y] * d[POS_Y] + d[POS_Z] * d[POS_Z]);
@@ -66,7 +66,7 @@ float Dist_PointToPoint(const int* const restrict f1, const int* const restrict 
     for (i = 0; i < POS_MAX; i++)
         {
             d[i] = abs(f1[i] - f2[i]);
-            d[i] = d[i] > naBoxSize_glb[i] / 2 ? naBoxSize_glb[i] - d[i] : d[i];
+            d[i] = d[i] > g_system.naBoxSize[i] / 2 ? g_system.naBoxSize[i] - d[i] : d[i];
         }
 
     return sqrtf((float) (d[POS_X] * d[POS_X] + d[POS_Y] * d[POS_Y] + d[POS_Z] * d[POS_Z]));
@@ -83,8 +83,8 @@ float Dist_BeadToPoint(const int beadID, const int* const f1)
     int i;
     for (i = 0; i < POS_MAX; i++)
         {
-            d[i] = abs(bead_info_glb[beadID][i] - f1[i]);
-            d[i] = d[i] > naBoxSize_glb[i] / 2 ? naBoxSize_glb[i] - d[i] : d[i];
+            d[i] = abs(g_system.bead_info[beadID][i] - f1[i]);
+            d[i] = d[i] > g_system.naBoxSize[i] / 2 ? g_system.naBoxSize[i] - d[i] : d[i];
         }
     return sqrtf((float) (d[POS_X] * d[POS_X] + d[POS_Y] * d[POS_Y] + d[POS_Z] * d[POS_Z]));
 }
@@ -100,8 +100,8 @@ float Dist_BeadToPoint_Double(const int beadID, const lDub* f1)
     int i;
     for (i = 0; i < POS_MAX; i++)
         {
-            d[i] = fabs((lDub) bead_info_glb[beadID][i] - f1[i]);
-            d[i] = d[i] > (lDub) naBoxSize_glb[i] / 2. ? (lDub) naBoxSize_glb[i] - d[i] : d[i];
+            d[i] = fabs((lDub) g_system.bead_info[beadID][i] - f1[i]);
+            d[i] = d[i] > (lDub) g_system.naBoxSize[i] / 2. ? (lDub) g_system.naBoxSize[i] - d[i] : d[i];
         }
     return sqrtf((float) (d[POS_X] * d[POS_X] + d[POS_Y] * d[POS_Y] + d[POS_Z] * d[POS_Z]));
 }
@@ -117,8 +117,8 @@ float Dist_BeadToPoint_Float(const int beadID, const float* f1)
     int i;
     for (i = 0; i < POS_MAX; i++)
         {
-            d[i] = fabsf((float) bead_info_glb[beadID][i] - f1[i]);
-            d[i] = d[i] > (float) naBoxSize_glb[i] / 2. ? (float) naBoxSize_glb[i] - d[i] : d[i];
+            d[i] = fabsf((float) g_system.bead_info[beadID][i] - f1[i]);
+            d[i] = d[i] > (float) g_system.naBoxSize[i] / 2. ? (float) g_system.naBoxSize[i] - d[i] : d[i];
         }
     return sqrtf((d[POS_X] * d[POS_X] + d[POS_Y] * d[POS_Y] + d[POS_Z] * d[POS_Z]));
 }
@@ -135,8 +135,8 @@ float Dist_BeadToBead(const int n1, const int n2)
 
     for (i = 0; i < POS_MAX; i++)
         {
-            d[i] = abs(bead_info_glb[n1][i] - bead_info_glb[n2][i]);
-            d[i] = d[i] > naBoxSize_glb[i] / 2 ? naBoxSize_glb[i] - d[i] : d[i];
+            d[i] = abs(g_system.bead_info[n1][i] - g_system.bead_info[n2][i]);
+            d[i] = d[i] > g_system.naBoxSize[i] / 2 ? g_system.naBoxSize[i] - d[i] : d[i];
         }
 
     return sqrtf((float) (d[POS_X] * d[POS_X] + d[POS_Y] * d[POS_Y] + d[POS_Z] * d[POS_Z]));
@@ -227,11 +227,11 @@ void LatPos_add_wPBC(int* outVec, const int* firVec, const int* secVec)
         }
     for (j = 0; j < POS_MAX; j++)
         {
-            outVec[j] = outVec[j] < 0 ? outVec[j] + naBoxSize_glb[j] : outVec[j];
+            outVec[j] = outVec[j] < 0 ? outVec[j] + g_system.naBoxSize[j] : outVec[j];
         }
     for (j = 0; j < POS_MAX; j++)
         {
-            outVec[j] = outVec[j] >= naBoxSize_glb[j] ? outVec[j] - naBoxSize_glb[j] : outVec[j];
+            outVec[j] = outVec[j] >= g_system.naBoxSize[j] ? outVec[j] - g_system.naBoxSize[j] : outVec[j];
         }
 }
 
@@ -246,9 +246,9 @@ void LatPos_add_wPBC(int* outVec, const int* firVec, const int* secVec)
 void LatPos_add_wPBC_ofComp(int* outVec, const int* firVec, const int* secVec, const int compNum)
 {
     outVec[compNum] = firVec[compNum] + secVec[compNum];
-    outVec[compNum] = outVec[compNum] < 0 ? outVec[compNum] + naBoxSize_glb[compNum] : outVec[compNum];
+    outVec[compNum] = outVec[compNum] < 0 ? outVec[compNum] + g_system.naBoxSize[compNum] : outVec[compNum];
     outVec[compNum] =
-        outVec[compNum] >= naBoxSize_glb[compNum] ? outVec[compNum] - naBoxSize_glb[compNum] : outVec[compNum];
+        outVec[compNum] >= g_system.naBoxSize[compNum] ? outVec[compNum] - g_system.naBoxSize[compNum] : outVec[compNum];
 }
 
 
@@ -282,11 +282,11 @@ void BeadPos_sub_wPBC(int* outVec, const int* firVec, const int* secVec)
         }
     for (j = 0; j < POS_MAX; j++)
         {
-            outVec[j] = outVec[j] < -naBoxSize_glb[j] / 2.f ? outVec[j] + naBoxSize_glb[j] : outVec[j]; // pht 
+            outVec[j] = outVec[j] < -g_system.naBoxSize[j] / 2.f ? outVec[j] + g_system.naBoxSize[j] : outVec[j]; // pht 
         }
     for (j = 0; j < POS_MAX; j++)
         {
-            outVec[j] = outVec[j] >= naBoxSize_glb[j] / 2.f ? outVec[j] - naBoxSize_glb[j] : outVec[j]; // pht
+            outVec[j] = outVec[j] >= g_system.naBoxSize[j] / 2.f ? outVec[j] - g_system.naBoxSize[j] : outVec[j]; // pht
         }
 }
 
@@ -303,7 +303,7 @@ int OP_GetTopoBonds(const int beadID, int* dum_list)
     while (curID != -1 && top_it < MAX_BONDS + 1)
         {
             dum_list[top_it] = curID;
-            curID            = topo_info_glb[beadID][top_it++];
+            curID            = g_system.topo_info[beadID][top_it++];
         }
 
     return top_it;
@@ -344,15 +344,15 @@ float Vec3n_AngleBetweenVecs(const int* vec_1, const int* vec_2)
 float BeadPos_CosThetaOfBeads(const int bead1, const int bead2)
 {
 
-    const int r_pos1[POS_MAX] = {bead_info_glb[bead1][0], bead_info_glb[bead1][1], bead_info_glb[bead1][2]};
+    const int r_pos1[POS_MAX] = {g_system.bead_info[bead1][0], g_system.bead_info[bead1][1], g_system.bead_info[bead1][2]};
 
-    const int r_pos2[POS_MAX] = {bead_info_glb[bead2][0], bead_info_glb[bead2][1], bead_info_glb[bead2][2]};
+    const int r_pos2[POS_MAX] = {g_system.bead_info[bead2][0], g_system.bead_info[bead2][1], g_system.bead_info[bead2][2]};
 
     return Vec3n_CosTheta(r_pos1, r_pos2);
 }
 
 
-/// LatticeUtil_GetOvlpLattIndecies: Given the starting location r_pos0, we store all of the naTotLattice_glb indecies
+/// LatticeUtil_GetOvlpLattIndecies: Given the starting location r_pos0, we store all of the g_system.naTotLattice indecies
 /// corresponding to the +-1 neighbors. We store all the indecies in numList. NOTE: This list _will_ include the
 /// point at r_pos0 as well.
 /// \param r_pos0
@@ -382,7 +382,7 @@ void LatticeUtil_GetOvlpLattIndecies(const int* restrict const r_pos0, int* rest
 }
 
 
-/// LatticeUtil_GetLattVals_FromList - loop over nIndexList and store the naTotLattice_glb values in nLatValsList.
+/// LatticeUtil_GetLattVals_FromList - loop over nIndexList and store the g_system.naTotLattice values in nLatValsList.
 /// Note that this will include -1 values as well, or empty sites.
 /// \param nIndexList
 /// \param nLatValsList - Must be at least 27 elements long.
@@ -392,7 +392,7 @@ void LatticeUtil_GetLattVals_FromList(const int* restrict const nIndexList, int*
     int i;
     for (i = 0; i < listSize; ++i)
         {
-            nLatValsList[i] = naTotLattice_glb[nIndexList[i]];
+            nLatValsList[i] = g_system.naTotLattice[nIndexList[i]];
         }
 }
 
