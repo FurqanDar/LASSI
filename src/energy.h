@@ -5,6 +5,15 @@
 
 void Energy_Total_System(void);
 
+/* Anisotropic SC-SC bond kernels (see energy_aniso.c).
+ * Pure FromCoupling cores take table entries; wrappers bind g_system / g_energy. */
+
+float Energy_Aniso_ScSc_FromCoupling(const float e_sc_sc);
+
+float Energy_Aniso_ScSc_Half_FromCoupling(const float e_sc_sc);
+
+float Energy_Aniso_ScSc_HalfDiv_FromCoupling(const float e_sc_sc);
+
 float Energy_Anisotropic(const int beadID);
 
 float Energy_Anisotropic_Self(const int beadID);
