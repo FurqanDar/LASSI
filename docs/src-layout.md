@@ -9,9 +9,9 @@ is implied by this split.
 | Files | Role |
 |-------|------|
 | `main.c` | Program entry and run loop |
-| `parsekey.c` / `parsekey.h` | Keyfile parsing |
-| `initialize.c` / `initialize.h` | System setup |
-| `global.h` | Shared globals and constants |
+| `parsekey.c` / `parsekey.h` | Keyfile parsing → `SimulationConfig` (`g_config`); `Config_ApplyToRuntime` shims into domain globals |
+| `initialize.c` / `initialize.h` | System setup (still reads `g_*` runtime domains in 6.1) |
+| `global.h` / `globals.c` | Shared globals, domain structs, `SimulationConfig` |
 
 ## Monte Carlo moves (`mcmove.h`)
 

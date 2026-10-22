@@ -10,3 +10,4 @@ EnergyTables g_energy;
 McControl g_mc;
 Reports g_reports;
 AnalysisState g_analysis;
+SimulationConfig g_config;

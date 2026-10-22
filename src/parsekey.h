@@ -6,6 +6,9 @@
 // #include <stdio.h>
 // #include <string.h>
 
+/// Copy keyfile-parsed g_config into runtime domain structs (g_mc / g_system / …).
+void Config_ApplyToRuntime(const SimulationConfig* cfg);
+
 int Parse_Keyfile(char* filename);
 
 int Parse_EnergyFile(char* strEnFile);
