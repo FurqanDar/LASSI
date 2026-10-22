@@ -2,112 +2,205 @@
 #include "energy.h"
 #include "structure.h"
 
+/*
+ * Phase 4.1: MV_* strategy tables. Each entry is a thin runner that preserves
+ * the old switch's bead/chain selection and Move_* call. MC_Step /
+ * MC_Step_Therm only pick a mode from faMCFreq and invoke the table.
+ */
+
+typedef int (*McMoveRunner)(float fMCTemp);
+
+static int McRun_Reject(float fMCTemp)
+{
+    (void) fMCTemp;
+    return 0;
+}
+
+static int McRun_PickBead_Rot(float fMCTemp)
+{
+    int i = rand() % g_system.tot_beads;
+    return Move_Rot(i, fMCTemp);
+}
+
+static int McRun_PickBead_Local(float fMCTemp)
+{
+    int i = rand() % g_system.tot_beads;
+    return Move_Local(i, fMCTemp);
+}
+
+static int McRun_PickBead_Local_Equil(float fMCTemp)
+{
+    int i = rand() % g_system.tot_beads;
+    return Move_Local_Equil(i, fMCTemp);
+}
+
+static int McRun_PickBead_CoLocal(float fMCTemp)
+{
+    int i = rand() % g_system.tot_beads;
+    return Move_CoLocal(i, fMCTemp);
+}
+
+static int McRun_PickBead_MultiLocal(float fMCTemp)
+{
+    int i = rand() % g_system.tot_beads;
+    return Move_MultiLocal(i, fMCTemp);
+}
+
+static int McRun_PickBead_MultiLocal_Equil(float fMCTemp)
+{
+    int i = rand() % g_system.tot_beads;
+    return Move_MultiLocal_Equil(i, fMCTemp);
+}
+
+static int McRun_PickBead_DbPvt(float fMCTemp)
+{
+    int i = rand() % g_system.tot_beads;
+    return Move_DbPvt(i, fMCTemp);
+}
+
+static int McRun_PickChain_Snake(float fMCTemp)
+{
+    int i = rand() % g_system.tot_beads;
+    i     = g_system.bead_info[i][BEAD_CHAINID];
+    return Move_Snake(i, fMCTemp);
+}
+
+static int McRun_PickChain_Snake_Equil(float fMCTemp)
+{
+    int i = rand() % g_system.tot_beads;
+    i     = g_system.bead_info[i][BEAD_CHAINID];
+    return Move_Snake_Equil(i, fMCTemp);
+}
+
+static int McRun_PickChain_Trans(float fMCTemp)
+{
+    int i = rand() % g_system.tot_beads;
+    i     = g_system.bead_info[i][BEAD_CHAINID];
+    return Move_Trans(i, fMCTemp);
+}
+
+static int McRun_PickChain_Trans_Equil(float fMCTemp)
+{
+    int i = rand() % g_system.tot_beads;
+    i     = g_system.bead_info[i][BEAD_CHAINID];
+    return Move_Trans_Equil(i, fMCTemp);
+}
+
+static int McRun_PickChain_SmallClus_Network(float fMCTemp)
+{
+    int i = rand() % g_system.tot_beads;
+    i     = g_system.bead_info[i][BEAD_CHAINID];
+    return Move_SmallClus_Network(i, fMCTemp);
+}
+
+static int McRun_PickChain_Pivot(float fMCTemp)
+{
+    int i = rand() % g_system.tot_beads;
+    i     = g_system.bead_info[i][BEAD_CHAINID];
+    return Move_Pivot(i, fMCTemp);
+}
+
+static int McRun_PickChain_Pivot_Equil(float fMCTemp)
+{
+    int i = rand() % g_system.tot_beads;
+    i     = g_system.bead_info[i][BEAD_CHAINID];
+    return Move_Pivot_Equil(i, fMCTemp);
+}
+
+static int McRun_PickChain_BranchedRot(float fMCTemp)
+{
+    int i = rand() % g_system.tot_beads;
+    i     = g_system.bead_info[i][BEAD_CHAINID];
+    return Move_BranchedRot(i, fMCTemp);
+}
+
+static int McRun_PickChain_BranchedRot_Equil(float fMCTemp)
+{
+    int i = rand() % g_system.tot_beads;
+    i     = g_system.bead_info[i][BEAD_CHAINID];
+    return Move_BranchedRot_Equil(i, fMCTemp);
+}
+
+static int McRun_PickChain_SmallClus_Proximity(float fMCTemp)
+{
+    int i = rand() % g_system.tot_beads;
+    i     = g_system.bead_info[i][BEAD_CHAINID];
+    return Move_SmallClus_Proximity(i, fMCTemp);
+}
+
+static int McRun_Clus_Network(float fMCTemp)
+{
+    return Move_Clus_Network(fMCTemp);
+}
+
+/* Old switch: case MV_PR_CLSTR called Move_Clus_Proximity then fell through to
+ * default which set nAccept = 0. Preserve that accept accounting. */
+static int McRun_Clus_Proximity_ThenReject(float fMCTemp)
+{
+    (void) Move_Clus_Proximity(fMCTemp);
+    return 0;
+}
+
+/* Indexed by MV_* / mode from faMCFreq selection. */
+static const McMoveRunner s_mcMoves_Prod[MAX_MV] = {
+    [MV_NULL]       = McRun_Reject,
+    [MV_STROT]      = McRun_PickBead_Rot,
+    [MV_LOCAL]      = McRun_PickBead_Local,
+    [MV_COLOCAL]    = McRun_PickBead_CoLocal,
+    [MV_MTLOCAL]    = McRun_PickBead_MultiLocal,
+    [MV_SNAKE]      = McRun_PickChain_Snake,
+    [MV_TRANS]      = McRun_PickChain_Trans,
+    [MV_SMCLSTR]    = McRun_PickChain_SmallClus_Network,
+    [MV_CLSTR]      = McRun_Clus_Network,
+    [MV_PIVOT]      = McRun_PickChain_Pivot,
+    [MV_BRROT]      = McRun_PickChain_BranchedRot,
+    [MV_DBPVT]      = McRun_PickBead_DbPvt,
+    [MV_PR_SMCLSTR] = McRun_PickChain_SmallClus_Proximity,
+    [MV_PR_CLSTR]   = McRun_Clus_Proximity_ThenReject,
+};
+
+static const McMoveRunner s_mcMoves_Therm[MAX_MV] = {
+    [MV_NULL]       = McRun_Reject,
+    [MV_STROT]      = McRun_PickBead_Local_Equil,
+    [MV_LOCAL]      = McRun_PickBead_Local_Equil,
+    [MV_COLOCAL]    = McRun_PickBead_Local_Equil,
+    [MV_MTLOCAL]    = McRun_PickBead_MultiLocal_Equil,
+    [MV_SNAKE]      = McRun_PickChain_Snake_Equil,
+    [MV_TRANS]      = McRun_PickChain_Trans_Equil,
+    [MV_SMCLSTR]    = McRun_PickChain_Trans_Equil,
+    [MV_CLSTR]      = McRun_PickChain_Trans_Equil,
+    [MV_PIVOT]      = McRun_PickChain_Pivot_Equil,
+    [MV_BRROT]      = McRun_PickChain_BranchedRot_Equil,
+    [MV_DBPVT]      = McRun_PickBead_DbPvt,
+    [MV_PR_SMCLSTR] = McRun_PickChain_Trans_Equil,
+    [MV_PR_CLSTR]   = McRun_Reject,
+};
+
+static int MC_PickMode(void)
+{
+    int mode = 0;
+    float prob = (float) rand() / (float) RAND_MAX;
+    int i;
+    for (i = 0; i < MAX_MV; i++)
+        {
+            if (prob < g_mc.faMCFreq[i])
+                {
+                    mode = i;
+                    break;
+                }
+        }
+    return mode;
+}
+
 /// MC_Step - given the MC move frequencies, picks which move to try.
 /// \param fMCTemp
 /// \return bAccept - the acceptance state where MCMove=bAccept/12 and
 /// MCAccept=bAccept%2.
 int MC_Step(float fMCTemp)
 {
-    int mode = 0; // Which move to do
-    int nAccept;  // Used in MC steps
-    float prob = (float) rand() / (float) RAND_MAX;
-    int i; // Internal iterator, and int.
-    for (i = 0; i < MAX_MV; i++)
-        {
-            if (prob < g_mc.faMCFreq[i])
-                { // Pick this move!
-                    mode = i;
-                    break;
-                }
-        }
-    nAccept = 0;
-
-    // Performing the appropriate move.
-    switch (mode)
-        {
-            // Translation
-            case MV_TRANS:
-                i       = rand() % g_system.tot_beads;  // Pick random bead
-                i       = g_system.bead_info[i][BEAD_CHAINID]; // Get the chainID
-                nAccept = Move_Trans(i, fMCTemp);
-                break;
-
-                // Cluster translation
-            case MV_CLSTR:
-                nAccept = Move_Clus_Network(fMCTemp);
-                break;
-
-                // Cluster translation iff ClusSize <= 5
-            case MV_SMCLSTR:
-                i       = rand() % g_system.tot_beads;  // Pick random bead
-                i       = g_system.bead_info[i][BEAD_CHAINID]; // Get the chainID
-                nAccept = Move_SmallClus_Network(i, fMCTemp);
-                break;
-
-                // Change Rotational State
-            case MV_STROT:
-                i       = rand() % g_system.tot_beads;
-                nAccept = Move_Rot(i, fMCTemp);
-                break;
-
-                // Local Move
-            case MV_LOCAL:
-                i       = rand() % g_system.tot_beads;
-                nAccept = Move_Local(i, fMCTemp);
-                break;
-
-                // Slithering Snake
-            case MV_SNAKE:
-                i       = rand() % g_system.tot_beads;  // Pick random bead
-                i       = g_system.bead_info[i][BEAD_CHAINID]; // Get the chainID
-                nAccept = Move_Snake(i, fMCTemp);
-                break;
-
-                // Double Pivot
-            case MV_DBPVT:
-                i       = rand() % g_system.tot_beads; // Pick a random bead
-                nAccept = Move_DbPvt(i, fMCTemp);
-                break;
-
-                // Co-Local
-            case MV_COLOCAL:
-                i       = rand() % g_system.tot_beads; // Pick a random bead
-                nAccept = Move_CoLocal(i, fMCTemp);
-                break;
-
-                // Shake Move
-            case MV_MTLOCAL:
-                i       = rand() % g_system.tot_beads;
-                nAccept = Move_MultiLocal(i, fMCTemp);
-                break;
-
-                // Pivot
-            case MV_PIVOT:
-                i       = rand() % g_system.tot_beads;  // Pick random bead
-                i       = g_system.bead_info[i][BEAD_CHAINID]; // Get the chainID
-                nAccept = Move_Pivot(i, fMCTemp);
-                break;
-
-                // Branched Rotation
-            case MV_BRROT:
-                i       = rand() % g_system.tot_beads;  // Pick random bead
-                i       = g_system.bead_info[i][BEAD_CHAINID]; // Get the chainID
-                nAccept = Move_BranchedRot(i, fMCTemp);
-                break;
-            case MV_PR_SMCLSTR:
-                i       = rand() % g_system.tot_beads;  // Pick random bead
-                i       = g_system.bead_info[i][BEAD_CHAINID]; // Get the chainID
-                nAccept = Move_SmallClus_Proximity(i, fMCTemp);
-                break;
-
-            case MV_PR_CLSTR:
-                nAccept = Move_Clus_Proximity(fMCTemp);
-            default:
-                nAccept = 0;
-                break;
-        }
-
-    g_mc.naMCAccepMat[nAccept][mode]++; // Just adding which move got accepted/rejected.
+    const int mode    = MC_PickMode();
+    const int nAccept = s_mcMoves_Prod[mode](fMCTemp);
+    g_mc.naMCAccepMat[nAccept][mode]++;
     return mode * 12 + nAccept;
 }
 
@@ -116,107 +209,8 @@ int MC_Step(float fMCTemp)
 /// where MCMove=bAccept/12 and MCAccept=bAccept%2.
 int MC_Step_Therm(float fMCTemp)
 {
-    int mode = 0; // Which move to do
-    int nAccept;  // Used in MC steps
-    float prob = (float) rand() / (float) RAND_MAX;
-    int i; // Internal iterator, and int.
-    for (i = 0; i < MAX_MV; i++)
-        {
-            if (prob < g_mc.faMCFreq[i])
-                { // Pick this move!
-                    mode = i;
-                    break;
-                }
-        }
-    // Start by assuming failure.
-    nAccept = 0;
-
-    // Performing the appropriate move.
-    switch (mode)
-        {
-            // translation of a random chain
-            case MV_TRANS:
-                i       = rand() % g_system.tot_beads;  // Pick random bead
-                i       = g_system.bead_info[i][BEAD_CHAINID]; // Get the chainID
-                nAccept = Move_Trans_Equil(i, fMCTemp);
-                break;
-
-                // cluster translation: moves largest cluster to another spot.
-            case MV_CLSTR:                         // In equil, just a translation of the chain
-                i       = rand() % g_system.tot_beads;  // Pick random bead
-                i       = g_system.bead_info[i][BEAD_CHAINID]; // Get the chainID
-                nAccept = Move_Trans_Equil(i, fMCTemp);
-                break;
-
-            case MV_SMCLSTR:                       // In equil, just a translation of the chain
-                i       = rand() % g_system.tot_beads;  // Pick random bead
-                i       = g_system.bead_info[i][BEAD_CHAINID]; // Get the chainID
-                nAccept = Move_Trans_Equil(i, fMCTemp);
-                break;
-
-                // face change
-            case MV_STROT: // In equil, just a local move
-                i       = rand() % g_system.tot_beads;
-                nAccept = Move_Local_Equil(i, fMCTemp);
-                break;
-
-                // local moves
-            case MV_LOCAL:
-                i       = rand() % g_system.tot_beads;
-                nAccept = Move_Local_Equil(i, fMCTemp);
-                break;
-
-                // slithering snake
-            case MV_SNAKE:
-                i       = rand() % g_system.tot_beads;  // Pick random bead
-                i       = g_system.bead_info[i][BEAD_CHAINID]; // Get the chainID
-                nAccept = Move_Snake_Equil(i, fMCTemp);
-                break;
-
-                // double pivot
-            case MV_DBPVT:
-                i       = rand() % g_system.tot_beads; // Pick a random bead
-                nAccept = Move_DbPvt(i, fMCTemp);
-                break;
-
-                // co-local
-            case MV_COLOCAL: // In equil, just a local move
-                i       = rand() % g_system.tot_beads;
-                nAccept = Move_Local_Equil(i, fMCTemp);
-                break;
-
-                // shake
-            case MV_MTLOCAL:
-                i       = rand() % g_system.tot_beads;
-                nAccept = Move_MultiLocal_Equil(i, fMCTemp);
-                break;
-
-                // pivot
-            case MV_PIVOT:
-                i       = rand() % g_system.tot_beads;  // Pick random bead
-                i       = g_system.bead_info[i][BEAD_CHAINID]; // Get the chainID
-                nAccept = Move_Pivot_Equil(i, fMCTemp);
-                break;
-
-                // branched rotate
-            case MV_BRROT:
-                i       = rand() % g_system.tot_beads;  // Pick random bead
-                i       = g_system.bead_info[i][BEAD_CHAINID]; // Get the chainID
-                nAccept = Move_BranchedRot_Equil(i, fMCTemp);
-                break;
-
-            case MV_PR_SMCLSTR:
-                // In equil, just a translation of the chain
-                i       = rand() % g_system.tot_beads;  // Pick random bead
-                i       = g_system.bead_info[i][BEAD_CHAINID]; // Get the chainID
-                nAccept = Move_Trans_Equil(i, fMCTemp);
-                break;
-
-            default:
-                nAccept = 0;
-                break;
-        }
-
-    g_mc.naMCAccepMat[nAccept][mode]++; // Just adding which move got accepted/rejected.
+    const int mode    = MC_PickMode();
+    const int nAccept = s_mcMoves_Therm[mode](fMCTemp);
+    g_mc.naMCAccepMat[nAccept][mode]++;
     return mode * 12 + nAccept;
 }
