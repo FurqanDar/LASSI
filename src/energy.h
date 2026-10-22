@@ -19,11 +19,28 @@ float Energy_Anisotropic_For_List(const int beadID, const int listSize, const in
 
 float Energy_Anisotropic_With_List(const int beadID, const int* bead_list, const int list_size);
 
+/* Isotropic pair / solvation kernels (see energy_iso.c).
+ * Pure FromCoupling cores take table entries; wrappers bind g_energy. */
+
+float Energy_Iso_Ovlp_FromCoupling(const float e_ovlp, const float xDis);
+
+float Energy_Iso_Cont_FromCoupling(const float e_cont, const float xDis);
+
+float Energy_Iso_fSol_FromCoupling(const float e_fsol);
+
+float Energy_Iso_PairDelta_FromCoupling(const float e_ovlp, const float e_cont, const float xDis);
+
+float Energy_Iso_EmptySiteSol_FromCoupling(const float e_fsol, const int empty_neigh_count);
+
 float Energy_Iso_Ovlp(int const beadType1, int const beadType2, float const xDis);
 
 float Energy_Iso_Cont(int const beadType1, int const beadType2, float const xDis);
 
 float Energy_Iso_fSol(int const beadType);
+
+float Energy_Iso_PairDelta(int const beadType1, int const beadType2, float const xDis);
+
+float Energy_Iso_EmptySiteSol(const int beadType, const int empty_neigh_count);
 
 float Energy_Topo_Angle(const int beadID);
 

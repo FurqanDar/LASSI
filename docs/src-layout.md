@@ -49,7 +49,8 @@ is implied by this split.
 
 | Files | Role |
 |-------|------|
-| `energy.c` / `energy.h` | Energy evaluation |
+| `energy.c` / `energy.h` | Energy evaluation (system/chain totals, anisotropic, Iso For* move deltas) |
+| `energy_iso.c` | Isotropic OVLP/CONT/fSol pair kernels + empty-site solvation (pure FromCoupling + wrappers) |
 
 Build: `src/compile.sh` (also wired in top-level `Makefile` / `CMakeLists.txt`).
 Regression gate: `make characterization`.

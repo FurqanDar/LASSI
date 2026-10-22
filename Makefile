@@ -1,6 +1,6 @@
 # Thin top-level targets. The simulation itself still builds via src/compile.sh.
 
-.PHONY: lassi characterization characterization-update clean-characterization unit-lattice unit-legal
+.PHONY: lassi characterization characterization-update clean-characterization unit-lattice unit-legal unit-energy
 
 lassi:
 	cd src && bash compile.sh
@@ -28,4 +28,11 @@ unit-legal:
 		src/structure.c src/globals.c \
 		-o tests/unit/test_linker_legal -lm -fcommon
 	./tests/unit/test_linker_legal
+
+# Pure isotropic OVLP/CONT/fSol kernels (Phase 5.3); no decks.
+unit-energy:
+	gcc -std=gnu11 -O0 -Wall -Wextra -I. \
+		tests/unit/test_energy_iso.c src/energy_iso.c src/globals.c \
+		-o tests/unit/test_energy_iso -lm -fcommon
+	./tests/unit/test_energy_iso
 
