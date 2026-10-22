@@ -128,14 +128,14 @@ void FileIO_WriteTo_MCMoveFile(const char* filename, const long nGen, float cons
     fprintf(fp, "%-10ld  %-10.2f  ", nGen, fMCTemp); // Step and Temp
     for (i = 1; i < MAX_MV; i++)
         {
-            fprintf(fp, "%-10ld  %-10ld  ", naMCAccepMat_glb[0][i], naMCAccepMat_glb[1][i]);
+            fprintf(fp, "%-10ld  %-10ld  ", g_mc.naMCAccepMat[0][i], g_mc.naMCAccepMat[1][i]);
         }
     fprintf(fp, "\n");
 
     for (i = 1; i < MAX_MV; i++)
         {
-            naMCAccepMat_glb[0][i] = 0;
-            naMCAccepMat_glb[1][i] = 0;
+            g_mc.naMCAccepMat[0][i] = 0;
+            g_mc.naMCAccepMat[1][i] = 0;
             // This way the print function will zero out the matrix every time
             // we print to a file!
         }
@@ -254,7 +254,7 @@ void FileIO_Trajectory_AppendFrame(const char* fileNameStr, const int run_it, co
             else
                 {
                     FileIOUtil_Traj_Txt_AppendFrame_ToFile(fileNameStr,
-                                                           nGen + nMCStepsForTherm_glb + run_it * nMCStepsPerCycle_glb);
+                                                           nGen + g_mc.nMCStepsForTherm + run_it * g_mc.nMCStepsPerCycle);
                 }
         }
 }
@@ -376,7 +376,7 @@ void Write_Saved_Trajectory(char* filename, const int run_it)
             if (run_it >= 0)
                 {
                     fprintf(fp, "%ld\n",
-                            nMCStepsForTherm_glb + run_it * nMCStepsPerCycle_glb +
+                            g_mc.nMCStepsForTherm + run_it * g_mc.nMCStepsPerCycle +
                                 i * naReportFreqs_glb[REPORT_CONFIG]); // Timestep
                 }
             else
@@ -892,19 +892,19 @@ void FileIO_PostCycle_WriteSystemRestart(const int run_it)
     sprintf(strFileTraj_glb, "%s_%d_restart.lammpstrj", strReportPrefix_glb,
             run_it); // Naming convention for trajectory files.
     FileIOUtil_CreateFile_Overwrite(strFileTraj_glb);
-    FileIOUtil_Traj_Txt_AppendFrame_ToFile(strFileTraj_glb, nMCStepsForTherm_glb + (run_it + 1) * nMCStepsPerCycle_glb);
+    FileIOUtil_Traj_Txt_AppendFrame_ToFile(strFileTraj_glb, g_mc.nMCStepsForTherm + (run_it + 1) * g_mc.nMCStepsPerCycle);
 }
 
 
 /// FileIO_WriteRestart_ForThermalization
 void FileIO_WriteRestart_ForThermalization(void)
 {
-    if (nMCStepsForTherm_glb)
+    if (g_mc.nMCStepsForTherm)
         {
             sprintf(strFileTraj_glb, "%s_EQ_restart.lammpstrj",
                     strReportPrefix_glb); // Naming convention for trajectory files.
             FileIOUtil_CreateFile_Overwrite(strFileTraj_glb);
-            FileIOUtil_Traj_Txt_AppendFrame_ToFile(strFileTraj_glb, nMCStepsForTherm_glb);
+            FileIOUtil_Traj_Txt_AppendFrame_ToFile(strFileTraj_glb, g_mc.nMCStepsForTherm);
         }
 }
 

@@ -21,7 +21,7 @@ float Energy_BiasingPotential(const int beadID)
                  * The potential has the form (r-r_{cen})^2
                  */
                 totEn = (float) Dist_VecMagSq(posDiff);
-                totEn = fCuTemp_glb * totEn;
+                totEn = g_mc.fCuTemp * totEn;
                 break;
 
             case 2:
@@ -29,9 +29,9 @@ float Energy_BiasingPotential(const int beadID)
                  * The potential has the form (r-r_{cen})^2 if the bead is outside the indent radius
                  */
                 totEn = (float) Dist_VecMagSq(posDiff);
-                if (totEn > fSquishRad_Sq_glb)
+                if (totEn > g_mc.fSquishRad_Sq)
                     {
-                        totEn = fCuTemp_glb * totEn * fSquish_Stiff_glb;
+                        totEn = g_mc.fCuTemp * totEn * g_mc.fSquish_Stiff;
                     }
                 else
                     {
@@ -47,9 +47,9 @@ float Energy_BiasingPotential(const int beadID)
                 totEn = (float) Dist_VecMagSq(posDiff);
                 if (thisType == ((int) nBeadTypes_glb - 1))
                     {
-                        if (totEn < fSquishRad_Sq_glb)
+                        if (totEn < g_mc.fSquishRad_Sq)
                             {
-                                totEn = fCuTemp_glb * fSquish_Stiff_glb;
+                                totEn = g_mc.fCuTemp * g_mc.fSquish_Stiff;
                             }
                         else
                             {
@@ -58,9 +58,9 @@ float Energy_BiasingPotential(const int beadID)
                     }
                 else
                     {
-                        if (totEn > fSquishRad_Sq_glb)
+                        if (totEn > g_mc.fSquishRad_Sq)
                             {
-                                totEn = fCuTemp_glb * totEn * fSquish_Stiff_glb;
+                                totEn = g_mc.fCuTemp * totEn * g_mc.fSquish_Stiff;
                             }
                         else
                             {
@@ -711,7 +711,7 @@ float Energy_Isotropic_Old(const int beadID)
                                     if (abs(x) <= 1 && abs(y) <= 1 && abs(z) <= 1)
                                         { // Want solvation radius to be 1
                                             totEn += faEnergy_glb[resi][resi][E_F_SOL];
-                                            totEn += faEnergy_glb[resi][resi][E_T_IND] * fCuTemp_glb;
+                                            totEn += faEnergy_glb[resi][resi][E_T_IND] * g_mc.fCuTemp;
                                         }
                                 }
                         }

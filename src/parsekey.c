@@ -33,7 +33,7 @@ int Parse_Keyfile(char* filename)
 
     for (i = 0; i < MAX_MV; i++)
         {
-            faMCFreq_glb[i] = 0.0f; // initialization; to be normalized
+            g_mc.faMCFreq[i] = 0.0f; // initialization; to be normalized
         }
     nBiasPotential_Mode_glb    = 0;
     nAnnealing_Mode_glb        = -1;
@@ -87,23 +87,23 @@ int Parse_Keyfile(char* filename)
                         }
                     else if (strcmp(strKeyword, "MC_TEMP") == 0)
                         {
-                            sscanf(strLine, "%*s %f", &fKT_glb);
+                            sscanf(strLine, "%*s %f", &g_mc.fKT);
                         }
                     else if (strcmp(strKeyword, "N_STEPS") == 0)
                         {
-                            sscanf(strLine, "%*s %ld", &nMCStepsPerCycle_glb);
+                            sscanf(strLine, "%*s %ld", &g_mc.nMCStepsPerCycle);
                         }
                     else if (strcmp(strKeyword, "PREEQ_STEPS") == 0)
                         {
-                            sscanf(strLine, "%*s %ld", &nMCStepsForTherm_glb);
+                            sscanf(strLine, "%*s %ld", &g_mc.nMCStepsForTherm);
                         }
                     else if (strcmp(strKeyword, "PREEQ_TEMP") == 0)
                         {
-                            sscanf(strLine, "%*s %f", &fPreKT_glb);
+                            sscanf(strLine, "%*s %f", &g_mc.fPreKT);
                         }
                     else if (strcmp(strKeyword, "MC_TEMP_RATE") == 0)
                         {
-                            sscanf(strLine, "%*s %f", &fMC_TempRate_glb);
+                            sscanf(strLine, "%*s %f", &g_mc.fMC_TempRate);
                         }
                     else if (strcmp(strKeyword, "MC_TEMP_MODE") == 0)
                         {
@@ -111,7 +111,7 @@ int Parse_Keyfile(char* filename)
                         }
                     else if (strcmp(strKeyword, "MC_DELTA_TEMP") == 0)
                         {
-                            sscanf(strLine, "%*s %f", &fDeltaTemp_glb);
+                            sscanf(strLine, "%*s %f", &g_mc.fDeltaTemp);
                         }
                     else if (strcmp(strKeyword, "MC_INVERT_TEMP") == 0)
                         {
@@ -119,7 +119,7 @@ int Parse_Keyfile(char* filename)
                         }
                     else if (strcmp(strKeyword, "MC_CYCLE_NUM") == 0)
                         {
-                            sscanf(strLine, "%*s %d", &nTotCycleNum_glb);
+                            sscanf(strLine, "%*s %d", &g_mc.nTotCycleNum);
                         }
                     else if (strcmp(strKeyword, "MC_INDENT_MODE") == 0)
                         {
@@ -127,55 +127,55 @@ int Parse_Keyfile(char* filename)
                         }
                     else if (strcmp(strKeyword, "MV_TRANS_FREQ") == 0)
                         {
-                            sscanf(strLine, "%*s %f", &faMCFreq_glb[MV_TRANS]);
+                            sscanf(strLine, "%*s %f", &g_mc.faMCFreq[MV_TRANS]);
                         }
                     else if (strcmp(strKeyword, "MV_CLSTR_FREQ") == 0)
                         {
-                            sscanf(strLine, "%*s %f", &faMCFreq_glb[MV_CLSTR]);
+                            sscanf(strLine, "%*s %f", &g_mc.faMCFreq[MV_CLSTR]);
                         }
                     else if (strcmp(strKeyword, "MV_SMCLSTR_FREQ") == 0)
                         {
-                            sscanf(strLine, "%*s %f", &faMCFreq_glb[MV_SMCLSTR]);
+                            sscanf(strLine, "%*s %f", &g_mc.faMCFreq[MV_SMCLSTR]);
                         }
                     else if (strcmp(strKeyword, "MV_STROT_FREQ") == 0)
                         {
-                            sscanf(strLine, "%*s %f", &faMCFreq_glb[MV_STROT]);
+                            sscanf(strLine, "%*s %f", &g_mc.faMCFreq[MV_STROT]);
                         }
                     else if (strcmp(strKeyword, "MV_LOCAL_FREQ") == 0)
                         {
-                            sscanf(strLine, "%*s %f", &faMCFreq_glb[MV_LOCAL]);
+                            sscanf(strLine, "%*s %f", &g_mc.faMCFreq[MV_LOCAL]);
                         }
                     else if (strcmp(strKeyword, "MV_SNAKE_FREQ") == 0)
                         {
-                            sscanf(strLine, "%*s %f", &faMCFreq_glb[MV_SNAKE]);
+                            sscanf(strLine, "%*s %f", &g_mc.faMCFreq[MV_SNAKE]);
                         }
                     else if (strcmp(strKeyword, "MV_DBPVT_FREQ") == 0)
                         {
-                            sscanf(strLine, "%*s %f", &faMCFreq_glb[MV_DBPVT]);
+                            sscanf(strLine, "%*s %f", &g_mc.faMCFreq[MV_DBPVT]);
                         }
                     else if (strcmp(strKeyword, "MV_COLOCAL_FREQ") == 0)
                         {
-                            sscanf(strLine, "%*s %f", &faMCFreq_glb[MV_COLOCAL]);
+                            sscanf(strLine, "%*s %f", &g_mc.faMCFreq[MV_COLOCAL]);
                         }
                     else if (strcmp(strKeyword, "MV_MTLOCAL_FREQ") == 0)
                         {
-                            sscanf(strLine, "%*s %f", &faMCFreq_glb[MV_MTLOCAL]);
+                            sscanf(strLine, "%*s %f", &g_mc.faMCFreq[MV_MTLOCAL]);
                         }
                     else if (strcmp(strKeyword, "MV_PIVOT_FREQ") == 0)
                         {
-                            sscanf(strLine, "%*s %f", &faMCFreq_glb[MV_PIVOT]);
+                            sscanf(strLine, "%*s %f", &g_mc.faMCFreq[MV_PIVOT]);
                         }
                     else if (strcmp(strKeyword, "MV_BRROT_FREQ") == 0)
                         {
-                            sscanf(strLine, "%*s %f", &faMCFreq_glb[MV_BRROT]);
+                            sscanf(strLine, "%*s %f", &g_mc.faMCFreq[MV_BRROT]);
                         }
                     else if (strcmp(strKeyword, "MV_PR_SMCLSTR") == 0)
                         {
-                            sscanf(strLine, "%*s %f", &faMCFreq_glb[MV_PR_SMCLSTR]);
+                            sscanf(strLine, "%*s %f", &g_mc.faMCFreq[MV_PR_SMCLSTR]);
                         }
                     else if (strcmp(strKeyword, "MV_PR_CLSTR") == 0)
                         {
-                            sscanf(strLine, "%*s %f", &faMCFreq_glb[MV_PR_CLSTR]);
+                            sscanf(strLine, "%*s %f", &g_mc.faMCFreq[MV_PR_CLSTR]);
                         }
                     else if (strcmp(strKeyword, "RESTART_FILE") == 0)
                         {
@@ -195,8 +195,8 @@ int Parse_Keyfile(char* filename)
                         }
                     else if (strcmp(strKeyword, "RANDOM_SEED") == 0)
                         {
-                            sscanf(strLine, "%*s %d", &nRNG_Seed_glb);
-                            nRNG_Seed_glb = nRNG_Seed_glb == 0 ? time(NULL) : nRNG_Seed_glb;
+                            sscanf(strLine, "%*s %d", &g_mc.nRNG_Seed);
+                            g_mc.nRNG_Seed = g_mc.nRNG_Seed == 0 ? time(NULL) : g_mc.nRNG_Seed;
                         }
                     else if (strcmp(strKeyword, "REPORT_PREFIX") == 0)
                         {
@@ -240,11 +240,11 @@ int Parse_Keyfile(char* filename)
                         }
                     else if (strcmp(strKeyword, "BIAS_INDENT_RADIUS") == 0)
                         {
-                            sscanf(strLine, "%*s %f", &fSquishRad_glb);
+                            sscanf(strLine, "%*s %f", &g_mc.fSquishRad);
                         }
                     else if (strcmp(strKeyword, "BIAS_INDENT_STIFF") == 0)
                         {
-                            sscanf(strLine, "%*s %f", &fSquish_Stiff_glb);
+                            sscanf(strLine, "%*s %f", &g_mc.fSquish_Stiff);
                         }
                     else if (strcmp(strKeyword, "BIAS_KEEP_ON") == 0)
                         {
@@ -276,21 +276,21 @@ int Parse_Keyfile(char* filename)
     float freq_tot = 0.0f;
     for (i = MV_NULL + 1; i < MAX_MV; i++)
         {
-            freq_tot += faMCFreq_glb[i];
+            freq_tot += g_mc.faMCFreq[i];
         }
 
     if (freq_tot == 0)
         {
             for (i = MV_NULL + 1; i < MAX_MV; i++)
                 {
-                    faMCFreq_glb[i] = 1.0f / (float) (MAX_MV - 1);
+                    g_mc.faMCFreq[i] = 1.0f / (float) (MAX_MV - 1);
                 }
         }
     else
         {
             for (i = MV_NULL + 1; i < MAX_MV; i++)
                 {
-                    faMCFreq_glb[i] /= freq_tot;
+                    g_mc.faMCFreq[i] /= freq_tot;
                 }
         }
 

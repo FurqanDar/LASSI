@@ -20,7 +20,7 @@ void Memory_Initialization_AtStart(void)
     naChainCheckList_glb = Create1DInt(2 + tot_chains_glb, arr_name);
 
     strcpy(arr_name, "fKTCycle");
-    faKT_Cycle_glb = Create1DFloat(1 + nTotCycleNum_glb, arr_name);
+    g_mc.faKT_Cycle = Create1DFloat(1 + g_mc.nTotCycleNum, arr_name);
 
     strcpy(arr_name, "naList_glb");
     naList_glb = Create1DInt(2 + tot_chains_glb, arr_name);
@@ -31,17 +31,17 @@ void Memory_Initialization_AtStart(void)
     if (naReportFreqs_glb[REPORT_NETWORK] != 0)
         {
             strcpy(arr_name, "ldTotClusArr");
-            ldaTOTCLUS_Arr_glb = Create2DLongdouble(2 + tot_chains_glb, nTotCycleNum_glb, arr_name);
+            ldaTOTCLUS_Arr_glb = Create2DLongdouble(2 + tot_chains_glb, g_mc.nTotCycleNum, arr_name);
 
             strcpy(arr_name, "ldMolClusArr");
             ldaMOLCLUS_Arr_glb = Create1DLongdouble(((tot_chains_glb + 1) * tot_chain_types_glb), arr_name);
 
             strcpy(arr_name, "ldTotMolClusArr");
             ldaTOTMOLCLUS_Arr_glb =
-                Create1DLongdouble((tot_chains_glb * tot_chain_types_glb * nTotCycleNum_glb), arr_name);
+                Create1DLongdouble((tot_chains_glb * tot_chain_types_glb * g_mc.nTotCycleNum), arr_name);
 
             strcpy(arr_name, "ldTotGyrRad");
-            ldaTOTRg_Arr_glb = Create2DLongdouble(2, nTotCycleNum_glb, arr_name);
+            ldaTOTRg_Arr_glb = Create2DLongdouble(2, g_mc.nTotCycleNum, arr_name);
         }
     nRDF_TotComps_glb = 2 + nBeadTypes_glb + nBeadTypes_glb * nBeadTypes_glb;
     nRDF_TotComps_glb /= 2;
@@ -49,7 +49,7 @@ void Memory_Initialization_AtStart(void)
         {
 
             strcpy(arr_name, "ldTotRDFArr");
-            ldaTOTRDF_Arr_glb = Create1DLongdouble((nTotCycleNum_glb * nRDF_TotComps_glb * nRDF_TotBins_glb), arr_name);
+            ldaTOTRDF_Arr_glb = Create1DLongdouble((g_mc.nTotCycleNum * nRDF_TotComps_glb * nRDF_TotBins_glb), arr_name);
 
             strcpy(arr_name, "ldRDFArr");
             ldaRDF_Arr_glb = Create1DLongdouble((nRDF_TotComps_glb * nRDF_TotBins_glb), arr_name);
@@ -65,12 +65,12 @@ void Memory_Initialization_AtStart(void)
 
             strcpy(arr_name, "ldTotRadDenArr");
             ldaTOTRadDen_Arr_glb =
-                Create1DLongdouble(nRadDen_TotComps_glb * nTotCycleNum_glb * nRDF_TotBins_glb, arr_name);
+                Create1DLongdouble(nRadDen_TotComps_glb * g_mc.nTotCycleNum * nRDF_TotBins_glb, arr_name);
         }
 
     if (nTrajMode_glb == -1)
         {
-            nTraj_FramesPerCycle_glb = nMCStepsPerCycle_glb / naReportFreqs_glb[REPORT_CONFIG] + 1;
+            nTraj_FramesPerCycle_glb = g_mc.nMCStepsPerCycle / naReportFreqs_glb[REPORT_CONFIG] + 1;
             printf("\n***********************************************\n");
             printf("This feature is still experimental!\n");
             printf("\n***********************************************\n");
@@ -332,18 +332,18 @@ void Global_Array_Initialization_AtStart(void)
                     for (j = 0; j < tot_chain_types_glb; j++)
                         {
                             ldaMOLCLUS_Arr_glb[MolClusArr_Index(0, j, i)] = 0.;
-                            for (k = 0; k < nTotCycleNum_glb; k++)
+                            for (k = 0; k < g_mc.nTotCycleNum; k++)
                                 {
                                     ldaTOTMOLCLUS_Arr_glb[MolClusArr_Index(k, j, i)] = 0.;
                                 }
                         }
                 }
-            for (k = 0; k < nTotCycleNum_glb; k++)
+            for (k = 0; k < g_mc.nTotCycleNum; k++)
                 { // For GyrRad
                     ldaTOTRg_Arr_glb[k][0] = 0.;
                     ldaTOTRg_Arr_glb[k][1] = 0.;
                 }
-            for (k = 0; k < nTotCycleNum_glb; k++)
+            for (k = 0; k < g_mc.nTotCycleNum; k++)
                 { // For ClusterDists
                     for (i = 0; i <= tot_chains_glb; i++)
                         {
@@ -359,7 +359,7 @@ void Global_Array_Initialization_AtStart(void)
                     for (j = 0; j < nRDF_TotComps_glb; j++)
                         { // For RDFs
                             ldaTOTRDF_Arr_glb[RDFArr_Index(0, j, i)] = 0.;
-                            for (k = 0; k < nTotCycleNum_glb; k++)
+                            for (k = 0; k < g_mc.nTotCycleNum; k++)
                                 {
                                     ldaTOTRDF_Arr_glb[RDFArr_Index(k, j, i)] = 0.;
                                 }
@@ -374,7 +374,7 @@ void Global_Array_Initialization_AtStart(void)
                     for (i = 0; i < nRDF_TotBins_glb; i++)
                         { // For Radial distributions
                             ldaRadDen_Arr_glb[RadDenArr_Index(0, j, i)] = 0.;
-                            for (k = 0; k < nTotCycleNum_glb; k++)
+                            for (k = 0; k < g_mc.nTotCycleNum; k++)
                                 {
                                     ldaTOTRadDen_Arr_glb[RadDenArr_Index(k, j, i)] = 0.;
                                 }
@@ -391,28 +391,28 @@ void Global_Array_Initialization_AtStart(void)
 
     for (i = MV_NULL + 2; i < MAX_MV; i++)
         {
-            faMCFreq_glb[i] += faMCFreq_glb[i - 1]; // Cumulative Frequencies
+            g_mc.faMCFreq[i] += g_mc.faMCFreq[i - 1]; // Cumulative Frequencies
         }
     for (i = 0; i < MAX_MV; i++)
         { // Zero out all the MCAccepts
-            naMCAccepMat_glb[0][i] = 0;
-            naMCAccepMat_glb[1][i] = 0;
+            g_mc.naMCAccepMat[0][i] = 0;
+            g_mc.naMCAccepMat[1][i] = 0;
         }
 
-    for (i = 0; i < nTotCycleNum_glb; i++)
+    for (i = 0; i < g_mc.nTotCycleNum; i++)
         {
-            faKT_Cycle_glb[i] = fKT_glb + (float) i * fDeltaTemp_glb;
+            g_mc.faKT_Cycle[i] = g_mc.fKT + (float) i * g_mc.fDeltaTemp;
         }
 
     if (nTemp_inv_glb == 1)
         {
-            for (i = 0; i < nTotCycleNum_glb; i++)
+            for (i = 0; i < g_mc.nTotCycleNum; i++)
                 {
-                    faKT_Cycle_glb[i] = 1.f / faKT_Cycle_glb[i];
+                    g_mc.faKT_Cycle[i] = 1.f / g_mc.faKT_Cycle[i];
                 }
         }
 
-    fSquishRad_Sq_glb               = fSquishRad_glb * fSquishRad_glb;
+    g_mc.fSquishRad_Sq               = g_mc.fSquishRad * g_mc.fSquishRad;
     ldLogOfSmallestPossibleProb_glb = logl((lLDub) 1. / (lLDub) RAND_MAX);
     nLimitedClusterSize_glb         = (int) tot_chains_glb / 2;
 
@@ -479,8 +479,8 @@ void Reset_Global_Arrays(void)
     // MCAccept arrays.
     for (i = 0; i < MAX_MV; i++)
         {
-            naMCAccepMat_glb[0][i] = 0;
-            naMCAccepMat_glb[1][i] = 0;
+            g_mc.naMCAccepMat[0][i] = 0;
+            g_mc.naMCAccepMat[1][i] = 0;
         }
 }
 
@@ -792,7 +792,7 @@ void Calculate_Rot_Bias(const float CurrentTemp)
         }
 }
 
-/// Temperature_Function - used to calculate what fCuTemp_glb should (current temperature) based on how long the
+/// Temperature_Function - used to calculate what g_mc.fCuTemp should (current temperature) based on how long the
 /// run has been going.
 /// \param mode - which
 /// of the four functions to use. Note that the various modes are described
@@ -811,26 +811,26 @@ float Temperature_Function(const int mode, const long nGen)
             case 1:
                 x_val   = -(float) (nGen);
                 x_val   = 4.f * x_val;
-                x_val   = x_val / (float) (nMCStepsForTherm_glb);
-                end_val = fKT_glb + fPreKT_glb * expf(x_val);
+                x_val   = x_val / (float) (g_mc.nMCStepsForTherm);
+                end_val = g_mc.fKT + g_mc.fPreKT * expf(x_val);
 
                 break;
 
             case 2:
                 x_val   = -(float) (nGen);
-                x_val   = fMC_TempRate_glb * x_val;
-                x_val   = x_val / (float) (nMCStepsForTherm_glb);
-                end_val = fKT_glb + expf(x_val);
+                x_val   = g_mc.fMC_TempRate * x_val;
+                x_val   = x_val / (float) (g_mc.nMCStepsForTherm);
+                end_val = g_mc.fKT + expf(x_val);
 
                 break;
 
             default:
 
-                end_val = fKT_glb;
+                end_val = g_mc.fKT;
                 break;
         }
 
-    if (end_val - fKT_glb < 0.005)
+    if (end_val - g_mc.fKT < 0.005)
         {
             puts("\n\n******************************\n");
             puts("Annealing Is Being Turned Off");
