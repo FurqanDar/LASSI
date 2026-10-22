@@ -275,21 +275,7 @@ extern AnalysisState g_analysis;
 #define ldLogOfSmallestPossibleProb_glb    g_energy.ldLogOfSmallestPossibleProb
 #define faCurrEn_glb                       g_energy.faCurrEn
 
-#define fKT_glb                            g_mc.fKT
-#define fPreKT_glb                         g_mc.fPreKT
-#define fCuTemp_glb                        g_mc.fCuTemp
-#define fDeltaTemp_glb                     g_mc.fDeltaTemp
-#define fMC_TempRate_glb                   g_mc.fMC_TempRate
-#define fSquishRad_glb                     g_mc.fSquishRad
-#define fSquishRad_Sq_glb                  g_mc.fSquishRad_Sq
-#define fSquish_Stiff_glb                  g_mc.fSquish_Stiff
-#define faKT_Cycle_glb                     g_mc.faKT_Cycle
-#define nMCStepsPerCycle_glb               g_mc.nMCStepsPerCycle
-#define nMCStepsForTherm_glb               g_mc.nMCStepsForTherm
-#define faMCFreq_glb                       g_mc.faMCFreq
-#define nTotCycleNum_glb                   g_mc.nTotCycleNum
-#define nRNG_Seed_glb                      g_mc.nRNG_Seed
-#define naMCAccepMat_glb                   g_mc.naMCAccepMat
+/* McControl *_glb shims removed after Phase 2.2 call-site migration to g_mc.* */
 
 #define strReportPrefix_glb                g_reports.strReportPrefix
 #define strFileEnergy_glb                  g_reports.strFileEnergy

@@ -15,7 +15,7 @@ int MC_Step(float fMCTemp)
     int i; // Internal iterator, and int.
     for (i = 0; i < MAX_MV; i++)
         {
-            if (prob < faMCFreq_glb[i])
+            if (prob < g_mc.faMCFreq[i])
                 { // Pick this move!
                     mode = i;
                     break;
@@ -108,7 +108,7 @@ int MC_Step(float fMCTemp)
                 break;
         }
 
-    naMCAccepMat_glb[nAccept][mode]++; // Just adding which move got accepted/rejected.
+    g_mc.naMCAccepMat[nAccept][mode]++; // Just adding which move got accepted/rejected.
     return mode * 12 + nAccept;
 }
 
@@ -123,7 +123,7 @@ int MC_Step_Therm(float fMCTemp)
     int i; // Internal iterator, and int.
     for (i = 0; i < MAX_MV; i++)
         {
-            if (prob < faMCFreq_glb[i])
+            if (prob < g_mc.faMCFreq[i])
                 { // Pick this move!
                     mode = i;
                     break;
@@ -218,6 +218,6 @@ int MC_Step_Therm(float fMCTemp)
                 break;
         }
 
-    naMCAccepMat_glb[nAccept][mode]++; // Just adding which move got accepted/rejected.
+    g_mc.naMCAccepMat[nAccept][mode]++; // Just adding which move got accepted/rejected.
     return mode * 12 + nAccept;
 }

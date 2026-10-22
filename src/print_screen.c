@@ -94,9 +94,9 @@ void PrintToScreen_MCMoveFreqs(void)
     int i;
     for (i = MV_NULL + 1; i < MAX_MV; i++)
         {
-            if (freqMin >= faMCFreq_glb[i] && faMCFreq_glb[i] != 0.)
+            if (freqMin >= g_mc.faMCFreq[i] && g_mc.faMCFreq[i] != 0.)
                 {
-                    freqMin = faMCFreq_glb[i];
+                    freqMin = g_mc.faMCFreq[i];
                 }
         }
 
@@ -108,7 +108,7 @@ void PrintToScreen_MCMoveFreqs(void)
     printf("| MC Move Frequencies%9s\n", "|");
     for (i = MV_NULL + 1; i < MAX_MV; i++)
         {
-            printf("| %-16s %5d %5s\n", MoveName[i], (int) ceilf(faMCFreq_glb[i] / freqMin), "|");
+            printf("| %-16s %5d %5s\n", MoveName[i], (int) ceilf(g_mc.faMCFreq[i] / freqMin), "|");
         }
     for (i = 0; i < 30; i++)
         {
@@ -119,19 +119,19 @@ void PrintToScreen_MCMoveFreqs(void)
 
 void ScreenIOUtil_PrintTemperatures(void)
 {
-    printf("Thermalizing Temperature       = %.2f\n", fPreKT_glb);
+    printf("Thermalizing Temperature       = %.2f\n", g_mc.fPreKT);
 
     if (nTemp_inv_glb == 1)
         {
             puts("Temperature Inverted           = YES");
-            printf("MC Temperatures: (First, Last) = (%.2f, %.2f)\n", fKT_glb,
-                   1.f / (fKT_glb + (float) (nTotCycleNum_glb - 1) * fDeltaTemp_glb));
+            printf("MC Temperatures: (First, Last) = (%.2f, %.2f)\n", g_mc.fKT,
+                   1.f / (g_mc.fKT + (float) (g_mc.nTotCycleNum - 1) * g_mc.fDeltaTemp));
         }
     else
         {
             puts("Temperature Inverted           = NO");
-            printf("MC Temperatures: (First, Last) = (%.2f, %.2f)\n", fKT_glb,
-                   fKT_glb + (float) (nTotCycleNum_glb - 1) * fDeltaTemp_glb);
+            printf("MC Temperatures: (First, Last) = (%.2f, %.2f)\n", g_mc.fKT,
+                   g_mc.fKT + (float) (g_mc.nTotCycleNum - 1) * g_mc.fDeltaTemp);
         }
 
     printf("Temperature Annealing Mode     = %d\n", nAnnealing_Mode_glb);
@@ -170,10 +170,10 @@ void ScreenIO_Print_KeyFile(void)
 
     printf("Indent Mode                    = %d\n", nBiasPotential_Mode_glb);
     //    printf("Rotational Bias Mode           = %d\n", RotBias_Mode_glb);
-    printf("Number of MC Cycles            = %d\n", nTotCycleNum_glb);
-    printf("Number of MC Steps/Cycle       = %e\n", (float) nMCStepsPerCycle_glb);
-    printf("Number of Thermalizing Steps   = %e\n", (float) nMCStepsForTherm_glb);
-    printf("RNG Seed                       = %d\n", nRNG_Seed_glb);
+    printf("Number of MC Cycles            = %d\n", g_mc.nTotCycleNum);
+    printf("Number of MC Steps/Cycle       = %e\n", (float) g_mc.nMCStepsPerCycle);
+    printf("Number of Thermalizing Steps   = %e\n", (float) g_mc.nMCStepsForTherm);
+    printf("RNG Seed                       = %d\n", g_mc.nRNG_Seed);
     printf("Clustering Mode                = %d\n", nClusteringMode_glb);
 
     PrintToScreen_MCMoveFreqs();
@@ -235,10 +235,10 @@ void ScreenIO_Print_AcceptanceRatios(void)
     puts("Acceptance Ratios    |");
     for (i = 1; i < MAX_MV; i++)
         {
-            nMoveSum = naMCAccepMat_glb[0][i] + naMCAccepMat_glb[1][i];
+            nMoveSum = g_mc.naMCAccepMat[0][i] + g_mc.naMCAccepMat[1][i];
             if (nMoveSum)
                 {
-                    fAccRatio = 100.f * (float) naMCAccepMat_glb[1][i] / (float) nMoveSum;
+                    fAccRatio = 100.f * (float) g_mc.naMCAccepMat[1][i] / (float) nMoveSum;
                     printf("%-12s: %-7.2f|\n", MoveName[i], fAccRatio);
                 }
             else
@@ -256,7 +256,7 @@ void ScreenIO_Print_Log_Thermalization(const long nGen)
     puts("****************************************");
     printf("Run Cycle: Thermalization\n");
     printf("Step     : %8.3e\n", (float) nGen);
-    printf("MC Temp  : %8.3e\n", fCuTemp_glb);
+    printf("MC Temp  : %8.3e\n", g_mc.fCuTemp);
 
     if (nTotClusCounter_glb > 0)
         {
@@ -276,7 +276,7 @@ void ScreenIO_Print_Log_FullRun(const long nGen, const int run_cycle)
     puts("****************************************");
     printf("Run Cycle: %d\n", run_cycle);
     printf("Step     : %8.3e\n", (float) nGen);
-    printf("MC Temp  : %8.3e\n", fCuTemp_glb);
+    printf("MC Temp  : %8.3e\n", g_mc.fCuTemp);
 
     if (nTotClusCounter_glb > 0)
         {

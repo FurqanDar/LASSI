@@ -80,7 +80,7 @@ void DataPrinting_Thermalization(const long nGen)
                     cAccFlag = ForPrinting_GetReportState(nGen, naReportFreqs_glb[REPORT_MCMOVE]);
                     if (cAccFlag)
                         {
-                            FileIO_WriteTo_MCMoveFile(strFileMCMove_glb, nGen, fCuTemp_glb);
+                            FileIO_WriteTo_MCMoveFile(strFileMCMove_glb, nGen, g_mc.fCuTemp);
                         }
                 }
         }
@@ -142,7 +142,7 @@ void DataPrinting_DuringRunCycles(const long nGen, const int run_it)
                     cAccFlag = ForPrinting_GetReportState(nGen, naReportFreqs_glb[REPORT_MCMOVE]);
                     if (cAccFlag)
                         {
-                            FileIO_WriteTo_MCMoveFile(strFileMCMove_glb, nGen, fCuTemp_glb);
+                            FileIO_WriteTo_MCMoveFile(strFileMCMove_glb, nGen, g_mc.fCuTemp);
                         }
                 }
         }

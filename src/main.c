@@ -28,7 +28,7 @@ int main(int argc, char* argv[])
     if (errorcode == 0)
         {
             printf("Key file %s was successfully parsed.\n\n", keyfile);
-            srand(nRNG_Seed_glb);
+            srand(g_mc.nRNG_Seed);
             ScreenIO_Print_KeyFile();
         }
     else
@@ -53,7 +53,7 @@ int main(int argc, char* argv[])
     else if (bReadConf_glb == 1)
         {
             Initial_Conditions_FromFile();
-            if (nMCStepsForTherm_glb > 0)
+            if (g_mc.nMCStepsForTherm > 0)
                 { // Remember that all thermalizing variants of
                   // MC moves cannot handle bonds.
                     Initial_Conditions_BreakBonds();
@@ -87,13 +87,13 @@ int main(int argc, char* argv[])
     printf("Thermalizing system.\n");
     printf("---------------------\n\n");
     // Thermalizing the system.
-    fCuTemp_glb = fPreKT_glb;
+    g_mc.fCuTemp = g_mc.fPreKT;
     // FILE Initialization
     FileIO_CreateRunningDataFiles();
 
-    for (nGen = 0; nGen < nMCStepsForTherm_glb; nGen++)
+    for (nGen = 0; nGen < g_mc.nMCStepsForTherm; nGen++)
         { // Intentionally not performing any data acquisition in the thermalization phase.
-            nMCInfo = MC_Step_Therm(fCuTemp_glb);
+            nMCInfo = MC_Step_Therm(g_mc.fCuTemp);
             //        printf("(%d,%d)\n", nMCInfo / 12, nMCInfo % 2);
             DataPrinting_Thermalization(nGen);
         }
@@ -116,26 +116,26 @@ int main(int argc, char* argv[])
     */
     int run_cycle;
     // Going through the MC cycles.
-    for (run_cycle = 0; run_cycle < nTotCycleNum_glb; run_cycle++)
+    for (run_cycle = 0; run_cycle < g_mc.nTotCycleNum; run_cycle++)
         {
             /*
              * Pre run-cycle specific initialization.
              */
-            fKT_glb = faKT_Cycle_glb[run_cycle];
-            Calculate_Rot_Bias(fKT_glb);
+            g_mc.fKT = g_mc.faKT_Cycle[run_cycle];
+            Calculate_Rot_Bias(g_mc.fKT);
             FileIOUtil_PreCycle_Init(run_cycle);
-            for (nGen = 0; nGen < nMCStepsPerCycle_glb / 2; nGen++)
+            for (nGen = 0; nGen < g_mc.nMCStepsPerCycle / 2; nGen++)
                 {
-                    fCuTemp_glb = nAnnealing_Mode_glb == -1 ? fKT_glb : Temperature_Function(nAnnealing_Mode_glb, nGen);
-                    nMCInfo     = MC_Step(fCuTemp_glb);
+                    g_mc.fCuTemp = nAnnealing_Mode_glb == -1 ? g_mc.fKT : Temperature_Function(nAnnealing_Mode_glb, nGen);
+                    nMCInfo     = MC_Step(g_mc.fCuTemp);
                     //            printf("(%d,%d)\n", nMCInfo / 12, nMCInfo % 2);
                     DataPrinting_DuringRunCycles(nGen, run_cycle);
                 }
 
-            for (nGen = nMCStepsPerCycle_glb / 2; nGen <= nMCStepsPerCycle_glb; nGen++)
+            for (nGen = g_mc.nMCStepsPerCycle / 2; nGen <= g_mc.nMCStepsPerCycle; nGen++)
                 {
-                    fCuTemp_glb = nAnnealing_Mode_glb == -1 ? fKT_glb : Temperature_Function(nAnnealing_Mode_glb, nGen);
-                    nMCInfo     = MC_Step(fCuTemp_glb);
+                    g_mc.fCuTemp = nAnnealing_Mode_glb == -1 ? g_mc.fKT : Temperature_Function(nAnnealing_Mode_glb, nGen);
+                    nMCInfo     = MC_Step(g_mc.fCuTemp);
                     //            printf("(%d,%d)\n", nMCInfo / 12, nMCInfo % 2);
                     DataPrinting_DuringRunCycles(nGen, run_cycle);
                     DataAnalysis_DuringRunCycles(nGen, run_cycle);
