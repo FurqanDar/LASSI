@@ -54,11 +54,11 @@ int RDF_ComponentIndex(const int i, const int j)
         }
     else if (i < j)
         {
-            return nBeadTypes_glb + j - (i * (3 + i - 2 * nBeadTypes_glb)) / 2;
+            return g_energy.nBeadTypes + j - (i * (3 + i - 2 * g_energy.nBeadTypes)) / 2;
         }
     else
         {
-            return nBeadTypes_glb + i - (j * (3 + j - 2 * nBeadTypes_glb)) / 2;
+            return g_energy.nBeadTypes + i - (j * (3 + j - 2 * g_energy.nBeadTypes)) / 2;
         }
 }
 

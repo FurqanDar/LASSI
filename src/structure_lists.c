@@ -242,7 +242,7 @@ int BeadList_CanTopoAngle(const int size, int* beadList)
         {
             tmpBead = beadList[i];
             resi    = g_system.bead_info[tmpBead][BEAD_TYPE];
-            if (faEnergy_glb[resi][resi][E_STIFF])
+            if (g_energy.faEnergy[resi][resi][E_STIFF])
                 {
                     beadList[newSize++] = tmpBead;
                 }

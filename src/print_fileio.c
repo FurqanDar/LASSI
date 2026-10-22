@@ -227,7 +227,7 @@ void FileIO_AppendEnergyTo_EnergyFile(const char* fileNameStr, const long nGen)
     fprintf(fp, "%-12ld", nGen);
     for (i = 0; i < (MAX_E); i++)
         {
-            fprintf(fp, "  %-10.2E", faCurrEn_glb[i]);
+            fprintf(fp, "  %-10.2E", g_energy.faCurrEn[i]);
         }
     fprintf(fp, "\n");
 
@@ -492,7 +492,7 @@ void FileIO_WriteTo_TopFile(const char* filename)
     fprintf(fp, "\t0\tdihedrals\n");                 // Systems don't have dihedrals  yet
     fprintf(fp, "\t0\timpropers\n");                 // Systems don't have imporopers yet
     fprintf(fp, "\n");                               // Empty line.
-    fprintf(fp, "%d\tatom types\n", nBeadTypes_glb); // This many bead-types
+    fprintf(fp, "%d\tatom types\n", g_energy.nBeadTypes); // This many bead-types
     fprintf(fp, "1\tbond types\n");                  // System can have multiple bond-lengths
     fprintf(fp, "0\tangle types\n");                 // Systems don't have any angular forces yet
     fprintf(fp, "\n");                               // Empty line.
@@ -502,7 +502,7 @@ void FileIO_WriteTo_TopFile(const char* filename)
     fprintf(fp, "\n");       // Empty line.
     fprintf(fp, "Masses\n"); // These don't really mean anything
     fprintf(fp, "\n");       // Empty line.
-    for (i = 0; i < nBeadTypes_glb; i++)
+    for (i = 0; i < g_energy.nBeadTypes; i++)
         {
             fprintf(fp, "%d\t1.0\n", i);
         }

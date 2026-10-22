@@ -37,7 +37,7 @@ int Move_Rot(int beadID, float MyTemp)
     if (g_system.bead_info[beadID][BEAD_FACE] != -1)
         {
             resj  = g_system.bead_info[g_system.bead_info[beadID][BEAD_FACE]][BEAD_TYPE]; // This is who I'm currently bonded to
-            oldEn = (lLDub) faEnergy_glb[resi][resj][E_SC_SC];
+            oldEn = (lLDub) g_energy.faEnergy[resi][resj][E_SC_SC];
         }
     // OP_ShuffleRotIndecies();
     CandNum = Check_RotStatesOld(beadID, resi, MyTemp);
@@ -48,7 +48,7 @@ int Move_Rot(int beadID, float MyTemp)
     if (yTemp != -1)
         { // There is a bead here
             resj  = g_system.bead_info[yTemp][BEAD_TYPE];
-            newEn = (lLDub) faEnergy_glb[resi][resj][E_SC_SC];
+            newEn = (lLDub) g_energy.faEnergy[resi][resj][E_SC_SC];
         }
     // See if we can accept this move
     MCProb      = (lLDub) rand() / (lLDub) RAND_MAX;
@@ -279,7 +279,7 @@ int Move_Snake(int chainID, float MyTemp)
         }
 
     resi = g_system.bead_info[angBead_old][BEAD_TYPE];
-    oldEn += faEnergy_glb[resi][resi][E_STIFF] ? Energy_Topo_Angle(angBead_old) : 0.;
+    oldEn += g_energy.faEnergy[resi][resi][E_STIFF] ? Energy_Topo_Angle(angBead_old) : 0.;
 
     if (SnakeFwd)
         { // Slithering the chain forwards in ID-space
@@ -326,7 +326,7 @@ int Move_Snake(int chainID, float MyTemp)
         }
 
     resi = g_system.bead_info[angBead_new][BEAD_TYPE];
-    newEn += faEnergy_glb[resi][resi][E_STIFF] ? Energy_Topo_Angle(angBead_new) : 0.;
+    newEn += g_energy.faEnergy[resi][resi][E_STIFF] ? Energy_Topo_Angle(angBead_new) : 0.;
 
     // Doing the Metropolis-Hastings thing
     MCProb      = (lLDub) rand() / (lLDub) RAND_MAX;
@@ -843,7 +843,7 @@ int Move_DbPvt(const int beadID, const float myTemp)
 
     const int resi = g_system.bead_info[thisBead][BEAD_TYPE];
     oldEn          = 0.;
-    if (faEnergy_glb[resi][resi][E_STIFF])
+    if (g_energy.faEnergy[resi][resi][E_STIFF])
         {
             oldEn = Energy_Topo_Angle(thisBead) + Energy_Topo_Angle(nextBead);
             oldEn += Energy_Topo_Angle(thisBead_P) + Energy_Topo_Angle(nextBead_P);
@@ -859,7 +859,7 @@ int Move_DbPvt(const int beadID, const float myTemp)
         }
 
     newEn = 0.;
-    if (faEnergy_glb[resi][resi][E_STIFF])
+    if (g_energy.faEnergy[resi][resi][E_STIFF])
         {
             newEn = Energy_Topo_Angle(thisBead) + Energy_Topo_Angle(nextBead);
             newEn += Energy_Topo_Angle(thisBead_P) + Energy_Topo_Angle(nextBead_P);
@@ -1300,7 +1300,7 @@ int Move_Pivot(int chainID, float MyTemp)
         }
 
     resi = g_system.bead_info[anchorBead][BEAD_TYPE];
-    oldEn += faEnergy_glb[resi][resi][E_STIFF] ? Energy_Topo_Angle(anchorBead) : 0.;
+    oldEn += g_energy.faEnergy[resi][resi][E_STIFF] ? Energy_Topo_Angle(anchorBead) : 0.;
 
     for (i = 0; i < beadNum; i++)
         {
@@ -1341,7 +1341,7 @@ int Move_Pivot(int chainID, float MyTemp)
         }
 
     resi = g_system.bead_info[anchorBead][BEAD_TYPE];
-    newEn += faEnergy_glb[resi][resi][E_STIFF] ? Energy_Topo_Angle(anchorBead) : 0.;
+    newEn += g_energy.faEnergy[resi][resi][E_STIFF] ? Energy_Topo_Angle(anchorBead) : 0.;
 
     const lLDub MCProb = (lLDub) rand() / (lLDub) RAND_MAX;
     lLDub MHAcc        = OP_GenMHValue(FSum, BSum, oldEn - newEn, (lLDub) MyTemp);
