@@ -50,3 +50,8 @@ is implied by this split.
 
 Build: `src/compile.sh` (also wired in top-level `Makefile` / `CMakeLists.txt`).
 Regression gate: `make characterization`.
+
+## Dependency direction
+
+See [`docs/architecture.md`](architecture.md) for the allowed
+`structure ← energy ← moves ← analysis/I/O ← main/parse` include edges.

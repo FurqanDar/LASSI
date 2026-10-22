@@ -1,9 +1,5 @@
 #include "print.h"
-#include "initialize.h"
-#include "cluster.h"
-#include "energy.h"
 #include "structure.h"
-
 
 /// PrintToScreen_EnergyMatrix - fancy function to print symmetric matrices with labels
 /// \param strTitle

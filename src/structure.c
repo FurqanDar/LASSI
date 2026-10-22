@@ -1,9 +1,4 @@
 #include "structure.h"
-#include "cluster.h"
-#include "energy.h"
-#include "mcmove.h"
-#include "print.h"
-
 
 /// Lat_Ind_FromCoords - helper function to get the correct 1D index of this position
 /// \param i

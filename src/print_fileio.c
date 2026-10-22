@@ -1,9 +1,9 @@
 #include "print.h"
-#include "initialize.h"
-#include "cluster.h"
-#include "energy.h"
 #include "structure.h"
 
+/* initialize.h is main/parse-layer; forward-declare the one allocator we use
+ * so I/O does not take a hard include edge upward (Phase 3.1). */
+int** Create2DInt(const size_t xDim, const size_t yDim, const char* ArrName);
 
 /// TrajArr_Index
 /// \param beadID

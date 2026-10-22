@@ -1,9 +1,4 @@
 #include "structure.h"
-#include "cluster.h"
-#include "energy.h"
-#include "mcmove.h"
-#include "print.h"
-
 
 /// NeighborSearch_ForOvlp: Given the beadID, which should be at startVec, we calculate all the neighbors
 /// within the +-1 cube. We return the number of neighbors.

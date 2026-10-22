@@ -1,9 +1,5 @@
 #include "structure.h"
 #include "cluster.h"
-#include "energy.h"
-#include "mcmove.h"
-#include "print.h"
-
 
 /// GyrTensor_GyrRad_Avg - calculates the total radius of gyration of the system, while not being smart about the
 /// periodic boundaries. This is used as a proxy to detect phase separation, but is a relic of the old formalism. The
