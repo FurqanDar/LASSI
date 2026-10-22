@@ -42,8 +42,7 @@ int Lat_Ind_OfBead(const int beadID)
 
 /// Dist_PointToPoint_Box - euclidean min-image distance between integer points with explicit box.
 /// Pure: no globals. Same arithmetic as Dist_PointToPoint.
-float Dist_PointToPoint_Box(const int* const restrict f1, const int* const restrict f2,
-                            const int* const restrict box)
+float Dist_PointToPoint_Box(const int* const restrict f1, const int* const restrict f2, const int* const restrict box)
 {
     int d[POS_MAX];
     int i;
@@ -65,8 +64,7 @@ float Dist_PointToPoint_Float(const float* f1, const float* f2)
     for (i = 0; i < POS_MAX; i++)
     {
         d[i] = fabsf(f1[i] - f2[i]);
-        d[i] =
-            d[i] > (float)g_system.naBoxSize[i] / 2. ? (float)g_system.naBoxSize[i] - d[i] : d[i];
+        d[i] = d[i] > (float)g_system.naBoxSize[i] / 2. ? (float)g_system.naBoxSize[i] - d[i] : d[i];
     }
 
     return sqrtf(d[POS_X] * d[POS_X] + d[POS_Y] * d[POS_Y] + d[POS_Z] * d[POS_Z]);
@@ -115,8 +113,7 @@ float Dist_BeadToPoint_Float(const int beadID, const float* f1)
     for (i = 0; i < POS_MAX; i++)
     {
         d[i] = fabsf((float)g_system.bead_info[beadID][i] - f1[i]);
-        d[i] =
-            d[i] > (float)g_system.naBoxSize[i] / 2. ? (float)g_system.naBoxSize[i] - d[i] : d[i];
+        d[i] = d[i] > (float)g_system.naBoxSize[i] / 2. ? (float)g_system.naBoxSize[i] - d[i] : d[i];
     }
     return sqrtf((d[POS_X] * d[POS_X] + d[POS_Y] * d[POS_Y] + d[POS_Z] * d[POS_Z]));
 }
@@ -207,8 +204,7 @@ void LatPos_add_wPBC(int* outVec, const int* firVec, const int* secVec)
     }
     for (j = 0; j < POS_MAX; j++)
     {
-        outVec[j] =
-            outVec[j] >= g_system.naBoxSize[j] ? outVec[j] - g_system.naBoxSize[j] : outVec[j];
+        outVec[j] = outVec[j] >= g_system.naBoxSize[j] ? outVec[j] - g_system.naBoxSize[j] : outVec[j];
     }
 }
 
@@ -219,11 +215,9 @@ void LatPos_add_wPBC(int* outVec, const int* firVec, const int* secVec)
 void LatPos_add_wPBC_ofComp(int* outVec, const int* firVec, const int* secVec, const int compNum)
 {
     outVec[compNum] = firVec[compNum] + secVec[compNum];
-    outVec[compNum] =
-        outVec[compNum] < 0 ? outVec[compNum] + g_system.naBoxSize[compNum] : outVec[compNum];
-    outVec[compNum] = outVec[compNum] >= g_system.naBoxSize[compNum]
-                          ? outVec[compNum] - g_system.naBoxSize[compNum]
-                          : outVec[compNum];
+    outVec[compNum] = outVec[compNum] < 0 ? outVec[compNum] + g_system.naBoxSize[compNum] : outVec[compNum];
+    outVec[compNum] = outVec[compNum] >= g_system.naBoxSize[compNum] ? outVec[compNum] - g_system.naBoxSize[compNum]
+                                                                     : outVec[compNum];
 }
 
 /// LatPos_add_noPBC: Given the two arrays firVec and secVec, we store the sum of the two arrays in
@@ -251,13 +245,11 @@ void BeadPos_sub_wPBC(int* outVec, const int* firVec, const int* secVec)
     }
     for (j = 0; j < POS_MAX; j++)
     {
-        outVec[j] = outVec[j] < -g_system.naBoxSize[j] / 2.f ? outVec[j] + g_system.naBoxSize[j]
-                                                             : outVec[j]; // pht
+        outVec[j] = outVec[j] < -g_system.naBoxSize[j] / 2.f ? outVec[j] + g_system.naBoxSize[j] : outVec[j]; // pht
     }
     for (j = 0; j < POS_MAX; j++)
     {
-        outVec[j] = outVec[j] >= g_system.naBoxSize[j] / 2.f ? outVec[j] - g_system.naBoxSize[j]
-                                                             : outVec[j]; // pht
+        outVec[j] = outVec[j] >= g_system.naBoxSize[j] / 2.f ? outVec[j] - g_system.naBoxSize[j] : outVec[j]; // pht
     }
 }
 

@@ -238,9 +238,8 @@ void OP_System_MoveBeadTo(const int beadID, const int* newPos)
 { // Updates position to new one and handles lattice
     OP_CopyBead(g_system.old_bead[beadID], g_system.bead_info[beadID]);
     LatPos_copy(g_system.bead_info[beadID], newPos);
-    g_system.naTotLattice[Lat_Ind_FromVec(g_system.old_bead[beadID])] =
-        -1;                                                  // Removing from old place.
-    g_system.naTotLattice[Lat_Ind_FromVec(newPos)] = beadID; // Placing in new place.
+    g_system.naTotLattice[Lat_Ind_FromVec(g_system.old_bead[beadID])] = -1; // Removing from old place.
+    g_system.naTotLattice[Lat_Ind_FromVec(newPos)] = beadID;                // Placing in new place.
 }
 
 /// OP_System_MoveBeadTo_Inv - performs the inverse of OP_System_MoveBeadTo to
@@ -278,16 +277,17 @@ void OP_MoveBeadTo_ForMTLocal(int beadID, const int* newPos)
     }
 }
 
-void OP_System_MoveBeadsInListToPos(const int listSize, const int* beadList,
-                                    const int (*newPos)[POS_MAX])
+void OP_System_MoveBeadsInListToPos(const int listSize, const int* beadList, const int (*newPos)[POS_MAX])
 {
     OP_Lattice_EmptySitesForListOfBeads(listSize, beadList);
     OP_Beads_MoveBeadsInListToPos(listSize, beadList, newPos);
     OP_Lattice_PlaceBeadsInList(listSize, beadList);
 }
 
-void OP_Inv_MoveBeadsTo_InList(const int listSize, const int beadList[MAX_BONDS + 1],
-                               const int newPos[MAX_BONDS + 1][POS_MAX])
+void OP_Inv_MoveBeadsTo_InList(
+    const int listSize,
+    const int beadList[MAX_BONDS + 1],
+    const int newPos[MAX_BONDS + 1][POS_MAX])
 {
     OP_Lattice_EmptySitesForListOfBeads(listSize, beadList);
     //    OP_Lattice_PlaceBeadsInList()
@@ -431,8 +431,7 @@ void OP_Beads_CopyBeadsInListFromOld(const int listSize, const int* beadList)
     }
 }
 
-void OP_Beads_CopyBeadsInListToPosList(const int listSize, const int* beadList,
-                                       int (*beadPos)[POS_MAX])
+void OP_Beads_CopyBeadsInListToPosList(const int listSize, const int* beadList, int (*beadPos)[POS_MAX])
 {
     int i, thisBead;
     for (i = 0; i < listSize; i++)
@@ -471,8 +470,7 @@ void OP_Lattice_EmptySitesForListOfPos(const int listSize, const int (*beadPos)[
     }
 }
 
-void OP_Beads_MoveBeadsInListToPos(const int listSize, const int* beadList,
-                                   const int (*newPos)[POS_MAX])
+void OP_Beads_MoveBeadsInListToPos(const int listSize, const int* beadList, const int (*newPos)[POS_MAX])
 {
     int i, tmpBead;
     for (i = 0; i < listSize; i++)
@@ -531,8 +529,7 @@ void OP_Inv_MoveBeads_InList_ToPos(const int listSize, const int* beadList)
     }
 }
 
-lLDub MC_RosenbluthSampling_ForLocal_AtOld(const int beadID, const int resi, long double* oldEn,
-                                           const int neigh_num)
+lLDub MC_RosenbluthSampling_ForLocal_AtOld(const int beadID, const int resi, long double* oldEn, const int neigh_num)
 {
     int ros_num;
     if (g_system.nBeadTypeIsSticker[resi])
@@ -550,8 +547,12 @@ lLDub MC_RosenbluthSampling_ForLocal_AtOld(const int beadID, const int resi, lon
     }
 }
 
-lLDub MC_RosenbluthSampling_ForLocal_AtNew(const int beadID, const int resi, int* bead_part,
-                                           long double* newEn, const int neigh_num)
+lLDub MC_RosenbluthSampling_ForLocal_AtNew(
+    const int beadID,
+    const int resi,
+    int* bead_part,
+    long double* newEn,
+    const int neigh_num)
 {
     int ros_num;
 
@@ -572,8 +573,7 @@ lLDub MC_RosenbluthSampling_ForLocal_AtNew(const int beadID, const int resi, int
     }
 }
 
-lLDub MC_RosenbluthSampling_ForChains_AtOld(const int beadID, const int resi, long double* oldEn,
-                                            const int neigh_num)
+lLDub MC_RosenbluthSampling_ForChains_AtOld(const int beadID, const int resi, long double* oldEn, const int neigh_num)
 {
     int ros_num;
     if (g_system.nBeadTypeIsSticker[resi])
@@ -581,8 +581,7 @@ lLDub MC_RosenbluthSampling_ForChains_AtOld(const int beadID, const int resi, lo
         // the anisotropic energy should not be added to the oldEn
         // because it is already counted in this biased smapling.
         // *oldEn  = *oldEn + Energy_Anisotropic_For_Chain(beadID);
-        ros_num =
-            Check_RotStates_wNeighList_ForChains(beadID, resi, g_system.naOldOvlpNeighs, neigh_num);
+        ros_num = Check_RotStates_wNeighList_ForChains(beadID, resi, g_system.naOldOvlpNeighs, neigh_num);
         OP_NormalizeRotState(0, ros_num);
         return logl(g_energy.ldaBoltzNorm[0]);
     }
@@ -592,8 +591,12 @@ lLDub MC_RosenbluthSampling_ForChains_AtOld(const int beadID, const int resi, lo
     }
 }
 
-lLDub MC_RosenbluthSampling_ForChains_AtNew(const int beadID, const int resi, int* bead_part,
-                                            long double* newEn, const int neigh_num)
+lLDub MC_RosenbluthSampling_ForChains_AtNew(
+    const int beadID,
+    const int resi,
+    int* bead_part,
+    long double* newEn,
+    const int neigh_num)
 {
     int ros_num;
     const int cur_part = g_system.bead_info[beadID][BEAD_FACE];
@@ -603,8 +606,7 @@ lLDub MC_RosenbluthSampling_ForChains_AtNew(const int beadID, const int resi, in
         // OP_ShuffleArray(neigh_num, g_system.naNewOvlpNeighs);
         // ros_num = Check_RotStates_wNeighList_ForChains(beadID, resi, g_system.naNewOvlpNeighs,
         // neigh_num);
-        ros_num =
-            Check_RotStates_wNeighList_ForChains(beadID, resi, g_system.naNewOvlpNeighs, neigh_num);
+        ros_num = Check_RotStates_wNeighList_ForChains(beadID, resi, g_system.naNewOvlpNeighs, neigh_num);
         OP_NormalizeRotState(0, ros_num);
         if (cur_part == -1)
         {
@@ -618,9 +620,12 @@ lLDub MC_RosenbluthSampling_ForChains_AtNew(const int beadID, const int resi, in
     }
 }
 
-lLDub MC_RosenbluthSampling_ForLists_AtOld(const int beadIdx, const int listSize,
-                                           const int beadList[MAX_BONDS + 1], lLDub* oldEn,
-                                           const int neigh_num)
+lLDub MC_RosenbluthSampling_ForLists_AtOld(
+    const int beadIdx,
+    const int listSize,
+    const int beadList[MAX_BONDS + 1],
+    lLDub* oldEn,
+    const int neigh_num)
 {
     const int beadID = beadList[beadIdx];
     const int resi = g_system.bead_info[beadID][BEAD_TYPE];
@@ -631,8 +636,8 @@ lLDub MC_RosenbluthSampling_ForLists_AtOld(const int beadIdx, const int listSize
         // because it is already counted in this biased smapling.
         // *oldEn  = *oldEn + Energy_Anisotropic_For_List(beadID, listSize, beadList);
         // ros_num = Check_RotStates_wNeighList(beadID, resi, g_system.naOldOvlpNeighs, neigh_num);
-        ros_num = Check_RotStates_wNeighList_ForLists(beadIdx, listSize, beadList, resi,
-                                                      g_system.naOldOvlpNeighs, neigh_num);
+        ros_num =
+            Check_RotStates_wNeighList_ForLists(beadIdx, listSize, beadList, resi, g_system.naOldOvlpNeighs, neigh_num);
         OP_NormalizeRotState(0, ros_num);
         return logl(g_energy.ldaBoltzNorm[0]);
     }
@@ -642,9 +647,13 @@ lLDub MC_RosenbluthSampling_ForLists_AtOld(const int beadIdx, const int listSize
     }
 }
 
-lLDub MC_RosenbluthSampling_ForLists_AtNew(const int beadIdx, const int listSize,
-                                           const int beadList[MAX_BONDS + 1], int* bead_part,
-                                           lLDub* newEn, const int neigh_num)
+lLDub MC_RosenbluthSampling_ForLists_AtNew(
+    const int beadIdx,
+    const int listSize,
+    const int beadList[MAX_BONDS + 1],
+    int* bead_part,
+    lLDub* newEn,
+    const int neigh_num)
 {
     *bead_part = -1;
     const int beadID = beadList[beadIdx];
@@ -657,8 +666,8 @@ lLDub MC_RosenbluthSampling_ForLists_AtNew(const int beadIdx, const int listSize
         // because it is already counted in this biased smapling.
         // *newEn  = *newEn + Energy_Anisotropic_For_List(beadID, listSize, beadList);
         // ros_num = Check_RotStates_wNeighList(beadID, resi, g_system.naNewOvlpNeighs, neigh_num);
-        ros_num = Check_RotStates_wNeighList_ForLists(beadIdx, listSize, beadList, resi,
-                                                      g_system.naNewOvlpNeighs, neigh_num);
+        ros_num =
+            Check_RotStates_wNeighList_ForLists(beadIdx, listSize, beadList, resi, g_system.naNewOvlpNeighs, neigh_num);
         OP_NormalizeRotState(0, ros_num);
         if (cur_part == -1)
         {
@@ -673,8 +682,13 @@ lLDub MC_RosenbluthSampling_ForLists_AtNew(const int beadIdx, const int listSize
     }
 }
 
-lLDub MC_RosenbluthSampling_ForRange_AtOld(const int beadID, const int resi, const int smallestBead,
-                                           const int largestBead, lLDub* oldEn, const int neigh_num)
+lLDub MC_RosenbluthSampling_ForRange_AtOld(
+    const int beadID,
+    const int resi,
+    const int smallestBead,
+    const int largestBead,
+    lLDub* oldEn,
+    const int neigh_num)
 {
     int ros_num;
     if (g_system.nBeadTypeIsSticker[resi])
@@ -683,8 +697,13 @@ lLDub MC_RosenbluthSampling_ForRange_AtOld(const int beadID, const int resi, con
         // because it is already counted in this biased smapling.
         // *oldEn  = *oldEn + Energy_Anisotropic_For_Range(beadID, smallestBead, largestBead);
         // ros_num = Check_RotStates_wNeighList(beadID, resi, g_system.naOldOvlpNeighs, neigh_num);
-        ros_num = Check_RotState_wNeighList_ForRange(beadID, resi, smallestBead, largestBead,
-                                                     g_system.naOldOvlpNeighs, neigh_num);
+        ros_num = Check_RotState_wNeighList_ForRange(
+            beadID,
+            resi,
+            smallestBead,
+            largestBead,
+            g_system.naOldOvlpNeighs,
+            neigh_num);
         OP_NormalizeRotState(0, ros_num);
         return logl(g_energy.ldaBoltzNorm[0]);
     }
@@ -694,9 +713,14 @@ lLDub MC_RosenbluthSampling_ForRange_AtOld(const int beadID, const int resi, con
     }
 }
 
-lLDub MC_RosenbluthSampling_ForRange_AtNew(const int beadID, const int resi, const int smallestBead,
-                                           const int largestBead, int* bead_part, lLDub* newEn,
-                                           const int neigh_num)
+lLDub MC_RosenbluthSampling_ForRange_AtNew(
+    const int beadID,
+    const int resi,
+    const int smallestBead,
+    const int largestBead,
+    int* bead_part,
+    lLDub* newEn,
+    const int neigh_num)
 {
     int ros_num;
     const int cur_part = g_system.bead_info[beadID][BEAD_FACE];
@@ -705,8 +729,13 @@ lLDub MC_RosenbluthSampling_ForRange_AtNew(const int beadID, const int resi, con
     {
         // OP_ShuffleArray(neigh_num, g_system.naNewOvlpNeighs);
         // ros_num = Check_RotStates_wNeighList(beadID, resi, g_system.naNewOvlpNeighs, neigh_num);
-        ros_num = Check_RotState_wNeighList_ForRange(beadID, resi, smallestBead, largestBead,
-                                                     g_system.naNewOvlpNeighs, neigh_num);
+        ros_num = Check_RotState_wNeighList_ForRange(
+            beadID,
+            resi,
+            smallestBead,
+            largestBead,
+            g_system.naNewOvlpNeighs,
+            neigh_num);
         OP_NormalizeRotState(0, ros_num);
         if (cur_part == -1)
         {

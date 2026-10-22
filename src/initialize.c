@@ -9,8 +9,8 @@ void Memory_Initialization_AtStart(void)
     char arr_name[100];
 
     strcpy(arr_name, "g_system.naTotLattice");
-    g_system.naTotLattice = Create1DInt(
-        g_system.naBoxSize[0] * g_system.naBoxSize[1] * g_system.naBoxSize[2], arr_name);
+    g_system.naTotLattice =
+        Create1DInt(g_system.naBoxSize[0] * g_system.naBoxSize[1] * g_system.naBoxSize[2], arr_name);
 
     Memory_Allocate_NeighborLists();
 
@@ -27,22 +27,20 @@ void Memory_Initialization_AtStart(void)
     g_analysis.naList = Create1DInt(2 + g_system.tot_chains, arr_name);
 
     strcpy(arr_name, "g_analysis.naClusterMatrix");
-    g_analysis.naClusterMatrix =
-        Create2DInt(g_system.tot_chains + 2, g_system.tot_chains + 2, arr_name);
+    g_analysis.naClusterMatrix = Create2DInt(g_system.tot_chains + 2, g_system.tot_chains + 2, arr_name);
 
     if (g_reports.naReportFreqs[REPORT_NETWORK] != 0)
     {
         strcpy(arr_name, "ldTotClusArr");
-        g_analysis.ldaTOTCLUS_Arr =
-            Create2DLongdouble(2 + g_system.tot_chains, g_mc.nTotCycleNum, arr_name);
+        g_analysis.ldaTOTCLUS_Arr = Create2DLongdouble(2 + g_system.tot_chains, g_mc.nTotCycleNum, arr_name);
 
         strcpy(arr_name, "ldMolClusArr");
         g_analysis.ldaMOLCLUS_Arr =
             Create1DLongdouble(((g_system.tot_chains + 1) * g_system.tot_chain_types), arr_name);
 
         strcpy(arr_name, "ldTotMolClusArr");
-        g_analysis.ldaTOTMOLCLUS_Arr = Create1DLongdouble(
-            (g_system.tot_chains * g_system.tot_chain_types * g_mc.nTotCycleNum), arr_name);
+        g_analysis.ldaTOTMOLCLUS_Arr =
+            Create1DLongdouble((g_system.tot_chains * g_system.tot_chain_types * g_mc.nTotCycleNum), arr_name);
 
         strcpy(arr_name, "ldTotGyrRad");
         g_analysis.ldaTOTRg_Arr = Create2DLongdouble(2, g_mc.nTotCycleNum, arr_name);
@@ -52,12 +50,11 @@ void Memory_Initialization_AtStart(void)
     if (g_reports.naReportFreqs[REPORT_RDFTOT] != 0)
     {
         strcpy(arr_name, "ldTotRDFArr");
-        g_analysis.ldaTOTRDF_Arr = Create1DLongdouble(
-            (g_mc.nTotCycleNum * g_analysis.nRDF_TotComps * g_analysis.nRDF_TotBins), arr_name);
+        g_analysis.ldaTOTRDF_Arr =
+            Create1DLongdouble((g_mc.nTotCycleNum * g_analysis.nRDF_TotComps * g_analysis.nRDF_TotBins), arr_name);
 
         strcpy(arr_name, "ldRDFArr");
-        g_analysis.ldaRDF_Arr =
-            Create1DLongdouble((g_analysis.nRDF_TotComps * g_analysis.nRDF_TotBins), arr_name);
+        g_analysis.ldaRDF_Arr = Create1DLongdouble((g_analysis.nRDF_TotComps * g_analysis.nRDF_TotBins), arr_name);
     }
 
     if (g_reports.naReportFreqs[REPORT_COMDEN] != 0)
@@ -66,25 +63,23 @@ void Memory_Initialization_AtStart(void)
         g_analysis.nRadDen_CompShift = g_system.tot_chain_types * (g_system.tot_chain_types + 1);
 
         strcpy(arr_name, "ldRadDenArr");
-        g_analysis.ldaRadDen_Arr =
-            Create1DLongdouble(g_analysis.nRadDen_TotComps * g_analysis.nRDF_TotBins, arr_name);
+        g_analysis.ldaRadDen_Arr = Create1DLongdouble(g_analysis.nRadDen_TotComps * g_analysis.nRDF_TotBins, arr_name);
 
         strcpy(arr_name, "ldTotRadDenArr");
-        g_analysis.ldaTOTRadDen_Arr = Create1DLongdouble(
-            g_analysis.nRadDen_TotComps * g_mc.nTotCycleNum * g_analysis.nRDF_TotBins, arr_name);
+        g_analysis.ldaTOTRadDen_Arr =
+            Create1DLongdouble(g_analysis.nRadDen_TotComps * g_mc.nTotCycleNum * g_analysis.nRDF_TotBins, arr_name);
     }
 
     if (g_reports.nTrajMode == -1)
     {
-        g_reports.nTraj_FramesPerCycle =
-            g_mc.nMCStepsPerCycle / g_reports.naReportFreqs[REPORT_CONFIG] + 1;
+        g_reports.nTraj_FramesPerCycle = g_mc.nMCStepsPerCycle / g_reports.naReportFreqs[REPORT_CONFIG] + 1;
         printf("\n***********************************************\n");
         printf("This feature is still experimental!\n");
         printf("\n***********************************************\n");
 
         strcpy(arr_name, "nTotTrajArr");
-        g_reports.naTOTTRAJ_Arr = Create1DInt(
-            g_reports.nTraj_FramesPerCycle * g_system.tot_beads * BEADINFO_MAX, arr_name);
+        g_reports.naTOTTRAJ_Arr =
+            Create1DInt(g_reports.nTraj_FramesPerCycle * g_system.tot_beads * BEADINFO_MAX, arr_name);
     }
 
     printf("Successfully allocated memory! Arrays initialized.\n");
@@ -169,8 +164,7 @@ void Check_BeadTypewiseInteractions(void)
         g_system.nBeadTypeCanOvlp[i] = 0;   // Assume beads don't have an overlap cost
         g_system.nBeadTypeCanCont[i] = 0;   // Assume beads don't have contact costs.
         g_system.nBeadTypeCanFSol[i] = 0;   // Assume beads have no stiffness
-        g_system.nBeadTypeCanTInd[i] =
-            0; // Assume beads have no Temperature independent interactions
+        g_system.nBeadTypeCanTInd[i] = 0;   // Assume beads have no Temperature independent interactions
     }
     // Assume system has no interactions
     g_system.bSystemHasSCSC = 0;
@@ -598,8 +592,7 @@ void Initial_Conditions_Simple(void)
                     for (j = 0; j < POS_MAX; j++)
                     {
                         tmpR2[j] = (rand() % radUp) - radLow;
-                        tmpR2[j] =
-                            (tmpR[j] + tmpR2[j] + g_system.naBoxSize[j]) % g_system.naBoxSize[j];
+                        tmpR2[j] = (tmpR[j] + tmpR2[j] + g_system.naBoxSize[j]) % g_system.naBoxSize[j];
                     }
                     TlCnt++;
                 }
@@ -690,18 +683,20 @@ void Initial_Conditions_Simple(void)
                     for (j = 0; j < POS_MAX; j++)
                     {
                         tmpR2[j] = (rand() % radUp) - radLow;
-                        tmpR2[j] =
-                            (tmpR[j] + tmpR2[j] + g_system.naBoxSize[j]) % g_system.naBoxSize[j];
+                        tmpR2[j] = (tmpR[j] + tmpR2[j] + g_system.naBoxSize[j]) % g_system.naBoxSize[j];
                     }
                     // printf("%d %d %d\n", tmpR2[0], tmpR2[1], tmpR2[2]);
                     TlCnt++;
                 }
                 if (TlCnt == 5000000)
                 {
-                    printf("\n\nNot enough space in the lattice. Crashing. "
-                           "Maybe try increasing max trials, "
-                           "or make the box bigger!\t %d\t%d %d\n\n",
-                           TlCnt, i, g_system.naTotLattice[Lat_Ind_FromVec(tmpR2)]);
+                    printf(
+                        "\n\nNot enough space in the lattice. Crashing. "
+                        "Maybe try increasing max trials, "
+                        "or make the box bigger!\t %d\t%d %d\n\n",
+                        TlCnt,
+                        i,
+                        g_system.naTotLattice[Lat_Ind_FromVec(tmpR2)]);
                     exit(1);
                 }
                 for (j = 0; j < POS_MAX; j++)
@@ -749,9 +744,16 @@ void Initial_Conditions_FromFile(void)
     tmpBeads = 0;
     while (fgets(strLine, sizeof(strLine), infile) != NULL)
     {
-        sscanf(strLine, "%d %d %d %d %d %d %d", &i, &tmp_beadinfo[BEAD_TYPE],
-               &tmp_beadinfo[BEAD_CHAINID], &tmp_beadinfo[POS_X], &tmp_beadinfo[POS_Y],
-               &tmp_beadinfo[POS_Z], &tmp_beadinfo[BEAD_FACE]);
+        sscanf(
+            strLine,
+            "%d %d %d %d %d %d %d",
+            &i,
+            &tmp_beadinfo[BEAD_TYPE],
+            &tmp_beadinfo[BEAD_CHAINID],
+            &tmp_beadinfo[POS_X],
+            &tmp_beadinfo[POS_Y],
+            &tmp_beadinfo[POS_Z],
+            &tmp_beadinfo[BEAD_FACE]);
         tmpBeads++;
         for (j = 0; j < BEADINFO_MAX; j++)
         {
@@ -795,8 +797,7 @@ void Calculate_Rot_Bias(const float CurrentTemp)
     {
         for (j = 0; j < MAX_AA; j++)
         {
-            g_energy.ldaBoltzFacNorm[i][j] =
-                (lLDub)expl(-(lLDub)g_energy.faEnergy[i][j][E_SC_SC] / (lLDub)CurrentTemp);
+            g_energy.ldaBoltzFacNorm[i][j] = (lLDub)expl(-(lLDub)g_energy.faEnergy[i][j][E_SC_SC] / (lLDub)CurrentTemp);
             // printf("%LE; ", g_energy.ldaBoltzFacNorm[i][j]);
         }
         // printf("\n");

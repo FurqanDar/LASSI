@@ -31,16 +31,15 @@ void GyrTensor_GyrRad_Avg(void)
         for (j = 0; j < POS_MAX; j++)
         {
             dumArg[j] = abs(g_system.bead_info[i][j] - (int)tot_COM[j]);
-            dumArg[j] = dumArg[j] > g_system.naBoxSize[j] / 2 ? g_system.naBoxSize[j] - dumArg[j]
-                                                              : dumArg[j];
+            dumArg[j] = dumArg[j] > g_system.naBoxSize[j] / 2 ? g_system.naBoxSize[j] - dumArg[j] : dumArg[j];
             g_analysis.faGyrTensor[j] += (float)(dumArg[j] * dumArg[j]);
         }
     }
 
     // Adding to the total g_analysis.faSysGyrRad to be averaged at the end.
-    g_analysis.faSysGyrRad +=
-        sqrtf((g_analysis.faGyrTensor[0] + g_analysis.faGyrTensor[1] + g_analysis.faGyrTensor[2]) /
-              (float)g_system.tot_beads);
+    g_analysis.faSysGyrRad += sqrtf(
+        (g_analysis.faGyrTensor[0] + g_analysis.faGyrTensor[1] + g_analysis.faGyrTensor[2]) /
+        (float)g_system.tot_beads);
     g_analysis.nTotGyrRadCounter++; // Remembering that we have calculated the radius; for final
                                     // averaging.
 }
@@ -94,8 +93,7 @@ int RadDenArr_Index(const int run_cycle, const int rad_comp, const int x_pos)
 
 int MolClusArr_Index(const int run_cycle, const int chain_type, const int clus_size)
 {
-    return clus_size +
-           (int)g_system.tot_chains * (chain_type + (int)g_system.tot_chain_types * run_cycle);
+    return clus_size + (int)g_system.tot_chains * (chain_type + (int)g_system.tot_chain_types * run_cycle);
 }
 
 /// RDF_ComponentWise_Avg - calculates the pair-distribution of the system where every bead acts as
@@ -121,7 +119,7 @@ void RDF_ComponentWise_Avg(void)
             x = Dist_BeadToBead(i, j);
             // Note that Dist_BeadToBead(i,j) automatically ensures no distance is greater than
             // (L/2)*sqrt(3)
-            myBin = (int)floor(4. * x); // I am assuming for now that dr=1/4
+            myBin = (int)floor(4. * x);                              // I am assuming for now that dr=1/4
             g_analysis.ldaRDF_Arr[RDFArr_Index(0, 0, myBin)] += 2.0; // Adding a pair to that bin
             array_pos = RDF_ComponentIndex(resi, resj);
             g_analysis.ldaRDF_Arr[RDFArr_Index(0, array_pos, myBin)] += 2.0;
@@ -196,8 +194,7 @@ void Calc_SystemCenterOfMass(lDub* const tmpR)
 /// \param naCOM_out
 /// \param cluster_size
 /// \param naClusList_in
-void Calc_CenterOfMass_OfCluster(lDub* const naCOM_out, const int cluster_size,
-                                 const int* const restrict naClusList_in)
+void Calc_CenterOfMass_OfCluster(lDub* const naCOM_out, const int cluster_size, const int* const restrict naClusList_in)
 {
     // This version measures the COM of a cluster of size c
     //  cluster size, given the molecule ID's in g_analysis.naList.
@@ -548,8 +545,7 @@ void RadDenHistUtil_ForSystem_FromCenterOfMassOfMolTypes(void)
             fB = g_system.chain_info[k][CHAIN_START];
             lB = fB + g_system.chain_info[k][CHAIN_LENGTH];
             thisType = g_system.chain_info[k][CHAIN_TYPE];
-            thisComp =
-                g_analysis.nRadDen_CompShift + RadDen_ComponentIndex(nCurrentType - 1, thisType);
+            thisComp = g_analysis.nRadDen_CompShift + RadDen_ComponentIndex(nCurrentType - 1, thisType);
             for (i = fB; i < lB; i++)
             {
                 fDis = Dist_BeadToPoint(i, naCOM_r);
@@ -581,13 +577,20 @@ void RadDenHistUtil_ForSystem_FromLargestClusterOfMolTypes(void)
     int* const naFullClusCumSizes = calloc((g_system.tot_chains + 1), sizeof(int));
 
     const int nMolWiseClusNum = ClusUtil_OfSystem_MolWise_GetLargestClusters(
-        naMolWiseClusIDs, naFullClusList, naFullClusSizes, naFullClusCumSizes);
+        naMolWiseClusIDs,
+        naFullClusList,
+        naFullClusSizes,
+        naFullClusCumSizes);
 
     for (nCurrentType = 0; nCurrentType < g_system.tot_chain_types + 1; nCurrentType++)
     {
         nMolWiseClusSize = ClusUtil_GetCluster_FromFullClusAndCumSizes(
-            naMolWiseClusIDs[nCurrentType], naTmpClusChainList, naFullClusList, naFullClusCumSizes,
-            naFullClusSizes, nMolWiseClusNum);
+            naMolWiseClusIDs[nCurrentType],
+            naTmpClusChainList,
+            naFullClusList,
+            naFullClusCumSizes,
+            naFullClusSizes,
+            nMolWiseClusNum);
 
         Calc_CenterOfMass_OfCluster(LaTypeCOM_r, nMolWiseClusSize, naTmpClusChainList);
 

@@ -20,11 +20,15 @@ int OP_GetTopoBonds(const int beadID, int* dum_list)
 
 float BeadPos_CosThetaOfBeads(const int bead1, const int bead2)
 {
-    const int r_pos1[POS_MAX] = {g_system.bead_info[bead1][0], g_system.bead_info[bead1][1],
-                                 g_system.bead_info[bead1][2]};
+    const int r_pos1[POS_MAX] = {
+        g_system.bead_info[bead1][0],
+        g_system.bead_info[bead1][1],
+        g_system.bead_info[bead1][2]};
 
-    const int r_pos2[POS_MAX] = {g_system.bead_info[bead2][0], g_system.bead_info[bead2][1],
-                                 g_system.bead_info[bead2][2]};
+    const int r_pos2[POS_MAX] = {
+        g_system.bead_info[bead2][0],
+        g_system.bead_info[bead2][1],
+        g_system.bead_info[bead2][2]};
 
     return Vec3n_CosTheta(r_pos1, r_pos2);
 }
@@ -60,8 +64,10 @@ void LatticeUtil_GetOvlpLattIndecies(const int* restrict const r_pos0, int* rest
 /// LatticeUtil_GetLattVals_FromList - loop over nIndexList and store the g_system.naTotLattice
 /// values in nLatValsList. Note that this will include -1 values as well, or empty sites. \param
 /// nIndexList \param nLatValsList - Must be at least 27 elements long.
-void LatticeUtil_GetLattVals_FromList(const int* restrict const nIndexList,
-                                      int* restrict nLatValsList, const int listSize)
+void LatticeUtil_GetLattVals_FromList(
+    const int* restrict const nIndexList,
+    int* restrict nLatValsList,
+    const int listSize)
 {
     int i;
     for (i = 0; i < listSize; ++i)
@@ -73,8 +79,10 @@ void LatticeUtil_GetLattVals_FromList(const int* restrict const nIndexList,
 /// LatticeUtil_GetBeadIDs_FromList - Given the list of Lattice values, we get all the values that
 /// are not -1. Or, the we get the values that correspond to non-empty lattice sites. \param
 /// nLatValsList \param nBeadsList \return
-int LatticeUtil_GetBeadIDs_FromList(const int* restrict const nLatValsList,
-                                    int* restrict nBeadsList, const int nListSize)
+int LatticeUtil_GetBeadIDs_FromList(
+    const int* restrict const nLatValsList,
+    int* restrict nBeadsList,
+    const int nListSize)
 {
     int nBeadsNum = 0;
     int tmpBead;

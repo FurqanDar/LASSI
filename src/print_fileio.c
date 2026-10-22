@@ -95,20 +95,22 @@ void FileIOUtil_WriteHeader_ForMCMove(const char* fileName)
 {
     FILE* fp = fopen(fileName, "a");
     fprintf(fp, "#Steps, and Temp, are followed by (rej, acc) for each MC Move.\n");
-    fprintf(fp, "#(nStep, T)             "
-                "STROT                   "
-                "LOCAL                   "
-                "COLOCAL                 "
-                "MTLOCAL                 "
-                "SNAKE                   "
-                "TRANS                   "
-                "SM_CLST                 "
-                "CLST                    "
-                "PIVOT                   "
-                "BRROT                   "
-                "DBPVT                   "
-                "PR_CLST                 "
-                "\n");
+    fprintf(
+        fp,
+        "#(nStep, T)             "
+        "STROT                   "
+        "LOCAL                   "
+        "COLOCAL                 "
+        "MTLOCAL                 "
+        "SNAKE                   "
+        "TRANS                   "
+        "SM_CLST                 "
+        "CLST                    "
+        "PIVOT                   "
+        "BRROT                   "
+        "DBPVT                   "
+        "PR_CLST                 "
+        "\n");
     fclose(fp);
 }
 
@@ -141,8 +143,10 @@ void FileIOUtil_WriteHeader_ForRDF(const char* strFileName)
 {
     FILE* fp = fopen(strFileName, "w");
 
-    fprintf(fp, "#Split RDFs. ALL-ALL; DIAGONALS (0-0, 1-1, ..) and then off-diagonals (0-1, 0-2, "
-                "..., 1-2, ...)\n");
+    fprintf(
+        fp,
+        "#Split RDFs. ALL-ALL; DIAGONALS (0-0, 1-1, ..) and then off-diagonals (0-1, 0-2, "
+        "..., 1-2, ...)\n");
 
     fclose(fp);
 }
@@ -178,9 +182,11 @@ void FileIOUtil_WriteHeader_ForMolClus(const char* strFileName)
 {
     FILE* fp = fopen(strFileName, "w");
 
-    fprintf(fp, "#Cluster size histograms, split by molecule type. Each row is a ChainType, and "
-                "each column is the "
-                "cluster size starting from 1.\n");
+    fprintf(
+        fp,
+        "#Cluster size histograms, split by molecule type. Each row is a ChainType, and "
+        "each column is the "
+        "cluster size starting from 1.\n");
 
     fclose(fp);
 }
@@ -190,17 +196,19 @@ void FileIOUtil_WriteHeader_ForMolClus(const char* strFileName)
 void FileIOUtil_WriteHeader_ForEnergy(const char* fileName)
 {
     FILE* fp = fopen(fileName, "a+");
-    fprintf(fp, "#"
-                "STEP         "
-                "TOT         "
-                "OVLP        "
-                "CONT        "
-                "SC-SC       "
-                "FSOL        "
-                "T_IND       "
-                "STIFF       "
-                "BIAS        "
-                "\n");
+    fprintf(
+        fp,
+        "#"
+        "STEP         "
+        "TOT         "
+        "OVLP        "
+        "CONT        "
+        "SC-SC       "
+        "FSOL        "
+        "T_IND       "
+        "STIFF       "
+        "BIAS        "
+        "\n");
     fclose(fp);
 }
 
@@ -241,8 +249,9 @@ void FileIO_Trajectory_AppendFrame(const char* fileNameStr, const int run_it, co
         }
         else
         {
-            FileIOUtil_Traj_Txt_AppendFrame_ToFile(fileNameStr, nGen + g_mc.nMCStepsForTherm +
-                                                                    run_it * g_mc.nMCStepsPerCycle);
+            FileIOUtil_Traj_Txt_AppendFrame_ToFile(
+                fileNameStr,
+                nGen + g_mc.nMCStepsForTherm + run_it * g_mc.nMCStepsPerCycle);
         }
     }
 }
@@ -265,17 +274,27 @@ void FileIOUtil_Traj_Txt_AppendFrame_ToFile(const char* filename, const long nGe
     fprintf(fp, "%ld\n", (size_t)g_system.tot_beads); // Total atom number
 
     fprintf(fp, "ITEM: BOX BOUNDS pp pp pp\n"); // BCs are always periodic for now
-    fprintf(fp, "0 %d\n0 %d\n0 %d\n", g_system.naBoxSize[0], g_system.naBoxSize[1],
-            g_system.naBoxSize[2]); // Box dimensions
+    fprintf(
+        fp,
+        "0 %d\n0 %d\n0 %d\n",
+        g_system.naBoxSize[0],
+        g_system.naBoxSize[1],
+        g_system.naBoxSize[2]); // Box dimensions
 
     fprintf(fp, "ITEM: ATOMS id type mol x y z bP\n"); // What we are printing
 
     for (i = 0; i < g_system.tot_beads; i++)
     {
-        fprintf(fp, "%d %d %d %d %d %d %d\n", i, g_system.bead_info[i][BEAD_TYPE],
-                g_system.bead_info[i][BEAD_CHAINID], g_system.bead_info[i][POS_X],
-                g_system.bead_info[i][POS_Y], g_system.bead_info[i][POS_Z],
-                g_system.bead_info[i][BEAD_FACE]);
+        fprintf(
+            fp,
+            "%d %d %d %d %d %d %d\n",
+            i,
+            g_system.bead_info[i][BEAD_TYPE],
+            g_system.bead_info[i][BEAD_CHAINID],
+            g_system.bead_info[i][POS_X],
+            g_system.bead_info[i][POS_Y],
+            g_system.bead_info[i][POS_Z],
+            g_system.bead_info[i][BEAD_FACE]);
     }
 
     fclose(fp);
@@ -357,9 +376,11 @@ void Write_Saved_Trajectory(char* filename, const int run_it)
         fprintf(fp, "ITEM: TIMESTEP\n");
         if (run_it >= 0)
         {
-            fprintf(fp, "%ld\n",
-                    g_mc.nMCStepsForTherm + run_it * g_mc.nMCStepsPerCycle +
-                        i * g_reports.naReportFreqs[REPORT_CONFIG]); // Timestep
+            fprintf(
+                fp,
+                "%ld\n",
+                g_mc.nMCStepsForTherm + run_it * g_mc.nMCStepsPerCycle +
+                    i * g_reports.naReportFreqs[REPORT_CONFIG]); // Timestep
         }
         else
         {
@@ -370,8 +391,12 @@ void Write_Saved_Trajectory(char* filename, const int run_it)
         fprintf(fp, "%ld\n", (size_t)g_system.tot_beads); // Total atom number
 
         fprintf(fp, "ITEM: BOX BOUNDS pp pp pp\n"); // BCs are always periodic for now
-        fprintf(fp, "0 %d\n0 %d\n0 %d\n", g_system.naBoxSize[0], g_system.naBoxSize[1],
-                g_system.naBoxSize[2]); // Box dimensions
+        fprintf(
+            fp,
+            "0 %d\n0 %d\n0 %d\n",
+            g_system.naBoxSize[0],
+            g_system.naBoxSize[1],
+            g_system.naBoxSize[2]); // Box dimensions
 
         fprintf(fp, "ITEM: ATOMS id type mol x y z bP\n"); // What we are printing
 
@@ -475,8 +500,8 @@ void FileIO_WriteTo_TopFile(const char* filename)
     fprintf(fp, "\n");                                    // Empty line.
     fprintf(fp, "%d\tatom types\n", g_energy.nBeadTypes); // This many bead-types
     fprintf(fp, "1\tbond types\n");                       // System can have multiple bond-lengths
-    fprintf(fp, "0\tangle types\n"); // Systems don't have any angular forces yet
-    fprintf(fp, "\n");               // Empty line.
+    fprintf(fp, "0\tangle types\n");                      // Systems don't have any angular forces yet
+    fprintf(fp, "\n");                                    // Empty line.
     fprintf(fp, " 0 %d xlo xhi\n", g_system.naBoxSize[0]);
     fprintf(fp, " 0 %d ylo yhi\n", g_system.naBoxSize[1]);
     fprintf(fp, " 0 %d zlo zhi\n", g_system.naBoxSize[2]);
@@ -493,9 +518,15 @@ void FileIO_WriteTo_TopFile(const char* filename)
     fprintf(fp, "\n");             // Empty line.
     for (i = 0; i < g_system.tot_beads; i++)
     {
-        fprintf(fp, "%d %d %d %d %d %d\n", i, g_system.bead_info[i][BEAD_CHAINID],
-                g_system.bead_info[i][BEAD_TYPE], g_system.bead_info[i][POS_X],
-                g_system.bead_info[i][POS_Y], g_system.bead_info[i][POS_Z]);
+        fprintf(
+            fp,
+            "%d %d %d %d %d %d\n",
+            i,
+            g_system.bead_info[i][BEAD_CHAINID],
+            g_system.bead_info[i][BEAD_TYPE],
+            g_system.bead_info[i][POS_X],
+            g_system.bead_info[i][POS_Y],
+            g_system.bead_info[i][POS_Z]);
     } // Done with the coordinates
     fprintf(fp, "\n");      // Empty line.
     fprintf(fp, "Bonds\n"); // Signifying the beginning of atom coordinates.
@@ -507,9 +538,13 @@ void FileIO_WriteTo_TopFile(const char* filename)
         {
             if (g_system.topo_info[i][j] != -1)
             { // There is a bond between i and g_system.topo_info[i][j]
-                fprintf(fp, "%d %d %d %d\n", k,
-                        g_system.linker_len[i][j] / (int)g_system.fLinkerLength, i,
-                        g_system.topo_info[i][j]);
+                fprintf(
+                    fp,
+                    "%d %d %d %d\n",
+                    k,
+                    g_system.linker_len[i][j] / (int)g_system.fLinkerLength,
+                    i,
+                    g_system.topo_info[i][j]);
                 k++;
             }
         }
@@ -528,16 +563,16 @@ void Write_SysProp(char* filename)
     fp = fopen(filename, "w");
     fprintf(fp, "#Contains various averaged quatities.\n");
     // Gyration Radius
-    fprintf(fp, "#Total Rg\n%f\t%f\n#Cluster Hist\n",
-            g_analysis.faSysGyrRad / (float)g_analysis.nTotGyrRadCounter,
-            (float)g_system.naBoxSize[0] / 2.);
+    fprintf(
+        fp,
+        "#Total Rg\n%f\t%f\n#Cluster Hist\n",
+        g_analysis.faSysGyrRad / (float)g_analysis.nTotGyrRadCounter,
+        (float)g_system.naBoxSize[0] / 2.);
     // Cluster Histogram
-    fprintf(fp, "%f\t",
-            (float)g_analysis.nLargestClusterRightNow / (float)g_analysis.nTotClusCounter);
+    fprintf(fp, "%f\t", (float)g_analysis.nLargestClusterRightNow / (float)g_analysis.nTotClusCounter);
     for (i = 1; i <= g_system.tot_chains; i++)
     {
-        fprintf(fp, "%f\t",
-                (float)g_analysis.laClusHistList[i] / (float)g_analysis.nTotClusCounter);
+        fprintf(fp, "%f\t", (float)g_analysis.laClusHistList[i] / (float)g_analysis.nTotClusCounter);
     }
     // Split RDFs
     fprintf(fp, "\n#Split RDFs. ALL-ALL; DIAGONALS and then from 0 onwards \n");
@@ -546,9 +581,7 @@ void Write_SysProp(char* filename)
         for (i = 0; i < g_analysis.nRDF_TotBins; i++)
         {
             // fprintf(fp, "%LE\t", ldRDF_ARR[j][i] / (float)g_analysis.nTotRDFCounter);
-            fprintf(fp, "%LE\t",
-                    g_analysis.ldaRDF_Arr[RDFArr_Index(0, j, i)] /
-                        (float)g_analysis.nTotRDFCounter);
+            fprintf(fp, "%LE\t", g_analysis.ldaRDF_Arr[RDFArr_Index(0, j, i)] / (float)g_analysis.nTotRDFCounter);
         }
         fprintf(fp, "\n");
     }
@@ -619,8 +652,10 @@ void FileIO_WriteTo_ClusFile_TotFromGLB(const int run_it)
     sprintf(dumFile, "%s_CLUS.dat",
             g_reports.strReportPrefix); // Name Of the ClusterHistogram Files
     fp = fopen(dumFile, "w");
-    fprintf(fp, "#Cluster Histograms: 1st column is largest cluster, and then clusters of size 1, "
-                "2, and so on\n");
+    fprintf(
+        fp,
+        "#Cluster Histograms: 1st column is largest cluster, and then clusters of size 1, "
+        "2, and so on\n");
     for (i = 0; i < run_it; i++)
     {
         fprintf(fp, "#Run_Cycle = %d\n", i);
@@ -644,9 +679,11 @@ void FileIO_WriteTo_MolClusFile_TotFromGLB(const int run_it)
     sprintf(dumFile, "%s_MolClus.dat",
             g_reports.strReportPrefix); // Name Of the COM Density Distribution
     fp = fopen(dumFile, "w");
-    fprintf(fp, "#Cluster Histograms: 1st column is largest cluster, and then clusters of size 1, "
-                "2, and so on. Each "
-                "row is a different moltype\n");
+    fprintf(
+        fp,
+        "#Cluster Histograms: 1st column is largest cluster, and then clusters of size 1, "
+        "2, and so on. Each "
+        "row is a different moltype\n");
     for (i = 0; i < run_it; i++)
     {
         fprintf(fp, "#Run_Cycle = %d\n", i);
@@ -673,8 +710,10 @@ void FileIO_WriteTo_GyrRadFile_TotFromGLB(const int run_it)
     sprintf(dumFile, "%s_GR.dat",
             g_reports.strReportPrefix); // Name Of the ClusterHistogram Files
     fp = fopen(dumFile, "w");
-    fprintf(fp, "#Cluster Histograms: 1st column is largest cluster, and then "
-                "clusters of size 1, 2, and so on\n");
+    fprintf(
+        fp,
+        "#Cluster Histograms: 1st column is largest cluster, and then "
+        "clusters of size 1, 2, and so on\n");
     for (i = 0; i < run_it; i++)
     {
         fprintf(fp, "#Run_Cycle = %d\n", i);
@@ -741,23 +780,22 @@ void FileIO_CreateRunningDataFiles(void)
     if (g_reports.naReportFreqs[REPORT_CONFIG])
     {
         sprintf(g_reports.strFileTraj, "%s_topo.lammpstrj",
-                g_reports.strReportPrefix); // Name of the topology file
-        FileIO_WriteTo_TopFile(
-            g_reports.strFileTraj); // Write the topology file. Only need to write once
+                g_reports.strReportPrefix);            // Name of the topology file
+        FileIO_WriteTo_TopFile(g_reports.strFileTraj); // Write the topology file. Only need to write once
 
         if (g_reports.nTrajMode == 1)
         {
             sprintf(g_reports.strFileTraj, "%s_EQ_trj.lassi", g_reports.strReportPrefix);
-            FileIOUtil_CreateFile_Binary_Overwrite(
-                g_reports.strFileTraj); // Opens a new binary file.
+            FileIOUtil_CreateFile_Binary_Overwrite(g_reports.strFileTraj); // Opens a new binary file.
         }
         else
         {
-            sprintf(g_reports.strFileTraj, "%s_EQ_trj.lammpstrj",
-                    g_reports.strReportPrefix); // Naming convention for trajectory files.
-            FileIOUtil_CreateFile_Overwrite(
-                g_reports.strFileTraj); // This opens a new trajectory file; each run_it will have
-                                        // its own
+            sprintf(
+                g_reports.strFileTraj,
+                "%s_EQ_trj.lammpstrj",
+                g_reports.strReportPrefix);                         // Naming convention for trajectory files.
+            FileIOUtil_CreateFile_Overwrite(g_reports.strFileTraj); // This opens a new trajectory file; each run_it
+                                                                    // will have its own
         }
     }
 
@@ -840,8 +878,7 @@ void FileIOUtil_PreCycle_Init(const int run_it)
             sprintf(g_reports.strFileTraj, "%s_trj.lassi", g_reports.strReportPrefix);
             if (run_it == 0)
             {
-                FileIOUtil_CreateFile_Binary_Overwrite(
-                    g_reports.strFileTraj); // Opens a new binary file.
+                FileIOUtil_CreateFile_Binary_Overwrite(g_reports.strFileTraj); // Opens a new binary file.
             }
         }
         else
@@ -874,11 +911,15 @@ void FileIOUtil_PreCycle_Init(const int run_it)
 /// \param run_it
 void FileIO_PostCycle_WriteSystemRestart(const int run_it)
 {
-    sprintf(g_reports.strFileTraj, "%s_%d_restart.lammpstrj", g_reports.strReportPrefix,
-            run_it); // Naming convention for trajectory files.
+    sprintf(
+        g_reports.strFileTraj,
+        "%s_%d_restart.lammpstrj",
+        g_reports.strReportPrefix,
+        run_it); // Naming convention for trajectory files.
     FileIOUtil_CreateFile_Overwrite(g_reports.strFileTraj);
     FileIOUtil_Traj_Txt_AppendFrame_ToFile(
-        g_reports.strFileTraj, g_mc.nMCStepsForTherm + (run_it + 1) * g_mc.nMCStepsPerCycle);
+        g_reports.strFileTraj,
+        g_mc.nMCStepsForTherm + (run_it + 1) * g_mc.nMCStepsPerCycle);
 }
 
 /// FileIO_WriteRestart_ForThermalization
@@ -886,8 +927,10 @@ void FileIO_WriteRestart_ForThermalization(void)
 {
     if (g_mc.nMCStepsForTherm)
     {
-        sprintf(g_reports.strFileTraj, "%s_EQ_restart.lammpstrj",
-                g_reports.strReportPrefix); // Naming convention for trajectory files.
+        sprintf(
+            g_reports.strFileTraj,
+            "%s_EQ_restart.lammpstrj",
+            g_reports.strReportPrefix); // Naming convention for trajectory files.
         FileIOUtil_CreateFile_Overwrite(g_reports.strFileTraj);
         FileIOUtil_Traj_Txt_AppendFrame_ToFile(g_reports.strFileTraj, g_mc.nMCStepsForTherm);
     }
@@ -952,12 +995,10 @@ void CopyData_Clus(const int run_it)
 {
     int i, j;
     const long double normFactor = 1.0 / (long double)g_analysis.nTotClusCounter;
-    g_analysis.ldaTOTCLUS_Arr[run_it][0] =
-        (long double)g_analysis.nLargestClusterRightNow * normFactor;
+    g_analysis.ldaTOTCLUS_Arr[run_it][0] = (long double)g_analysis.nLargestClusterRightNow * normFactor;
     for (i = 1; i <= g_system.tot_chains; i++)
     {
-        g_analysis.ldaTOTCLUS_Arr[run_it][i] =
-            (long double)g_analysis.laClusHistList[i] * normFactor;
+        g_analysis.ldaTOTCLUS_Arr[run_it][i] = (long double)g_analysis.laClusHistList[i] * normFactor;
     }
     for (i = 0; i < g_system.tot_chains; i++)
     {
@@ -982,8 +1023,7 @@ void FileIOUtil_AppendTo_GyrRadFile_ForRun(const int run_it)
     fp = fopen(dumFile, "a");
 
     fprintf(fp, "#Run_Cycle = %d; Avg Over %d Samples\n", run_it, g_analysis.nTotClusCounter);
-    fprintf(fp, "%LE\t",
-            (long double)g_analysis.faSysGyrRad / (long double)g_analysis.nTotGyrRadCounter);
+    fprintf(fp, "%LE\t", (long double)g_analysis.faSysGyrRad / (long double)g_analysis.nTotGyrRadCounter);
     fprintf(fp, "%LE\n", (long double)g_system.naBoxSize[0] / 2.0);
 
     fclose(fp);

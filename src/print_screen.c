@@ -6,8 +6,7 @@
 /// \param nSeqEn
 /// \param fArray
 /// \param param
-void PrintToScreen_EnergyMatrix(char* strTitle, int nSeqEn, float fArray[MAX_AA][MAX_AA][MAX_E],
-                                int param)
+void PrintToScreen_EnergyMatrix(char* strTitle, int nSeqEn, float fArray[MAX_AA][MAX_AA][MAX_E], int param)
 {
     const int nLen = nSeqEn;
     const int outLen = (nLen + 3) * 5;
@@ -116,14 +115,18 @@ void ScreenIOUtil_PrintTemperatures(void)
     if (g_system.nTemp_inv == 1)
     {
         puts("Temperature Inverted           = YES");
-        printf("MC Temperatures: (First, Last) = (%.2f, %.2f)\n", g_mc.fKT,
-               1.f / (g_mc.fKT + (float)(g_mc.nTotCycleNum - 1) * g_mc.fDeltaTemp));
+        printf(
+            "MC Temperatures: (First, Last) = (%.2f, %.2f)\n",
+            g_mc.fKT,
+            1.f / (g_mc.fKT + (float)(g_mc.nTotCycleNum - 1) * g_mc.fDeltaTemp));
     }
     else
     {
         puts("Temperature Inverted           = NO");
-        printf("MC Temperatures: (First, Last) = (%.2f, %.2f)\n", g_mc.fKT,
-               g_mc.fKT + (float)(g_mc.nTotCycleNum - 1) * g_mc.fDeltaTemp);
+        printf(
+            "MC Temperatures: (First, Last) = (%.2f, %.2f)\n",
+            g_mc.fKT,
+            g_mc.fKT + (float)(g_mc.nTotCycleNum - 1) * g_mc.fDeltaTemp);
     }
 
     printf("Temperature Annealing Mode     = %d\n", g_system.nAnnealing_Mode);
@@ -141,11 +144,11 @@ void ScreenIO_Print_KeyFile(void)
     printf("Number of Beads      = %ld\n", (size_t)g_system.tot_beads);
     printf("Number of Chains     = %ld\n", (size_t)g_system.tot_chains);
     printf("Number of Components = %ld\n", (size_t)g_system.tot_chain_types);
-    printf("Lattice Dimensions   = %3d %3d %3d\n", g_system.naBoxSize[0], g_system.naBoxSize[1],
-           g_system.naBoxSize[2]);
-    printf("Monomer Density      = %1.2e\n",
-           (float)g_system.tot_beads / (float)g_system.naBoxSize[0] / (float)g_system.naBoxSize[1] /
-               (float)g_system.naBoxSize[2]);
+    printf("Lattice Dimensions   = %3d %3d %3d\n", g_system.naBoxSize[0], g_system.naBoxSize[1], g_system.naBoxSize[2]);
+    printf(
+        "Monomer Density      = %1.2e\n",
+        (float)g_system.tot_beads / (float)g_system.naBoxSize[0] / (float)g_system.naBoxSize[1] /
+            (float)g_system.naBoxSize[2]);
     printf("\n");
 
     PrintToScreen_AllEnergyMatrices();
@@ -248,9 +251,10 @@ void ScreenIO_Print_Log_Thermalization(const long nGen)
 
     if (g_analysis.nTotClusCounter > 0)
     {
-        printf("Perc Phi : %8.3f\n", ((float)g_analysis.nLargestClusterRightNow) /
-                                         ((float)g_analysis.nTotClusCounter) /
-                                         (float)g_system.tot_chains);
+        printf(
+            "Perc Phi : %8.3f\n",
+            ((float)g_analysis.nLargestClusterRightNow) / ((float)g_analysis.nTotClusCounter) /
+                (float)g_system.tot_chains);
     }
 
     ScreenIO_Print_SystemEnergy();
@@ -268,9 +272,10 @@ void ScreenIO_Print_Log_FullRun(const long nGen, const int run_cycle)
 
     if (g_analysis.nTotClusCounter > 0)
     {
-        printf("Perc Phi : %8.3f\n", ((float)g_analysis.nLargestClusterRightNow) /
-                                         ((float)g_analysis.nTotClusCounter) /
-                                         (float)g_system.tot_chains);
+        printf(
+            "Perc Phi : %8.3f\n",
+            ((float)g_analysis.nLargestClusterRightNow) / ((float)g_analysis.nTotClusCounter) /
+                (float)g_system.tot_chains);
     }
 
     ScreenIO_Print_SystemEnergy();
@@ -293,8 +298,7 @@ void ScreenIO_PrintStdErr_BeadPosition(const int beadID)
 /// run_cycle this crash has occurred on.
 void ScreenIO_Print_SanityCheckFailurePreamble(const long nGen, const int run_cycle)
 {
-    fputs("\n-------------------------------------------------------------------------------",
-          stderr);
+    fputs("\n-------------------------------------------------------------------------------", stderr);
     fputs("\nERROR! Sanity check failed! Crashing!\n", stderr);
     fprintf(stderr, "Crash occurred at (run_cycle: %d; mc_step: %ld)\n", run_cycle, nGen);
     fputs("Snapshot of system saved to crash_snapshot.txt\n", stderr);
@@ -350,8 +354,13 @@ void ScreenIO_Print_SanityFail_MolecularStructure(const int badBead)
         bdDist = Dist_BeadToBead(badBead, bondPart);
         linkCons = (float)g_system.linker_len[badBead][idx] * LINKER_RSCALE;
 
-        fprintf(stderr, "beads: (%d, %d) have dist: %5.3f with linker-constraint: %5.3f\n", badBead,
-                bondPart, bdDist, linkCons);
+        fprintf(
+            stderr,
+            "beads: (%d, %d) have dist: %5.3f with linker-constraint: %5.3f\n",
+            badBead,
+            bondPart,
+            bdDist,
+            linkCons);
         idx++;
         bondPart = g_system.topo_info[badBead][idx];
     }

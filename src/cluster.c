@@ -27,15 +27,14 @@ int Clus_Network_ChainCluster_General(int const chainID)
     int clusSize = 0; // Index to track the cluster size.
     int curID;        // Index to track the current chain being looked at.
     curID = chainID;
-    g_analysis.naList[clusSize++] =
-        curID; // The cluster contains chainID by definition, and ClusSize = 1
+    g_analysis.naList[clusSize++] = curID;  // The cluster contains chainID by definition, and ClusSize = 1
     g_analysis.naChainCheckList[curID] = 1; // This means that curID has been checked!
     int fB, lB;                             // Indecies to track the first and last bead of chains.
     int chainPart;
 
     while (curID != -1)
-    { // Keep going through g_analysis.naList till it is exhausted.
-        fB = g_system.chain_info[curID][CHAIN_START];       // First bead of this chain.
+    {                                                 // Keep going through g_analysis.naList till it is exhausted.
+        fB = g_system.chain_info[curID][CHAIN_START]; // First bead of this chain.
         lB = fB + g_system.chain_info[curID][CHAIN_LENGTH]; // Last bead+1 of this chain. Makes
                                                             // for-loops easier this way.
         for (i = fB; i < lB; i++)
@@ -47,8 +46,7 @@ int Clus_Network_ChainCluster_General(int const chainID)
                 if (g_analysis.naChainCheckList[chainPart] == -1)
                 { // This is a unique chain.
                     g_analysis.naList[clusSize++] = chainPart;
-                    g_analysis.naChainCheckList[chainPart] =
-                        1; // Recording that this chain has been looked at
+                    g_analysis.naChainCheckList[chainPart] = 1; // Recording that this chain has been looked at
                 }
             }
             // Moving on to the next bead in this chain
@@ -81,15 +79,14 @@ int Clus_Network_ChainCluster_ForTotal(int const chainID)
     int clusSize = 0; // Index to track the cluster size.
     int curID;        // Index to track the current chain being looked at.
     curID = chainID;
-    g_analysis.naList[clusSize++] =
-        curID; // The cluster contains chainID by definition, and ClusSize = 1
+    g_analysis.naList[clusSize++] = curID;  // The cluster contains chainID by definition, and ClusSize = 1
     g_analysis.naChainCheckList[curID] = 1; // This means that curID has been checked!
     int fB, lB;                             // Indecies to track the first and last bead of chains.
     int chainPart;
 
     while (curID != -1)
-    { // Keep going through g_analysis.naList till it is exhausted.
-        fB = g_system.chain_info[curID][CHAIN_START];       // First bead of this chain.
+    {                                                 // Keep going through g_analysis.naList till it is exhausted.
+        fB = g_system.chain_info[curID][CHAIN_START]; // First bead of this chain.
         lB = fB + g_system.chain_info[curID][CHAIN_LENGTH]; // Last bead+1 of this chain. Makes
                                                             // for-loops easier this way.
         for (i = fB; i < lB; i++)
@@ -101,8 +98,7 @@ int Clus_Network_ChainCluster_ForTotal(int const chainID)
                 if (g_analysis.naChainCheckList[chainPart] == -1)
                 { // This is a unique chain.
                     g_analysis.naList[clusSize++] = chainPart;
-                    g_analysis.naChainCheckList[chainPart] =
-                        1; // Recording that this chain has been looked at
+                    g_analysis.naChainCheckList[chainPart] = 1; // Recording that this chain has been looked at
                 }
             }
             // Moving on to the next bead in this chain
@@ -133,8 +129,7 @@ void Clus_Network_TotalAnalysis(void)
     j = 0;
     while (curID < g_system.tot_chains && IsUnique == 1)
     {
-        Cluster_length =
-            Clus_Network_ChainCluster_ForTotal(curID); // This is the length of curID cluster
+        Cluster_length = Clus_Network_ChainCluster_ForTotal(curID); // This is the length of curID cluster
         if (Cluster_length > currentLargest)
         {
             currentLargest = Cluster_length;
@@ -186,8 +181,7 @@ int Clus_Network_SecondLargestCluster(void)
     j = 0;
     while (curID < g_system.tot_chains && IsUnique == 1)
     {
-        Cluster_length =
-            Clus_Network_ChainCluster_ForTotal(curID); // This is the length of curID cluster
+        Cluster_length = Clus_Network_ChainCluster_ForTotal(curID); // This is the length of curID cluster
         if (Cluster_length > currentLargest)
         {
             currentLargest = Cluster_length;
@@ -267,16 +261,15 @@ int Clus_Network_LimitedCluster(int const chainID)
     int clusSize = 0; // Index to track the cluster size.
     int curID;        // Index to track the current chain being looked at.
     curID = chainID;
-    g_analysis.naList[clusSize++] =
-        curID;  // The cluster contains chainID by definition, and ClusSize = 1
-    int fB, lB; // Indecies to track the first and last bead of chains.
+    g_analysis.naList[clusSize++] = curID; // The cluster contains chainID by definition, and ClusSize = 1
+    int fB, lB;                            // Indecies to track the first and last bead of chains.
     int chainPart;
     int IsUnique = 1; // Tracks if a chain is unique or not. 0 is non-unique,
                       // and 1 is unique.
 
     while (curID != -1)
-    { // Keep going through g_analysis.naList till it is exhausted.
-        fB = g_system.chain_info[curID][CHAIN_START];       // First bead of this chain.
+    {                                                 // Keep going through g_analysis.naList till it is exhausted.
+        fB = g_system.chain_info[curID][CHAIN_START]; // First bead of this chain.
         lB = fB + g_system.chain_info[curID][CHAIN_LENGTH]; // Last bead+1 of this chain. Makes
                                                             // for-loops easier this way.
 
@@ -337,8 +330,7 @@ void Clus_Network_Distribution_Avg(void)
     currentLargest = 0;
     while (curID < g_system.tot_chains && IsUnique == 1)
     {
-        Cluster_length =
-            Clus_Network_ChainCluster_ForTotal(curID); // This is the length of curID cluster
+        Cluster_length = Clus_Network_ChainCluster_ForTotal(curID); // This is the length of curID cluster
         // printf("Clus Len: %d\n", Cluster_length);
         g_analysis.laClusHistList[Cluster_length]++; // Adding to that cluster-size bin
         if (Cluster_length > currentLargest)
@@ -386,8 +378,7 @@ void Clus_Network_Distribution_MolWise_Avg(void)
     currentLargest = 0;
     while (curID < g_system.tot_chains && IsUnique == 1)
     {
-        Cluster_length =
-            Clus_Network_ChainCluster_ForTotal(curID); // This is the length of curID cluster
+        Cluster_length = Clus_Network_ChainCluster_ForTotal(curID); // This is the length of curID cluster
         // printf("Clus Len: %d\n", Cluster_length);
         g_analysis.laClusHistList[Cluster_length]++; // Adding to that cluster-size bin
         if (Cluster_length > currentLargest)
@@ -455,8 +446,7 @@ void Clus_Network_MolWise_LargestClusters(void)
 
     while (curID < g_system.tot_chains && IsUnique == 1)
     {
-        Cluster_length =
-            Clus_Network_ChainCluster_ForTotal(curID); // This is the length of curID cluster
+        Cluster_length = Clus_Network_ChainCluster_ForTotal(curID); // This is the length of curID cluster
 
         for (i = 0; i < g_system.tot_chain_types; i++)
         {
@@ -497,8 +487,7 @@ void Clus_Network_MolWise_LargestClusters(void)
     for (i = 0; i < g_system.tot_chain_types; i++)
     {
         // printf("(%d %d)\t", largestClus_of_type[i],clusID_of_type[i]);
-        g_analysis.naList[i] =
-            clusID_of_type[i]; // Now g_analysis.naList contains the cluster ID's.
+        g_analysis.naList[i] = clusID_of_type[i]; // Now g_analysis.naList contains the cluster ID's.
     }
     // printf("\n");
     free(clus_numof_MolType);
@@ -520,8 +509,7 @@ int Clus_Proximity_ChainCluster_ForTotal_IntOnly(int const chainID)
     int clusSize = 0; // Index to track the cluster size.
     int curID;        // Index to track the current chain being looked at.
     curID = chainID;
-    g_analysis.naList[clusSize++] =
-        curID; // The cluster contains chainID by definition, and ClusSize = 1
+    g_analysis.naList[clusSize++] = curID;  // The cluster contains chainID by definition, and ClusSize = 1
     g_analysis.naChainCheckList[curID] = 1; // This means that curID has been checked!
     int fB, lB;                             // Indecies to track the first and last bead of chains.
     int chainPart;
@@ -531,8 +519,8 @@ int Clus_Proximity_ChainCluster_ForTotal_IntOnly(int const chainID)
     int tmpR[POS_MAX] = {0};
     int tmpR2[POS_MAX] = {0};
     while (curID != -1)
-    { // Keep going through g_analysis.naList till it is exhausted.
-        fB = g_system.chain_info[curID][CHAIN_START];       // First bead of this chain.
+    {                                                 // Keep going through g_analysis.naList till it is exhausted.
+        fB = g_system.chain_info[curID][CHAIN_START]; // First bead of this chain.
         lB = fB + g_system.chain_info[curID][CHAIN_LENGTH]; // Last bead+1 of this chain. Makes
                                                             // for-loops easier this way.
         for (i = fB; i < lB; i++)
@@ -550,8 +538,7 @@ int Clus_Proximity_ChainCluster_ForTotal_IntOnly(int const chainID)
                 if (g_analysis.naChainCheckList[chainPart] == -1)
                 { // This is a unique chain.
                     g_analysis.naList[clusSize++] = chainPart;
-                    g_analysis.naChainCheckList[chainPart] =
-                        1; // Recording that this chain has been looked at
+                    g_analysis.naChainCheckList[chainPart] = 1; // Recording that this chain has been looked at
                 }
             }
             if (g_system.nBeadTypeCanOvlp[resi] == 0)
@@ -563,8 +550,8 @@ int Clus_Proximity_ChainCluster_ForTotal_IntOnly(int const chainID)
                 tmpBead = g_system.naRot_IndArr[k];
                 for (j = 0; j < POS_MAX; j++)
                 {
-                    tmpR2[j] = (tmpR[j] + g_system.naLocalArr[tmpBead][j] + g_system.naBoxSize[j]) %
-                               g_system.naBoxSize[j];
+                    tmpR2[j] =
+                        (tmpR[j] + g_system.naLocalArr[tmpBead][j] + g_system.naBoxSize[j]) % g_system.naBoxSize[j];
                 }
                 tmpBead = Lat_Ind_FromVec(tmpR2);
                 tmpBead = g_system.naTotLattice[tmpBead];
@@ -580,8 +567,7 @@ int Clus_Proximity_ChainCluster_ForTotal_IntOnly(int const chainID)
                     if (g_analysis.naChainCheckList[chainPart] == -1)
                     { // This is a unique chain.
                         g_analysis.naList[clusSize++] = chainPart;
-                        g_analysis.naChainCheckList[chainPart] =
-                            1; // Recording that this chain has been looked at
+                        g_analysis.naChainCheckList[chainPart] = 1; // Recording that this chain has been looked at
                     }
                 }
             }
@@ -611,8 +597,7 @@ int Clus_Proximity_ChainCluster_ForTotal_All(int const chainID)
     int clusSize = 0; // Index to track the cluster size.
     int curID;        // Index to track the current chain being looked at.
     curID = chainID;
-    g_analysis.naList[clusSize++] =
-        curID; // The cluster contains chainID by definition, and ClusSize = 1
+    g_analysis.naList[clusSize++] = curID;  // The cluster contains chainID by definition, and ClusSize = 1
     g_analysis.naChainCheckList[curID] = 1; // This means that curID has been checked!
     int fB, lB;                             // Indecies to track the first and last bead of chains.
     int chainPart;
@@ -620,8 +605,8 @@ int Clus_Proximity_ChainCluster_ForTotal_All(int const chainID)
     int tmpR[POS_MAX] = {0};
     int tmpR2[POS_MAX] = {0};
     while (curID != -1)
-    { // Keep going through g_analysis.naList till it is exhausted.
-        fB = g_system.chain_info[curID][CHAIN_START];       // First bead of this chain.
+    {                                                 // Keep going through g_analysis.naList till it is exhausted.
+        fB = g_system.chain_info[curID][CHAIN_START]; // First bead of this chain.
         lB = fB + g_system.chain_info[curID][CHAIN_LENGTH]; // Last bead+1 of this chain. Makes
                                                             // for-loops easier this way.
         for (i = fB; i < lB; i++)
@@ -636,8 +621,8 @@ int Clus_Proximity_ChainCluster_ForTotal_All(int const chainID)
                 tmpBead = g_system.naRot_IndArr[k];
                 for (j = 0; j < POS_MAX; j++)
                 {
-                    tmpR2[j] = (tmpR[j] + g_system.naLocalArr[tmpBead][j] + g_system.naBoxSize[j]) %
-                               g_system.naBoxSize[j];
+                    tmpR2[j] =
+                        (tmpR[j] + g_system.naLocalArr[tmpBead][j] + g_system.naBoxSize[j]) % g_system.naBoxSize[j];
                 }
                 tmpBead = Lat_Ind_FromVec(tmpR2);
                 tmpBead = g_system.naTotLattice[tmpBead];
@@ -647,8 +632,7 @@ int Clus_Proximity_ChainCluster_ForTotal_All(int const chainID)
                     if (g_analysis.naChainCheckList[chainPart] == -1)
                     { // This is a unique chain.
                         g_analysis.naList[clusSize++] = chainPart;
-                        g_analysis.naChainCheckList[chainPart] =
-                            1; // Recording that this chain has been looked at
+                        g_analysis.naChainCheckList[chainPart] = 1; // Recording that this chain has been looked at
                     }
                 }
             }
@@ -678,8 +662,7 @@ void Clus_Proximity_TotalAnalysis(void)
     j = 0;
     while (curID < g_system.tot_chains && IsUnique == 1)
     {
-        Cluster_length = Clus_Proximity_ChainCluster_ForTotal_IntOnly(
-            curID); // This is the length of curID cluster
+        Cluster_length = Clus_Proximity_ChainCluster_ForTotal_IntOnly(curID); // This is the length of curID cluster
         if (Cluster_length > currentLargest)
         {
             currentLargest = Cluster_length;
@@ -725,8 +708,7 @@ int Clus_Proximity_SecondLargestCluster(void)
     j = 0;
     while (curID < g_system.tot_chains && IsUnique == 1)
     {
-        Cluster_length = Clus_Proximity_ChainCluster_ForTotal_IntOnly(
-            curID); // This is the length of curID cluster
+        Cluster_length = Clus_Proximity_ChainCluster_ForTotal_IntOnly(curID); // This is the length of curID cluster
         if (Cluster_length > currentLargest)
         {
             currentLargest = Cluster_length;
@@ -799,9 +781,8 @@ int Clus_Proximity_LimitedCluster_IntOnly(int const chainID)
     int clusSize = 0; // Index to track the cluster size.
     int curID;        // Index to track the current chain being looked at.
     curID = chainID;
-    g_analysis.naList[clusSize++] =
-        curID;  // The cluster contains chainID by definition, and ClusSize = 1
-    int fB, lB; // Indecies to track the first and last bead of chains.
+    g_analysis.naList[clusSize++] = curID; // The cluster contains chainID by definition, and ClusSize = 1
+    int fB, lB;                            // Indecies to track the first and last bead of chains.
     int chainPart;
     int tmpBead = 0;
     int resi, resj; // Tracking the type of the bead to check if they are
@@ -812,8 +793,8 @@ int Clus_Proximity_LimitedCluster_IntOnly(int const chainID)
                       // and 1 is unique.
 
     while (curID != -1)
-    { // Keep going through g_analysis.naList till it is exhausted.
-        fB = g_system.chain_info[curID][CHAIN_START];       // First bead of this chain.
+    {                                                 // Keep going through g_analysis.naList till it is exhausted.
+        fB = g_system.chain_info[curID][CHAIN_START]; // First bead of this chain.
         lB = fB + g_system.chain_info[curID][CHAIN_LENGTH]; // Last bead+1 of this chain. Makes
                                                             // for-loops easier this way.
 
@@ -856,8 +837,8 @@ int Clus_Proximity_LimitedCluster_IntOnly(int const chainID)
                 tmpBead = g_system.naRot_IndArr[k];
                 for (j = 0; j < POS_MAX; j++)
                 {
-                    tmpR2[j] = (tmpR[j] + g_system.naLocalArr[tmpBead][j] + g_system.naBoxSize[j]) %
-                               g_system.naBoxSize[j];
+                    tmpR2[j] =
+                        (tmpR[j] + g_system.naLocalArr[tmpBead][j] + g_system.naBoxSize[j]) % g_system.naBoxSize[j];
                 }
                 tmpBead = Lat_Ind_FromVec(tmpR2);
                 tmpBead = g_system.naTotLattice[tmpBead];
@@ -919,9 +900,8 @@ int Clus_Proximity_LimitedCluster_IntOnly_Check(int const chainID, int const* Ol
     int clusSize = 0; // Index to track the cluster size.
     int curID;        // Index to track the current chain being looked at.
     curID = chainID;
-    g_analysis.naList[clusSize++] =
-        curID;  // The cluster contains chainID by definition, and ClusSize = 1
-    int fB, lB; // Indecies to track the first and last bead of chains.
+    g_analysis.naList[clusSize++] = curID; // The cluster contains chainID by definition, and ClusSize = 1
+    int fB, lB;                            // Indecies to track the first and last bead of chains.
     int chainPart;
     int resi, resj; // Tracking the type of the bead to check if they are
                     // interacting via E_OVLP
@@ -932,8 +912,8 @@ int Clus_Proximity_LimitedCluster_IntOnly_Check(int const chainID, int const* Ol
                       // and 1 is unique.
 
     while (curID != -1)
-    { // Keep going through g_analysis.naList till it is exhausted.
-        fB = g_system.chain_info[curID][CHAIN_START];       // First bead of this chain.
+    {                                                 // Keep going through g_analysis.naList till it is exhausted.
+        fB = g_system.chain_info[curID][CHAIN_START]; // First bead of this chain.
         lB = fB + g_system.chain_info[curID][CHAIN_LENGTH]; // Last bead+1 of this chain. Makes
                                                             // for-loops easier this way.
 
@@ -980,8 +960,8 @@ int Clus_Proximity_LimitedCluster_IntOnly_Check(int const chainID, int const* Ol
                 tmpBead = g_system.naRot_IndArr[k];
                 for (j = 0; j < POS_MAX; j++)
                 {
-                    tmpR2[j] = (tmpR[j] + g_system.naLocalArr[tmpBead][j] + g_system.naBoxSize[j]) %
-                               g_system.naBoxSize[j];
+                    tmpR2[j] =
+                        (tmpR[j] + g_system.naLocalArr[tmpBead][j] + g_system.naBoxSize[j]) % g_system.naBoxSize[j];
                 }
                 tmpBead = Lat_Ind_FromVec(tmpR2);
                 tmpBead = g_system.naTotLattice[tmpBead];
@@ -1072,10 +1052,13 @@ int Clus_Proximity_LimitedCluster_All(int const chainID, int* clusList)
             curBeadNeighNum = NeighborSearch_ForCluster_Ovlp(i, r_pos_curBead, tmpNeighBeadList);
             BeadListOP_GetChainIDs(curBeadNeighNum, tmpNeighBeadList, tmpNeighChainList);
             qsort(tmpNeighChainList, curBeadNeighNum, sizeof(int), UtilFunc_CompareInts);
-            curChainNeighNum =
-                ListOP_UniqueElementsOfSortedList_Int(curBeadNeighNum, tmpNeighChainList);
-            clusSize = ChainListOP_AddUniqueChains_wSize(clusSize, clusList, curChainNeighNum,
-                                                         tmpNeighChainList, ClusterLimit);
+            curChainNeighNum = ListOP_UniqueElementsOfSortedList_Int(curBeadNeighNum, tmpNeighChainList);
+            clusSize = ChainListOP_AddUniqueChains_wSize(
+                clusSize,
+                clusList,
+                curChainNeighNum,
+                tmpNeighChainList,
+                ClusterLimit);
             if (clusSize >= ClusterLimit)
             {
                 return -1;
@@ -1129,10 +1112,14 @@ int Clus_Proximity_LimitedCluster_All_Check(int const chainID, int const* OldLis
             curBeadNeighNum = NeighborSearch_ForCluster_Ovlp(i, r_pos_curBead, tmpNeighBeadList);
             BeadListOP_GetChainIDs(curBeadNeighNum, tmpNeighBeadList, tmpNeighChainList);
             qsort(tmpNeighChainList, curBeadNeighNum, sizeof(int), UtilFunc_CompareInts);
-            curChainNeighNum =
-                ListOP_UniqueElementsOfSortedList_Int(curBeadNeighNum, tmpNeighChainList);
+            curChainNeighNum = ListOP_UniqueElementsOfSortedList_Int(curBeadNeighNum, tmpNeighChainList);
             clusSize = ChainListOP_AddUniqueChains_wSize_Check(
-                clusSize, NewList, curChainNeighNum, tmpNeighChainList, ClusterLimit, OldList);
+                clusSize,
+                NewList,
+                curChainNeighNum,
+                tmpNeighChainList,
+                ClusterLimit,
+                OldList);
             if (clusSize >= ClusterLimit)
             {
                 return -1;
@@ -1164,8 +1151,7 @@ void Clus_Proximity_Distribution_Avg(void)
     currentLargest = 0;
     while (curID < g_system.tot_chains && IsUnique == 1)
     {
-        Cluster_length = Clus_Proximity_ChainCluster_ForTotal_IntOnly(
-            curID); // This is the length of curID cluster
+        Cluster_length = Clus_Proximity_ChainCluster_ForTotal_IntOnly(curID); // This is the length of curID cluster
         // printf("Clus Len: %d\n", Cluster_length);
         g_analysis.laClusHistList[Cluster_length]++; // Adding to that cluster-size bin
         if (Cluster_length > currentLargest)
@@ -1210,8 +1196,7 @@ void Clus_Proximity_Distribution_IntOnly_MolWise_Avg(void)
     currentLargest = 0;
     while (curID < g_system.tot_chains && IsUnique == 1)
     {
-        Cluster_length = Clus_Proximity_ChainCluster_ForTotal_IntOnly(
-            curID); // This is the length of curID cluster
+        Cluster_length = Clus_Proximity_ChainCluster_ForTotal_IntOnly(curID); // This is the length of curID cluster
         // printf("Clus Len: %d\n", Cluster_length);
         g_analysis.laClusHistList[Cluster_length]++; // Adding to that cluster-size bin
         if (Cluster_length > currentLargest)
@@ -1258,8 +1243,7 @@ void Clus_Proximity_Distribution_All_MolWise_Avg(void)
     currentLargest = 0;
     while (curID < g_system.tot_chains && IsUnique == 1)
     {
-        Cluster_length =
-            Clus_Proximity_ChainCluster_ForTotal_All(curID); // This is the length of curID cluster
+        Cluster_length = Clus_Proximity_ChainCluster_ForTotal_All(curID); // This is the length of curID cluster
         // printf("Clus Len: %d\n", Cluster_length);
         g_analysis.laClusHistList[Cluster_length]++; // Adding to that cluster-size bin
         if (Cluster_length > currentLargest)
@@ -1317,8 +1301,7 @@ void Clus_Proximity_IntOnly_MolWise_LargestClusters(void)
 
     while (curID < g_system.tot_chains && IsUnique == 1)
     {
-        Cluster_length = Clus_Proximity_ChainCluster_ForTotal_IntOnly(
-            curID); // This is the length of curID cluster
+        Cluster_length = Clus_Proximity_ChainCluster_ForTotal_IntOnly(curID); // This is the length of curID cluster
 
         for (i = 0; i < g_system.tot_chain_types; i++)
         {
@@ -1359,8 +1342,7 @@ void Clus_Proximity_IntOnly_MolWise_LargestClusters(void)
     for (i = 0; i < g_system.tot_chain_types; i++)
     {
         // printf("(%d %d)\t", largestClus_of_type[i],clusID_of_type[i]);
-        g_analysis.naList[i] =
-            clusID_of_type[i]; // Now g_analysis.naList contains the cluster ID's.
+        g_analysis.naList[i] = clusID_of_type[i]; // Now g_analysis.naList contains the cluster ID's.
     }
     // printf("\n");
     free(clus_numof_MolType);
@@ -1398,8 +1380,7 @@ void Clus_Proximity_All_MolWise_LargestClusters(void)
 
     while (curID < g_system.tot_chains && IsUnique == 1)
     {
-        Cluster_length =
-            Clus_Proximity_ChainCluster_ForTotal_All(curID); // This is the length of curID cluster
+        Cluster_length = Clus_Proximity_ChainCluster_ForTotal_All(curID); // This is the length of curID cluster
 
         for (i = 0; i < g_system.tot_chain_types; i++)
         {
@@ -1440,8 +1421,7 @@ void Clus_Proximity_All_MolWise_LargestClusters(void)
     for (i = 0; i < g_system.tot_chain_types; i++)
     {
         // printf("(%d %d)\t", largestClus_of_type[i],clusID_of_type[i]);
-        g_analysis.naList[i] =
-            clusID_of_type[i]; // Now g_analysis.naList contains the cluster ID's.
+        g_analysis.naList[i] = clusID_of_type[i]; // Now g_analysis.naList contains the cluster ID's.
     }
     // printf("\n");
     free(clus_numof_MolType);
@@ -1459,16 +1439,17 @@ void ClusAnalysis_Perform_Analysis(const int nMode)
     switch (nMode)
     {
     case 1:
-        largestNow = ClusAnalysis_Ovlp_ForSystem_MolTypeWiseDecompAndSizes(
-            g_analysis.laClusHistList, g_analysis.ldaMOLCLUS_Arr);
+        largestNow =
+            ClusAnalysis_Ovlp_ForSystem_MolTypeWiseDecompAndSizes(g_analysis.laClusHistList, g_analysis.ldaMOLCLUS_Arr);
         break;
     case 2:
-        largestNow = ClusAnalysis_Ovlp_ForSystem_MolTypeWiseDecompAndSizes(
-            g_analysis.laClusHistList, g_analysis.ldaMOLCLUS_Arr);
+        largestNow =
+            ClusAnalysis_Ovlp_ForSystem_MolTypeWiseDecompAndSizes(g_analysis.laClusHistList, g_analysis.ldaMOLCLUS_Arr);
         break;
     default:
         largestNow = ClusAnalysis_Aniso_ForSystem_MolTypeWiseDecompAndSizes(
-            g_analysis.laClusHistList, g_analysis.ldaMOLCLUS_Arr);
+            g_analysis.laClusHistList,
+            g_analysis.ldaMOLCLUS_Arr);
         break;
     }
 
@@ -1532,8 +1513,7 @@ void Clus_Perform_MolWise_LargestClusters(void)
 
     while (curID < g_system.tot_chains && IsUnique == 1)
     {
-        Cluster_length =
-            Clus_Perform_ChainCluster_ForTotal(curID); // This is the length of curID cluster
+        Cluster_length = Clus_Perform_ChainCluster_ForTotal(curID); // This is the length of curID cluster
 
         for (i = 0; i <= g_system.tot_chain_types; i++)
         {
@@ -1574,8 +1554,7 @@ void Clus_Perform_MolWise_LargestClusters(void)
 
     for (i = 0; i <= g_system.tot_chain_types; i++)
     {
-        g_analysis.naList[i] =
-            clusID_of_type[i]; // Now g_analysis.naList contains the cluster ID's.
+        g_analysis.naList[i] = clusID_of_type[i]; // Now g_analysis.naList contains the cluster ID's.
     }
 
     free(clus_numof_MolType);
@@ -1608,9 +1587,10 @@ void Clus_Find_LargestClusters(void)
 /// beadID.
 int ClusUtil_GetOvlpNeighborBeads_ForBead(const int beadID, int* restrict neighList)
 {
-    const int r_pos0[POS_MAX] = {g_system.bead_info[beadID][POS_X],
-                                 g_system.bead_info[beadID][POS_Y],
-                                 g_system.bead_info[beadID][POS_Z]};
+    const int r_pos0[POS_MAX] = {
+        g_system.bead_info[beadID][POS_X],
+        g_system.bead_info[beadID][POS_Y],
+        g_system.bead_info[beadID][POS_Z]};
 
     return LatticeUtil_GetNeighBeads_AtPos(r_pos0, neighList);
 }
@@ -1636,8 +1616,11 @@ int ClusUtil_GetOvlpNeighborChains_ForBead(const int beadID, int* restrict neigh
 /// chains into clusList, while increasing the total clusSize. Lastly, the function returns the
 /// number of unique chains found. \param beadID \param caTotClusTable \param clusList \param
 /// clusSize \return
-int ClusUtil_AddOvlpCluster_OfBead(const int beadID, char* restrict caTotClusTable,
-                                   int* restrict clusList, int* restrict clusSize)
+int ClusUtil_AddOvlpCluster_OfBead(
+    const int beadID,
+    char* restrict caTotClusTable,
+    int* restrict clusList,
+    int* restrict clusSize)
 {
     int tmpChainList[CLUS_CONTACT_NEIGHS];
     const int dumChainNum = ClusUtil_GetOvlpNeighborChains_ForBead(beadID, tmpChainList);
@@ -1692,8 +1675,11 @@ int ClusUtil_AddOvlpCluster_OfBead_CheckForSame(const int beadID, const char* co
 /// \param clusList
 /// \param clusSize
 /// \return
-int ClusUtil_AddOvlpCluster_OfChain(const int chainID, char* restrict caTotClusTable,
-                                    int* restrict clusList, int* restrict clusSize)
+int ClusUtil_AddOvlpCluster_OfChain(
+    const int chainID,
+    char* restrict caTotClusTable,
+    int* restrict clusList,
+    int* restrict clusSize)
 {
     const int startSize = *clusSize;
 
@@ -1715,8 +1701,7 @@ int ClusUtil_AddOvlpCluster_OfChain(const int chainID, char* restrict caTotClusT
 /// \param chainID
 /// \param caTotClusTable
 /// \return
-int ClusUtil_AddOvlpCluster_OfChain_CheckForSame(const int chainID,
-                                                 const char* restrict const caTotClusTable)
+int ClusUtil_AddOvlpCluster_OfChain_CheckForSame(const int chainID, const char* restrict const caTotClusTable)
 {
     const int firstB = g_system.chain_info[chainID][CHAIN_START];
     const int lastB = firstB + g_system.chain_info[chainID][CHAIN_LENGTH];
@@ -1741,8 +1726,7 @@ int ClusUtil_AddOvlpCluster_OfChain_CheckForSame(const int chainID,
 /// which chains have been already looked at in the system. \param naClusList Array that will
 /// contain the chain indices of the chains in the cluster. \return Total size of the cluster
 /// chainID is a part of.
-int ClusUtil_OvlpCluster_OfChain(const int chainID, char* restrict caTotClusTable,
-                                 int* restrict naClusList)
+int ClusUtil_OvlpCluster_OfChain(const int chainID, char* restrict caTotClusTable, int* restrict naClusList)
 {
     naClusList[0] = chainID;
     caTotClusTable[chainID] = 1;
@@ -1766,8 +1750,11 @@ int ClusUtil_OvlpCluster_OfChain(const int chainID, char* restrict caTotClusTabl
 /// \param clusList
 /// \param maxSize
 /// \return
-int ClusUtil_OvlpCluster_OfChain_wMaxSize(const int chainID, char* restrict caTotClusTable,
-                                          int* restrict clusList, int const maxSize)
+int ClusUtil_OvlpCluster_OfChain_wMaxSize(
+    const int chainID,
+    char* restrict caTotClusTable,
+    int* restrict clusList,
+    int const maxSize)
 {
     clusList[0] = chainID;
     caTotClusTable[chainID] = 1;
@@ -1794,8 +1781,10 @@ int ClusUtil_OvlpCluster_OfChain_wMaxSize(const int chainID, char* restrict caTo
 /// \param clusList
 /// \param clusSize
 /// \return
-int ClusUtil_OvlpCluster_OfChain_CheckForSame(const char* const caTotClusTable,
-                                              const int* const clusList, int const clusSize)
+int ClusUtil_OvlpCluster_OfChain_CheckForSame(
+    const char* const caTotClusTable,
+    const int* const clusList,
+    int const clusSize)
 {
     int tmpChain;
     int tmpVal;
@@ -1819,8 +1808,11 @@ int ClusUtil_OvlpCluster_OfChain_CheckForSame(const char* const caTotClusTable,
 /// \param clusList
 /// \param clusSize
 /// \return
-int ClusUtil_AddAnisoCluster_OfBead(const int beadID, char* restrict caTotClusTable,
-                                    int* restrict clusList, int* restrict clusSize)
+int ClusUtil_AddAnisoCluster_OfBead(
+    const int beadID,
+    char* restrict caTotClusTable,
+    int* restrict clusList,
+    int* restrict clusSize)
 {
     int const beadPartner = g_system.bead_info[beadID][BEAD_FACE];
 
@@ -1844,8 +1836,11 @@ int ClusUtil_AddAnisoCluster_OfBead(const int beadID, char* restrict caTotClusTa
 /// \param clusList
 /// \param clusSize
 /// \return
-int ClusUtil_AddAnisoCluster_OfChain(const int chainID, char* restrict caTotClusTable,
-                                     int* restrict clusList, int* restrict clusSize)
+int ClusUtil_AddAnisoCluster_OfChain(
+    const int chainID,
+    char* restrict caTotClusTable,
+    int* restrict clusList,
+    int* restrict clusSize)
 {
     const int startSize = *clusSize;
 
@@ -1868,8 +1863,7 @@ int ClusUtil_AddAnisoCluster_OfChain(const int chainID, char* restrict caTotClus
 /// \param caTotClusTable
 /// \param clusList
 /// \return
-int ClusUtil_AnisoCluster_OfChain(const int chainID, char* restrict caTotClusTable,
-                                  int* restrict clusList)
+int ClusUtil_AnisoCluster_OfChain(const int chainID, char* restrict caTotClusTable, int* restrict clusList)
 {
     clusList[0] = chainID;
     caTotClusTable[chainID] = 1;
@@ -1893,8 +1887,11 @@ int ClusUtil_AnisoCluster_OfChain(const int chainID, char* restrict caTotClusTab
 /// \param clusList
 /// \param maxSize
 /// \return
-int ClusUtil_AnisoCluster_OfChain_wMaxSize(const int chainID, char* restrict caTotClusTable,
-                                           int* restrict clusList, int const maxSize)
+int ClusUtil_AnisoCluster_OfChain_wMaxSize(
+    const int chainID,
+    char* restrict caTotClusTable,
+    int* restrict clusList,
+    int const maxSize)
 {
     clusList[0] = chainID;
     caTotClusTable[chainID] = 1;
@@ -1939,8 +1936,7 @@ int ClusUtil_NextUnvisitedChain(int const nChainID, const char* const caTotClusT
 /// index-based arithmetic. \return The total number of clusters in the system. 1 would mean every
 /// molecule is part of a single cluster. While g_system.tot_chains would mean that every molecule
 /// is only a part of its own cluster.
-int ClusUtil_AnisoClusters_OfSystem(int* const restrict naFullClusList,
-                                    int* const restrict naCumClusSizes)
+int ClusUtil_AnisoClusters_OfSystem(int* const restrict naFullClusList, int* const restrict naCumClusSizes)
 {
     int nCumulativeSize = 0;
     int nClusNum = 0;
@@ -1952,8 +1948,8 @@ int ClusUtil_AnisoClusters_OfSystem(int* const restrict naFullClusList,
 
     while (nThisChainID < g_system.tot_chains)
     {
-        nThisClusSize = ClusUtil_AnisoCluster_OfChain(nThisChainID, caTmpClusCheckList,
-                                                      naFullClusList + nCumulativeSize);
+        nThisClusSize =
+            ClusUtil_AnisoCluster_OfChain(nThisChainID, caTmpClusCheckList, naFullClusList + nCumulativeSize);
 
         nCumulativeSize += nThisClusSize;
         nClusNum++;
@@ -1986,8 +1982,8 @@ int ClusUtil_OvlpClusters_OfSystem(int* const naFullClusList, int* const naCumCl
 
     while (nThisChainID < g_system.tot_chains)
     {
-        nThisClusSize = ClusUtil_OvlpCluster_OfChain(nThisChainID, caTmpClusCheckList,
-                                                     naFullClusList + nCumulativeSize);
+        nThisClusSize =
+            ClusUtil_OvlpCluster_OfChain(nThisChainID, caTmpClusCheckList, naFullClusList + nCumulativeSize);
 
         nCumulativeSize += nThisClusSize;
         nClusNum++;
@@ -2007,8 +2003,10 @@ int ClusUtil_OvlpClusters_OfSystem(int* const naFullClusList, int* const naCumCl
 /// \param naSizeList Will contain sizes of clusters.
 /// \param naCumClusSizes Contains cumulative sizes.
 /// \param nClusNum Total number of clusters.
-void ClusUtil_GenClusSizesFromCumulativeSizes(int* const naSizeList,
-                                              const int* const naCumClusSizes, int const nClusNum)
+void ClusUtil_GenClusSizesFromCumulativeSizes(
+    int* const naSizeList,
+    const int* const naCumClusSizes,
+    int const nClusNum)
 {
     int i;
 
@@ -2023,8 +2021,7 @@ void ClusUtil_GenClusSizesFromCumulativeSizes(int* const naSizeList,
 /// \param laHist Histogram to be added on to.
 /// \param naCounts Array that has the occurences.
 /// \param nBins Total number of bins to look at.
-void ClusHistUtil_AddToHist_FromCountsList(lLong* const laHist, const int* const naCounts,
-                                           const int nBins)
+void ClusHistUtil_AddToHist_FromCountsList(lLong* const laHist, const int* const naCounts, const int nBins)
 {
     int i;
     for (i = 0; i < nBins; i++)
@@ -2037,9 +2034,10 @@ void ClusHistUtil_AddToHist_FromCountsList(lLong* const laHist, const int* const
 /// \param naClusSizeHist
 /// \param naCumClusSizes
 /// \param nClusNum
-void ClusUtil_GenHistFromCumulativeSizes(lLong* const restrict naClusSizeHist,
-                                         const int* const restrict naCumClusSizes,
-                                         int const nClusNum)
+void ClusUtil_GenHistFromCumulativeSizes(
+    lLong* const restrict naClusSizeHist,
+    const int* const restrict naCumClusSizes,
+    int const nClusNum)
 {
     int* naTmpSizeList = (int*)calloc((nClusNum), sizeof(int));
 
@@ -2058,16 +2056,18 @@ void ClusUtil_GenHistFromCumulativeSizes(lLong* const restrict naClusSizeHist,
 /// \param naClusSizes Array containing the cluster sizes.
 /// \param nClusNum Total number of clusters. Mostly used for debugging.
 /// \return The size of this particular cluster.
-int ClusUtil_GetCluster_FromFullClusAndCumSizes(const int nClusID, int* const naOutClusList,
-                                                const int* const naFullClusList,
-                                                const int* const naCumSizes,
-                                                const int* const naClusSizes, const int nClusNum)
+int ClusUtil_GetCluster_FromFullClusAndCumSizes(
+    const int nClusID,
+    int* const naOutClusList,
+    const int* const naFullClusList,
+    const int* const naCumSizes,
+    const int* const naClusSizes,
+    const int nClusNum)
 {
 #if DEBUG_BUILD
     if (nClusID > nClusNum)
     {
-        fprintf(stderr, "Incorrect cluster-ID (%d) is greater than number of clusters (%d)\n",
-                nClusID, nClusNum);
+        fprintf(stderr, "Incorrect cluster-ID (%d) is greater than number of clusters (%d)\n", nClusID, nClusNum);
         fprintf(stderr, "Crashing.");
         exit(1);
     }
@@ -2095,9 +2095,10 @@ int ClusUtil_GetCluster_FromFullClusAndCumSizes(const int nClusID, int* const na
 /// nClusSize) we calculate the cluster composition, and add to the ldaMolWiseHist array. \param
 /// ldaMolWiseHist Histogram array. Bins are calculated using MolClusArr_Index() \param naClusList
 /// The chainIDs of this cluster. \param nClusSize The size of this cluster.
-void ClusHistUtil_AddToHist_MolTypeWiseDecomp_FromCluster(lLDub* const restrict ldaMolWiseHist,
-                                                          const int* const restrict naClusList,
-                                                          const int nClusSize)
+void ClusHistUtil_AddToHist_MolTypeWiseDecomp_FromCluster(
+    lLDub* const restrict ldaMolWiseHist,
+    const int* const restrict naClusList,
+    const int nClusSize)
 {
 #ifdef DEBUG_BUILD
     if (nClusSize < 1)
@@ -2126,8 +2127,11 @@ void ClusHistUtil_AddToHist_MolTypeWiseDecomp_FromCluster(lLDub* const restrict 
 /// Contains the cumulative sizes given the clusters. \param naClusSizes Contains the cluster sizes.
 /// \param nClusNum Contains the total number of clusters.
 void ClusHistUtil_AddToHist_MolTypeWiseDecomp_FromFullClusAndCumSizes(
-    lLDub* const ldaMolWiseHist, const int* const naClusChainIDs, const int* const naCumClusSizes,
-    const int* const naClusSizes, int const nClusNum)
+    lLDub* const ldaMolWiseHist,
+    const int* const naClusChainIDs,
+    const int* const naCumClusSizes,
+    const int* const naClusSizes,
+    int const nClusNum)
 {
     int* thisCluster = calloc(g_system.tot_chains + 1, sizeof(int));
 
@@ -2136,7 +2140,12 @@ void ClusHistUtil_AddToHist_MolTypeWiseDecomp_FromFullClusAndCumSizes(
     for (i = 0; i < nClusNum; i++)
     {
         thisSize = ClusUtil_GetCluster_FromFullClusAndCumSizes(
-            i, thisCluster, naClusChainIDs, naCumClusSizes, naClusSizes, nClusNum);
+            i,
+            thisCluster,
+            naClusChainIDs,
+            naCumClusSizes,
+            naClusSizes,
+            nClusNum);
         ClusHistUtil_AddToHist_MolTypeWiseDecomp_FromCluster(ldaMolWiseHist, thisCluster, thisSize);
     }
 
@@ -2148,8 +2157,9 @@ void ClusHistUtil_AddToHist_MolTypeWiseDecomp_FromFullClusAndCumSizes(
 /// cluster sizes. ldaMolWiseHist is the histogram for the composition of each cluster. The
 /// composition corresponds to the number of different chain types within each cluster (or
 /// cluster-size) \param naSizeHist \param ldaMolWiseHist
-int ClusAnalysis_Ovlp_ForSystem_MolTypeWiseDecompAndSizes(lLong* const restrict naSizeHist,
-                                                          lLDub* const restrict ldaMolWiseHist)
+int ClusAnalysis_Ovlp_ForSystem_MolTypeWiseDecompAndSizes(
+    lLong* const restrict naSizeHist,
+    lLDub* const restrict ldaMolWiseHist)
 {
     int* naFullClusList = (int*)calloc((g_system.tot_chains + 1), sizeof(int));
     int* naCumClusSizes = (int*)calloc((g_system.tot_chains + 1), sizeof(int));
@@ -2163,7 +2173,11 @@ int ClusAnalysis_Ovlp_ForSystem_MolTypeWiseDecompAndSizes(lLong* const restrict 
     ClusHistUtil_AddToHist_FromCountsList(naSizeHist, naClusSizes, nClusNum);
 
     ClusHistUtil_AddToHist_MolTypeWiseDecomp_FromFullClusAndCumSizes(
-        ldaMolWiseHist, naFullClusList, naCumClusSizes, naClusSizes, nClusNum);
+        ldaMolWiseHist,
+        naFullClusList,
+        naCumClusSizes,
+        naClusSizes,
+        nClusNum);
 
     const int currentLargest = ListOP_GetMaxVal_Int(nClusNum, naClusSizes);
 
@@ -2179,8 +2193,9 @@ int ClusAnalysis_Ovlp_ForSystem_MolTypeWiseDecompAndSizes(lLong* const restrict 
 /// cluster sizes. ldaMolWiseHist is the histogram for the composition of each cluster. The
 /// composition corresponds to the number of different chain types within each cluster (or
 /// cluster-size) \param naSizeHist \param ldaMolWiseHist
-int ClusAnalysis_Aniso_ForSystem_MolTypeWiseDecompAndSizes(lLong* const restrict naSizeHist,
-                                                           lLDub* const restrict ldaMolWiseHist)
+int ClusAnalysis_Aniso_ForSystem_MolTypeWiseDecompAndSizes(
+    lLong* const restrict naSizeHist,
+    lLDub* const restrict ldaMolWiseHist)
 {
     int* naFullClusList = (int*)calloc((g_system.tot_chains + 1), sizeof(int));
     int* naCumClusSizes = (int*)calloc((g_system.tot_chains + 1), sizeof(int));
@@ -2194,7 +2209,11 @@ int ClusAnalysis_Aniso_ForSystem_MolTypeWiseDecompAndSizes(lLong* const restrict
     ClusHistUtil_AddToHist_FromCountsList(naSizeHist, naClusSizes, nClusNum);
 
     ClusHistUtil_AddToHist_MolTypeWiseDecomp_FromFullClusAndCumSizes(
-        ldaMolWiseHist, naFullClusList, naCumClusSizes, naClusSizes, nClusNum);
+        ldaMolWiseHist,
+        naFullClusList,
+        naCumClusSizes,
+        naClusSizes,
+        nClusNum);
 
     const int currentLargest = ListOP_GetMaxVal_Int(nClusNum, naClusSizes);
 
@@ -2212,11 +2231,12 @@ int ClusAnalysis_Aniso_ForSystem_MolTypeWiseDecompAndSizes(lLong* const restrict
 /// \param naClusSizes
 /// \param nClusNum
 /// \return
-int ClusUtil_GetLargestCluster_FromFullClusAndCumSizes(int* const restrict naOutClusList,
-                                                       const int* const restrict naFullClusList,
-                                                       const int* const restrict naCumSizes,
-                                                       const int* const restrict naClusSizes,
-                                                       const int nClusNum)
+int ClusUtil_GetLargestCluster_FromFullClusAndCumSizes(
+    int* const restrict naOutClusList,
+    const int* const restrict naFullClusList,
+    const int* const restrict naCumSizes,
+    const int* const restrict naClusSizes,
+    const int nClusNum)
 {
     int i;
     const int thisSize = ListOP_GetMaxVal_Int(nClusNum, naClusSizes);
@@ -2224,8 +2244,7 @@ int ClusUtil_GetLargestCluster_FromFullClusAndCumSizes(int* const restrict naOut
 #if DEBUG_BUILD
     if (nClusID > nClusNum)
     {
-        fprintf(stderr, "Incorrect cluster-ID (%d) is greater than number of clusters (%d)\n",
-                nClusID, nClusNum);
+        fprintf(stderr, "Incorrect cluster-ID (%d) is greater than number of clusters (%d)\n", nClusID, nClusNum);
         fprintf(stderr, "Crashing.");
         exit(1);
     }
@@ -2255,8 +2274,11 @@ int ClusUtil_GetLargestCluster_FromFullClusAndCumSizes(int* const restrict naOut
 /// \param nClusNum
 /// \return
 int ClusUtil_GetSecondLargestCluster_FromFullClusAndCumSizes(
-    int* const restrict naOutClusList, const int* const restrict naFullClusList,
-    const int* const restrict naCumSizes, const int* const restrict naClusSizes, const int nClusNum)
+    int* const restrict naOutClusList,
+    const int* const restrict naFullClusList,
+    const int* const restrict naCumSizes,
+    const int* const restrict naClusSizes,
+    const int nClusNum)
 {
     int i;
 
@@ -2266,8 +2288,7 @@ int ClusUtil_GetSecondLargestCluster_FromFullClusAndCumSizes(
 #if DEBUG_BUILD
     if (nClusID > nClusNum)
     {
-        fprintf(stderr, "Incorrect cluster-ID (%d) is greater than number of clusters (%d)\n",
-                nClusID, nClusNum);
+        fprintf(stderr, "Incorrect cluster-ID (%d) is greater than number of clusters (%d)\n", nClusID, nClusNum);
         fprintf(stderr, "Crashing.");
         exit(1);
     }
@@ -2324,7 +2345,11 @@ int ClusUtil_OvlpCluster_OfSystem_SecondLargest(int* naOutClusList)
     ClusUtil_GenClusSizesFromCumulativeSizes(naClusSizes, naCumClusSizes, nClusNum);
 
     thisSize = ClusUtil_GetSecondLargestCluster_FromFullClusAndCumSizes(
-        naOutClusList, naFullClusList, naCumClusSizes, naClusSizes, nClusNum);
+        naOutClusList,
+        naFullClusList,
+        naCumClusSizes,
+        naClusSizes,
+        nClusNum);
 
     free(naFullClusList);
     free(naCumClusSizes);
@@ -2356,7 +2381,11 @@ int ClusUtil_OvlpCluster_OfSystem_SecondLargest_ForMCMove(int* naOutClusList)
         ClusUtil_GenClusSizesFromCumulativeSizes(naClusSizes, naCumClusSizes, nClusNum);
 
         thisSize = ClusUtil_GetSecondLargestCluster_FromFullClusAndCumSizes(
-            naOutClusList, naFullClusList, naCumClusSizes, naClusSizes, nClusNum);
+            naOutClusList,
+            naFullClusList,
+            naCumClusSizes,
+            naClusSizes,
+            nClusNum);
     }
 
     free(naFullClusList);
@@ -2383,7 +2412,11 @@ int ClusUtil_AnisoCluster_OfSystem_SecondLargest(int* naOutClusList)
     ClusUtil_GenClusSizesFromCumulativeSizes(naClusSizes, naCumClusSizes, nClusNum);
 
     thisSize = ClusUtil_GetSecondLargestCluster_FromFullClusAndCumSizes(
-        naOutClusList, naFullClusList, naCumClusSizes, naClusSizes, nClusNum);
+        naOutClusList,
+        naFullClusList,
+        naCumClusSizes,
+        naClusSizes,
+        nClusNum);
 
     free(naFullClusList);
     free(naCumClusSizes);
@@ -2415,7 +2448,11 @@ int ClusUtil_AnisoCluster_OfSystem_SecondLargest_ForMCMove(int* naOutClusList)
         ClusUtil_GenClusSizesFromCumulativeSizes(naClusSizes, naCumClusSizes, nClusNum);
 
         thisSize = ClusUtil_GetSecondLargestCluster_FromFullClusAndCumSizes(
-            naOutClusList, naFullClusList, naCumClusSizes, naClusSizes, nClusNum);
+            naOutClusList,
+            naFullClusList,
+            naCumClusSizes,
+            naClusSizes,
+            nClusNum);
     }
 
     free(naFullClusList);
@@ -2431,10 +2468,11 @@ int ClusUtil_AnisoCluster_OfSystem_SecondLargest_ForMCMove(int* naOutClusList)
 /// \param naClusSizes_out
 /// \param naCumClusSizes_out
 /// \return
-int ClusUtil_OfSystem_MolWise_GetLargestClusters(int* const restrict naClusIDsList_out,
-                                                 int* const restrict naFullClusList_out,
-                                                 int* const restrict naClusSizes_out,
-                                                 int* const restrict naCumClusSizes_out)
+int ClusUtil_OfSystem_MolWise_GetLargestClusters(
+    int* const restrict naClusIDsList_out,
+    int* const restrict naFullClusList_out,
+    int* const restrict naClusSizes_out,
+    int* const restrict naCumClusSizes_out)
 {
     const int nClusNum = ClusUtil_OvlpClusters_OfSystem(naFullClusList_out, naCumClusSizes_out);
 
@@ -2444,8 +2482,12 @@ int ClusUtil_OfSystem_MolWise_GetLargestClusters(int* const restrict naClusIDsLi
 
     ChainListOP_GetChainTypes(naChainTypes, naFullClusList_out, g_system.tot_chains);
 
-    ClusUtil_MolWise_FindLargestClusters(naClusIDsList_out, naChainTypes, naClusSizes_out,
-                                         naCumClusSizes_out, nClusNum);
+    ClusUtil_MolWise_FindLargestClusters(
+        naClusIDsList_out,
+        naChainTypes,
+        naClusSizes_out,
+        naCumClusSizes_out,
+        nClusNum);
 
     free(naChainTypes);
 
@@ -2470,10 +2512,14 @@ int ClusUtil_OfSystem_MolWise_GetLargestClusters(int* const restrict naClusIDsLi
 /// \param naClusSizes_in
 /// \param naCumClusSizes_in
 void ClusUtil_SelectSubsetOfClusters(
-    int* const restrict naSubsetClusChains_out, int* const restrict naSubsetClusSizes_out,
-    int* const restrict naSubsetCumSizes_out, const int nSubsetNum_in,
-    const int* const restrict naSubSetClusIDs_in, const int* const restrict naFullClusList_in,
-    const int* const restrict naClusSizes_in, const int* const restrict naCumClusSizes_in)
+    int* const restrict naSubsetClusChains_out,
+    int* const restrict naSubsetClusSizes_out,
+    int* const restrict naSubsetCumSizes_out,
+    const int nSubsetNum_in,
+    const int* const restrict naSubSetClusIDs_in,
+    const int* const restrict naFullClusList_in,
+    const int* const restrict naClusSizes_in,
+    const int* const restrict naCumClusSizes_in)
 {
     int i, thisSize;
 
@@ -2482,8 +2528,12 @@ void ClusUtil_SelectSubsetOfClusters(
     for (i = 0; i < nSubsetNum_in; i++)
     {
         thisSize = ClusUtil_GetCluster_FromFullClusAndCumSizes(
-            naSubSetClusIDs_in[i], naSubsetClusChains_out + cumSize, naFullClusList_in,
-            naCumClusSizes_in, naClusSizes_in, nSubsetNum_in);
+            naSubSetClusIDs_in[i],
+            naSubsetClusChains_out + cumSize,
+            naFullClusList_in,
+            naCumClusSizes_in,
+            naClusSizes_in,
+            nSubsetNum_in);
         cumSize += thisSize;
         naSubsetClusSizes_out[i] = thisSize;
         naSubsetCumSizes_out[i + 1] = cumSize;
@@ -2496,11 +2546,12 @@ void ClusUtil_SelectSubsetOfClusters(
 /// \param naClusSizes_in
 /// \param naCumClusSizes_in
 /// \param nClusNum_in
-void ClusUtil_MolWise_FindLargestClusters(int* const restrict naClusIDs_out,
-                                          const int* const restrict naChainTypes_in,
-                                          const int* const restrict naClusSizes_in,
-                                          const int* const restrict naCumClusSizes_in,
-                                          const int nClusNum_in)
+void ClusUtil_MolWise_FindLargestClusters(
+    int* const restrict naClusIDs_out,
+    const int* const restrict naChainTypes_in,
+    const int* const restrict naClusSizes_in,
+    const int* const restrict naCumClusSizes_in,
+    const int nClusNum_in)
 {
     int i;
     int j;
@@ -2513,7 +2564,12 @@ void ClusUtil_MolWise_FindLargestClusters(int* const restrict naClusIDs_out,
     for (i = 0; i < nClusNum_in; i++)
     {
         thisSize = ClusUtil_GetCluster_FromFullClusAndCumSizes(
-            i, thisClus, naChainTypes_in, naCumClusSizes_in, naClusSizes_in, nClusNum_in);
+            i,
+            thisClus,
+            naChainTypes_in,
+            naCumClusSizes_in,
+            naClusSizes_in,
+            nClusNum_in);
         tmpSizesList[0] = thisSize;
         ListOP_GenHistFromCounts_Int(tmpSizesList + 1, thisClus, thisSize);
 
@@ -2537,8 +2593,7 @@ void ClusUtil_MolWise_FindLargestClusters(int* const restrict naClusIDs_out,
 /// \param naOutList
 /// \param naInList
 /// \param nSize
-void ListOP_ReplaceWithLarger_Int(int* const restrict naOutList, const int* const restrict naInList,
-                                  const int nSize)
+void ListOP_ReplaceWithLarger_Int(int* const restrict naOutList, const int* const restrict naInList, const int nSize)
 {
     int i;
     for (i = 0; i < nSize; i++)

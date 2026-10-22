@@ -256,8 +256,7 @@ int Parse_Keyfile(char* filename)
             }
             else
             {
-                fprintf(stderr, "ERROR: unable to parse line %d in %s.\n%s", nLine, filename,
-                        strLine);
+                fprintf(stderr, "ERROR: unable to parse line %d in %s.\n%s", nLine, filename, strLine);
                 exit(1);
             }
         }
@@ -270,9 +269,7 @@ int Parse_Keyfile(char* filename)
 
     if (g_system.nBiasPotential_CoupledToTemp && g_system.nBiasPotential_KeepON)
     {
-        fprintf(stderr,
-                "KeyFile error <%s>: Cannot have BIAS_COUPLED_TO_TEMP=1 and BIAS_KEEP_ON=1\n",
-                filename);
+        fprintf(stderr, "KeyFile error <%s>: Cannot have BIAS_COUPLED_TO_TEMP=1 and BIAS_KEEP_ON=1\n", filename);
         exit(1);
     }
 
@@ -304,8 +301,11 @@ int Parse_Keyfile(char* filename)
 
     if (strStructFile[0] != '\0')
     {
-        Parse_StructureFile_CalcBeadsAndChains(strStructFile, &g_system.tot_beads,
-                                               &g_system.tot_chains, &g_system.tot_chain_types);
+        Parse_StructureFile_CalcBeadsAndChains(
+            strStructFile,
+            &g_system.tot_beads,
+            &g_system.tot_chains,
+            &g_system.tot_chain_types);
 
         CreateBeadsAndChains(g_system.tot_beads, g_system.tot_chains);
 
@@ -323,8 +323,7 @@ int Parse_Keyfile(char* filename)
         }
         else
         {
-            fprintf(stderr, "ERROR: undefined value in STRUCT_FILETYPE of %s.\nCrashing!\n",
-                    filename);
+            fprintf(stderr, "ERROR: undefined value in STRUCT_FILETYPE of %s.\nCrashing!\n", filename);
             exit(1);
         }
     }
@@ -462,8 +461,7 @@ int Parse_EnergyFile(char* strEnFile)
                 sscanf(strLine, "%d", &g_energy.nBeadTypes);
                 if (g_energy.nBeadTypes > MAX_AA)
                 {
-                    fprintf(stderr, "ERROR: the number of AA types exceeds MAX_AA in %s.\n",
-                            strEnFile);
+                    fprintf(stderr, "ERROR: the number of AA types exceeds MAX_AA in %s.\n", strEnFile);
                     nRes = 3;
                     break;
                 }
@@ -512,10 +510,11 @@ int Parse_EnergyFile(char* strEnFile)
                     }
                     else
                     {
-                        fprintf(stderr,
-                                "ERROR: irregular expression in energy "
-                                "matrices of %s.\n",
-                                strEnFile);
+                        fprintf(
+                            stderr,
+                            "ERROR: irregular expression in energy "
+                            "matrices of %s.\n",
+                            strEnFile);
                         nRes = 4;
                         break;
                     }
@@ -707,8 +706,7 @@ void Parse_StructureFile(char* filename)
             // It's assumed that the next line contains the number of copies for
             // this molecule.
             nChainType++;
-            g_system.nChainTypeIsLinear[nChainType] =
-                1; // Assume all chains are linear to begin with.
+            g_system.nChainTypeIsLinear[nChainType] = 1; // Assume all chains are linear to begin with.
             nChainStart += nBEADS;
             nChainID++;
             nBEADS = 0;
@@ -744,8 +742,8 @@ void Parse_StructureFile(char* filename)
                       // because indicies start at 0.
                         g_system.nChainTypeIsLinear[nChainType] = 0;
                     }
-                    curPartner += nChainStart; // Accounts for all beads before,
-                                               // like above.
+                    curPartner += nChainStart;                       // Accounts for all beads before,
+                                                                     // like above.
                     g_system.topo_info[curID][nCursor] = curPartner; // Adding the ID of the partner
                     g_system.linker_len[curID][nCursor] =
                         curLinker * (int)g_system.fLinkerLength; // Adding the linker constraint.
@@ -803,8 +801,7 @@ void Parse_StructureFile(char* filename)
 /// \param n_bead_num: Stores how many total beads are in the structure file.
 /// \param n_chain_num: Stores how many total chains are in the structure file.
 /// \param n_chain_types: Stores how many different chain-types are in the file.
-void Parse_StructureFile_CalcBeadsAndChains(char* filename, int* n_bead_num, int* n_chain_num,
-                                            int* n_chain_types)
+void Parse_StructureFile_CalcBeadsAndChains(char* filename, int* n_bead_num, int* n_chain_num, int* n_chain_types)
 {
     int dum_beads = 0;
     int dum_chains = 0;

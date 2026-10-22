@@ -48,8 +48,16 @@ int Move_Local_Equil(int beadID, float MyTemp)
     oldEn = g_system.nBiasPotential_Mode == -1 ? 0.f : Energy_BiasingPotential(beadID);
     newEn = 0.;
 
-    Energy_Iso_ForLocalEquil(beadID, resi, r_pos0, &oldEn, &newEn, &old_ovlp_num, &old_cont_num,
-                             g_system.naOldOvlpNeighs, g_system.naOldContNeighs);
+    Energy_Iso_ForLocalEquil(
+        beadID,
+        resi,
+        r_pos0,
+        &oldEn,
+        &newEn,
+        &old_ovlp_num,
+        &old_cont_num,
+        g_system.naOldOvlpNeighs,
+        g_system.naOldContNeighs);
 
     int bondList[MAX_BONDS + 1];
     int bondNum = g_system.bSystemHasTopo ? OP_GetTopoBonds(beadID, bondList) : 0;
@@ -61,8 +69,16 @@ int Move_Local_Equil(int beadID, float MyTemp)
 
     newEn += g_system.nBiasPotential_Mode == -1 ? 0.f : Energy_BiasingPotential(beadID);
 
-    Energy_Iso_ForLocalEquil(beadID, resi, r_posNew, &newEn, &oldEn, &new_ovlp_num, &new_cont_num,
-                             g_system.naNewOvlpNeighs, g_system.naNewContNeighs);
+    Energy_Iso_ForLocalEquil(
+        beadID,
+        resi,
+        r_posNew,
+        &newEn,
+        &oldEn,
+        &new_ovlp_num,
+        &new_cont_num,
+        g_system.naNewOvlpNeighs,
+        g_system.naNewContNeighs);
 
     newEn += bondNum ? Energy_Topo_Angle_ForList(bondNum, bondList) : 0.;
 
@@ -118,9 +134,8 @@ int Move_Snake_Equil(int chainID, float MyTemp)
     const char SnakeFwd = MCProb < 0.5f ? 1 : 0;    // 1 For forwards, 0 for backwards.
     if (SnakeFwd)
     { // Forwards slither, so lastB-1 (last bead) is anchor
-        LatPos_gen_rand_wRad(
-            r_posNew,
-            g_system.linker_len[lastB - 1][0]); // lastB-1 will be replaced by lastB-2
+        LatPos_gen_rand_wRad(r_posNew,
+                             g_system.linker_len[lastB - 1][0]); // lastB-1 will be replaced by lastB-2
         LatPos_copy(r_posTmp1, r_posNew);
         LatPos_add_wPBC(r_posNew, g_system.bead_info[lastB - 1], r_posTmp1);
         yTemp = Check_MoveBeadTo(r_posNew); // 0: there is no space, 1: there is space
@@ -162,8 +177,14 @@ int Move_Snake_Equil(int chainID, float MyTemp)
 
     for (i = firstB; i < lastB; i++)
     {
-        Energy_Iso_ForChainsEquil(i, &oldEn, &newEn, &old_ovlp_num, &old_cont_num,
-                                  g_system.naOldOvlpNeighs, g_system.naOldContNeighs);
+        Energy_Iso_ForChainsEquil(
+            i,
+            &oldEn,
+            &newEn,
+            &old_ovlp_num,
+            &old_cont_num,
+            g_system.naOldOvlpNeighs,
+            g_system.naOldContNeighs);
     }
     const int resi = g_system.bead_info[angBead_old][BEAD_TYPE];
     oldEn += g_energy.faEnergy[resi][resi][E_STIFF] ? Energy_Topo_Angle(angBead_old) : 0.;
@@ -188,8 +209,14 @@ int Move_Snake_Equil(int chainID, float MyTemp)
     lLDub FSum = 0.;
     for (i = firstB; i < lastB; i++)
     {
-        Energy_Iso_ForChainsEquil(i, &newEn, &oldEn, &new_ovlp_num, &new_cont_num,
-                                  g_system.naNewOvlpNeighs, g_system.naNewContNeighs);
+        Energy_Iso_ForChainsEquil(
+            i,
+            &newEn,
+            &oldEn,
+            &new_ovlp_num,
+            &new_cont_num,
+            g_system.naNewOvlpNeighs,
+            g_system.naNewContNeighs);
     }
 
     newEn += g_energy.faEnergy[resi][resi][E_STIFF] ? Energy_Topo_Angle(angBead_new) : 0.;
@@ -250,8 +277,14 @@ int Move_Trans_Equil(int chainID, float MyTemp)
 
     for (i = firstB; i < lastB; i++)
     {
-        Energy_Iso_ForChainsEquil(i, &oldEn, &newEn, &old_ovlp_num, &old_cont_num,
-                                  g_system.naOldOvlpNeighs, g_system.naOldContNeighs);
+        Energy_Iso_ForChainsEquil(
+            i,
+            &oldEn,
+            &newEn,
+            &old_ovlp_num,
+            &old_cont_num,
+            g_system.naOldOvlpNeighs,
+            g_system.naOldContNeighs);
     }
 
     OP_System_DispChain_ForTrans(chainID,
@@ -268,8 +301,14 @@ int Move_Trans_Equil(int chainID, float MyTemp)
 
     for (i = firstB; i < lastB; i++)
     {
-        Energy_Iso_ForChainsEquil(i, &newEn, &oldEn, &new_ovlp_num, &new_cont_num,
-                                  g_system.naNewOvlpNeighs, g_system.naNewContNeighs);
+        Energy_Iso_ForChainsEquil(
+            i,
+            &newEn,
+            &oldEn,
+            &new_ovlp_num,
+            &new_cont_num,
+            g_system.naNewOvlpNeighs,
+            g_system.naNewContNeighs);
     }
 
     MCProb = (lLDub)rand() / (lLDub)RAND_MAX;
@@ -357,8 +396,17 @@ int Move_MultiLocal_Equil(int beadID, float MyTemp)
     lLDub newEn = 0.;
     for (i = 0; i < beadNum; i++)
     {
-        Energy_Iso_ForLists(i, beadNum, beadsList, beads_pos0, &oldEn, &newEn, &old_ovlp_num,
-                            &old_cont_num, g_system.naOldOvlpNeighs, g_system.naOldContNeighs);
+        Energy_Iso_ForLists(
+            i,
+            beadNum,
+            beadsList,
+            beads_pos0,
+            &oldEn,
+            &newEn,
+            &old_ovlp_num,
+            &old_cont_num,
+            g_system.naOldOvlpNeighs,
+            g_system.naOldContNeighs);
     }
 
     int bondAngNum = 0;
@@ -396,8 +444,17 @@ int Move_MultiLocal_Equil(int beadID, float MyTemp)
 
     for (i = 0; i < beadNum; i++)
     {
-        Energy_Iso_ForLists(i, beadNum, beadsList, beads_posNew, &newEn, &oldEn, &new_ovlp_num,
-                            &new_cont_num, g_system.naNewOvlpNeighs, g_system.naNewContNeighs);
+        Energy_Iso_ForLists(
+            i,
+            beadNum,
+            beadsList,
+            beads_posNew,
+            &newEn,
+            &oldEn,
+            &new_ovlp_num,
+            &new_cont_num,
+            g_system.naNewOvlpNeighs,
+            g_system.naNewContNeighs);
     }
 
     newEn += bondAngNum ? Energy_Topo_Angle_ForList(bondAngNum, bondAngList) : 0.;
@@ -528,8 +585,16 @@ int Move_Pivot_Equil(int chainID, float MyTemp)
     for (i = 0; i < beadNum; i++)
     {
         tmpBead = beadsList[i];
-        Energy_Iso_ForRangeEquil(tmpBead, smBead, lgBead, &oldEn, &newEn, &old_ovlp_num,
-                                 &old_cont_num, g_system.naOldOvlpNeighs, g_system.naOldContNeighs);
+        Energy_Iso_ForRangeEquil(
+            tmpBead,
+            smBead,
+            lgBead,
+            &oldEn,
+            &newEn,
+            &old_ovlp_num,
+            &old_cont_num,
+            g_system.naOldOvlpNeighs,
+            g_system.naOldContNeighs);
     }
 
     const int resi = g_system.bead_info[anchorBead][BEAD_TYPE];
@@ -557,8 +622,16 @@ int Move_Pivot_Equil(int chainID, float MyTemp)
     for (i = 0; i < beadNum; i++)
     {
         tmpBead = beadsList[i];
-        Energy_Iso_ForRangeEquil(tmpBead, smBead, lgBead, &newEn, &oldEn, &new_ovlp_num,
-                                 &new_cont_num, g_system.naNewOvlpNeighs, g_system.naNewContNeighs);
+        Energy_Iso_ForRangeEquil(
+            tmpBead,
+            smBead,
+            lgBead,
+            &newEn,
+            &oldEn,
+            &new_ovlp_num,
+            &new_cont_num,
+            g_system.naNewOvlpNeighs,
+            g_system.naNewContNeighs);
     }
 
     newEn += g_energy.faEnergy[resi][resi][E_STIFF] ? Energy_Topo_Angle(anchorBead) : 0.;
@@ -670,8 +743,16 @@ int Move_BranchedRot_Equil(int chainID, float MyTemp)
     for (i = 0; i < beadNum; i++)
     {
         tmpBead = beadsList[i];
-        Energy_Iso_ForRangeEquil(tmpBead, smBead, lgBead, &oldEn, &newEn, &old_ovlp_num,
-                                 &old_cont_num, g_system.naOldOvlpNeighs, g_system.naOldContNeighs);
+        Energy_Iso_ForRangeEquil(
+            tmpBead,
+            smBead,
+            lgBead,
+            &oldEn,
+            &newEn,
+            &old_ovlp_num,
+            &old_cont_num,
+            g_system.naOldOvlpNeighs,
+            g_system.naOldContNeighs);
     }
 
     for (i = 0; i < beadNum; i++)
@@ -695,8 +776,16 @@ int Move_BranchedRot_Equil(int chainID, float MyTemp)
     for (i = 0; i < beadNum; i++)
     {
         tmpBead = beadsList[i];
-        Energy_Iso_ForRangeEquil(tmpBead, smBead, lgBead, &newEn, &oldEn, &new_ovlp_num,
-                                 &new_cont_num, g_system.naNewOvlpNeighs, g_system.naNewContNeighs);
+        Energy_Iso_ForRangeEquil(
+            tmpBead,
+            smBead,
+            lgBead,
+            &newEn,
+            &oldEn,
+            &new_ovlp_num,
+            &new_cont_num,
+            g_system.naNewOvlpNeighs,
+            g_system.naNewContNeighs);
     }
 
     lLDub MCProb = (lLDub)rand() / (lLDub)RAND_MAX;

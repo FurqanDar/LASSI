@@ -3,8 +3,7 @@
 /// BeadIDListOP_GetChainIDs: Given beadList of size beadNum, we record the chainIDs of every bead
 /// into chainList. Make sure chainList is as big as beadList. \param beadNum \param beadList \param
 /// chainList
-void BeadListOP_GetChainIDs(const int beadNum, const int* restrict beadList,
-                            int* restrict chainList)
+void BeadListOP_GetChainIDs(const int beadNum, const int* restrict beadList, int* restrict chainList)
 {
     int i, tmp_bead, dum_chain;
 
@@ -40,8 +39,7 @@ void BeadListOP_GetChainTypes(const int beadNum, const int* beadList, int* chain
 /// beadList, where all masked elements are removed. \param beadNum \param beadList \param propList
 /// \param prop_val
 /// \return newSize - size of overwritten beadList.
-int BeadListOP_Filter_wrt_SecondList(const int beadNum, int* beadList, const int* propList,
-                                     const int prop_val)
+int BeadListOP_Filter_wrt_SecondList(const int beadNum, int* beadList, const int* propList, const int prop_val)
 {
     int newSize = 0;
     int i;
@@ -62,8 +60,7 @@ int BeadListOP_Filter_wrt_SecondList(const int beadNum, int* beadList, const int
 /// beadList, where all masked elements are removed. Acts as the logical not for
 /// Filter_wrt_SecondList \param beadNum \param beadList \param propList \param prop_val \return
 /// newSize - size of overwritten beadList.
-int BeadListOP_InvFilter_wrt_SecondList(const int beadNum, int* beadList, const int* propList,
-                                        const int prop_val)
+int BeadListOP_InvFilter_wrt_SecondList(const int beadNum, int* beadList, const int* propList, const int prop_val)
 {
     int newSize = 0;
     int i;
@@ -224,8 +221,12 @@ int BeadList_CanTopoAngle(const int size, int* beadList)
 /// function assumes that chainList contains only unique elements, and that clusList has the
 /// smallest chainID as the first element, and the largest chainID the last element (at
 /// clusList[clusSize-1]). \param clusSize \param clusList \param newChainNums \param chainList
-int ChainListOP_AddUniqueChains_wSize(const int clusSize, int* clusList, const int newChainNums,
-                                      const int* chainList, const int maxClus)
+int ChainListOP_AddUniqueChains_wSize(
+    const int clusSize,
+    int* clusList,
+    const int newChainNums,
+    const int* chainList,
+    const int maxClus)
 {
     int i;
     int curChain;
@@ -248,9 +249,13 @@ int ChainListOP_AddUniqueChains_wSize(const int clusSize, int* clusList, const i
 /// function assumes that chainList contains only unique elements, and that clusList has the
 /// smallest chainID as the first element, and the largest chainID the last element (at
 /// clusList[clusSize-1]). \param clusSize \param clusList \param newChainNums \param chainList
-int ChainListOP_AddUniqueChains_wSize_Check(const int clusSize, int* clusList,
-                                            const int newChainNums, const int* chainList,
-                                            const int maxClus, const int* oldList)
+int ChainListOP_AddUniqueChains_wSize_Check(
+    const int clusSize,
+    int* clusList,
+    const int newChainNums,
+    const int* chainList,
+    const int maxClus,
+    const int* oldList)
 {
     int i;
     int curChain;
@@ -276,8 +281,7 @@ int ChainListOP_AddUniqueChains_wSize_Check(const int clusSize, int* clusList,
 /// ChainListOP_GetChainTypes - Given a list that contains chainIDs, we get the type of each of the
 /// chains. \param naTypesList Array where the chain-types will be recorded. \param naChainIDs Array
 /// that contains all the chainIDs. \param nListSize Number of chains in the naChainIDs array
-void ChainListOP_GetChainTypes(int* const naTypesList, const int* const naChainIDs,
-                               const int nListSize)
+void ChainListOP_GetChainTypes(int* const naTypesList, const int* const naChainIDs, const int nListSize)
 {
     int i;
     int tmpChain;
@@ -362,8 +366,7 @@ int ListOP_GetMaxVal_Int(const int nListSize, const int* const naList)
 /// \param nListSize
 /// \param naInputList
 /// \return
-int ListOP_IndicesForVal_Int(const int nVal, int* const naOutList, const int nListSize,
-                             const int* const naInputList)
+int ListOP_IndicesForVal_Int(const int nVal, int* const naOutList, const int nListSize, const int* const naInputList)
 {
     int i;
     int nNumberOfInds = 0;
@@ -447,8 +450,10 @@ int ListOP_Get2ndLargestVal_Int(const int nListSize, const int* const naInputLis
 /// by 1 in naOutFreqHist naOutFreqHist[naInputList[i]]++ over all elements \param naOutFreqHist
 /// \param naInputList
 /// \param nSize
-void ListOP_GenHistFromCounts_Int(int* const restrict naOutFreqHist,
-                                  const int* const restrict naInputList, const int nSize)
+void ListOP_GenHistFromCounts_Int(
+    int* const restrict naOutFreqHist,
+    const int* const restrict naInputList,
+    const int nSize)
 {
     int i;
     for (i = 0; i < nSize; i++)

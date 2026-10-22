@@ -44,8 +44,7 @@ int Check_LinkerConstraintForBead(const int beadID)
     while (idx < MAX_BONDS && g_system.topo_info[beadID][idx] != -1)
     { // Keep going till we run out of partners
         bondPartner = g_system.topo_info[beadID][idx];
-        if (Dist_BeadToBead(beadID, bondPartner) >
-            LINKER_RSCALE * (float)g_system.linker_len[beadID][idx])
+        if (Dist_BeadToBead(beadID, bondPartner) > LINKER_RSCALE * (float)g_system.linker_len[beadID][idx])
         {
             return bondPartner; // This means that we have broken one of the linkers.
         }
@@ -148,8 +147,7 @@ void PerformRuntimeSanityCheck_BeadPosAndLattPos(const long nGen, const int run_
 
         ScreenIO_Print_SanityFail_BeadPosAndLattPos(badBead);
 
-        fputs("-------------------------------------------------------------------------------",
-              stderr);
+        fputs("-------------------------------------------------------------------------------", stderr);
         exit(1);
     }
 }
@@ -169,8 +167,7 @@ void PerformRuntimeSanityCheck_MolecularStructure(const long nGen, const int run
 
         ScreenIO_Print_SanityFail_MolecularStructure(badBead);
 
-        fputs("-------------------------------------------------------------------------------",
-              stderr);
+        fputs("-------------------------------------------------------------------------------", stderr);
         exit(1);
     }
 }
@@ -190,8 +187,7 @@ void PerformRuntimeSanityCheck_SelfBonds(const long nGen, const int run_cycle)
 
         ScreenIO_Print_SanityFail_SelfBond(badBead);
 
-        fputs("-------------------------------------------------------------------------------",
-              stderr);
+        fputs("-------------------------------------------------------------------------------", stderr);
         exit(1);
     }
 }
@@ -211,8 +207,7 @@ void PerformRuntimeSanityCheck_BondSymmetry(const long nGen, const int run_cycle
 
         ScreenIO_Print_SanityFail_BeadBondSymmetry(badBead);
 
-        fputs("-------------------------------------------------------------------------------",
-              stderr);
+        fputs("-------------------------------------------------------------------------------", stderr);
         exit(1);
     }
 }
@@ -231,8 +226,7 @@ void PerformRuntimeSanityCheck_BondDistance(const long nGen, const int run_cycle
 
         ScreenIO_Print_SanityFail_BeadBondDistance(badBead);
 
-        fputs("-------------------------------------------------------------------------------",
-              stderr);
+        fputs("-------------------------------------------------------------------------------", stderr);
         exit(1);
     }
 }

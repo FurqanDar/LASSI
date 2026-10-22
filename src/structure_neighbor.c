@@ -38,8 +38,7 @@ int NeighborSearch_ForOvlp(int const beadID, const int* startVec, int* neighList
 /// neighbors within the +-1 cube. We return the number of neighbors. \param beadID \param startVec
 /// \param neighList
 /// \return Number of neighbors.
-int NeighborSearch_ForCont(int const beadID, const int* startVec, int* contList, int* ovlpList,
-                           int* ovlpNum)
+int NeighborSearch_ForCont(int const beadID, const int* startVec, int* contList, int* ovlpList, int* ovlpNum)
 {
     int neigh_num = 0;
 
@@ -113,8 +112,7 @@ int NeighborSearch_SolSitesAround(const int* startVec)
     return NeighborSearch_EmptySitesAround_wRad(startVec, 1);
 }
 
-int NeighborSearch_AroundPoint_UptoIndex(const int beadID, const int* startVec, const int upTO,
-                                         int* neighList)
+int NeighborSearch_AroundPoint_UptoIndex(const int beadID, const int* startVec, const int upTO, int* neighList)
 {
     int i;
     int neigh_num = 0;
@@ -137,8 +135,7 @@ int NeighborSearch_AroundPoint_UptoIndex(const int beadID, const int* startVec, 
     return neigh_num;
 }
 
-int NeighborSearch_AroundPoint_wRad_IgnBead(const int beadID, const int* startVec, const int nRad,
-                                            int* neighList)
+int NeighborSearch_AroundPoint_wRad_IgnBead(const int beadID, const int* startVec, const int nRad, int* neighList)
 {
     int neigh_num = 0;
     int tmpBead;
@@ -163,8 +160,12 @@ int NeighborSearch_AroundPoint_wRad_IgnBead(const int beadID, const int* startVe
     return neigh_num;
 }
 
-int NeighborSearch_AroundPoint_wRad_wDists(const int beadID, const int* startVec, const int nRad,
-                                           int* neighList, float* distList)
+int NeighborSearch_AroundPoint_wRad_wDists(
+    const int beadID,
+    const int* startVec,
+    const int nRad,
+    int* neighList,
+    float* distList)
 {
     int neigh_num = 0;
     int tmpBead;
