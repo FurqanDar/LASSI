@@ -101,9 +101,21 @@ int Check_RotStates_wNeighList(int const beadID, int const resi, const int* neig
 
 int Check_RotStates_wNeighList_ForChains(int const beadID, int const resi, const int* neighList, int const neighNum);
 
-int Check_RotStates_wNeighList_ForLists(int const beadIdx, const int listSize, const int beadList[MAX_BONDS + 1], int const resi, const int* neighList, int const neighNum);
+int Check_RotStates_wNeighList_ForLists(
+    int const beadIdx,
+    const int listSize,
+    const int beadList[MAX_BONDS + 1],
+    int const resi,
+    const int* neighList,
+    int const neighNum);
 
-int Check_RotState_wNeighList_ForRange(int const beadID, int const resi, int const smallestBead, int const largestBead, const int* neighList, int const neighNum);
+int Check_RotState_wNeighList_ForRange(
+    int const beadID,
+    int const resi,
+    int const smallestBead,
+    int const largestBead,
+    const int* neighList,
+    int const neighNum);
 
 int Check_RotStatesOld(int const beadID, int const resi, float const MyTemp);
 
@@ -137,25 +149,53 @@ lLDub OP_GenMHValue(lLDub fRos, lLDub bRos, lLDub Delta_En, lLDub Cur_Temp);
 
 lLDub MC_RosenbluthSampling_ForLocal_AtOld(const int beadID, const int resi, long double* oldEn, const int neigh_num);
 
-lLDub MC_RosenbluthSampling_ForLocal_AtNew(const int beadID, const int resi, int* bead_part, long double* newEn,
-                                           const int neigh_num);
+lLDub MC_RosenbluthSampling_ForLocal_AtNew(
+    const int beadID,
+    const int resi,
+    int* bead_part,
+    long double* newEn,
+    const int neigh_num);
 
 lLDub MC_RosenbluthSampling_ForChains_AtOld(const int beadID, const int resi, long double* oldEn, const int neigh_num);
 
-lLDub MC_RosenbluthSampling_ForChains_AtNew(const int beadID, const int resi, int* bead_part, long double* newEn,
-                                            const int neigh_num);
+lLDub MC_RosenbluthSampling_ForChains_AtNew(
+    const int beadID,
+    const int resi,
+    int* bead_part,
+    long double* newEn,
+    const int neigh_num);
 
-lLDub MC_RosenbluthSampling_ForLists_AtOld(const int beadIdx, const int listSize, const int beadList[MAX_BONDS + 1],
-                                           lLDub* oldEn, const int neigh_num);
+lLDub MC_RosenbluthSampling_ForLists_AtOld(
+    const int beadIdx,
+    const int listSize,
+    const int beadList[MAX_BONDS + 1],
+    lLDub* oldEn,
+    const int neigh_num);
 
-lLDub MC_RosenbluthSampling_ForLists_AtNew(const int beadIdx, const int listSize, const int beadList[MAX_BONDS + 1],
-                                           int* bead_part, lLDub* oldEn, const int neigh_num);
+lLDub MC_RosenbluthSampling_ForLists_AtNew(
+    const int beadIdx,
+    const int listSize,
+    const int beadList[MAX_BONDS + 1],
+    int* bead_part,
+    lLDub* oldEn,
+    const int neigh_num);
 
-lLDub MC_RosenbluthSampling_ForRange_AtOld(const int beadID, const int resi, const int smallestBead,
-                                           const int largestBead, lLDub* oldEn, const int neigh_num);
+lLDub MC_RosenbluthSampling_ForRange_AtOld(
+    const int beadID,
+    const int resi,
+    const int smallestBead,
+    const int largestBead,
+    lLDub* oldEn,
+    const int neigh_num);
 
-lLDub MC_RosenbluthSampling_ForRange_AtNew(const int beadID, const int resi, const int smallestBead,
-                                           const int largestBead, int* bead_part, lLDub* newEn, const int neigh_num);
+lLDub MC_RosenbluthSampling_ForRange_AtNew(
+    const int beadID,
+    const int resi,
+    const int smallestBead,
+    const int largestBead,
+    int* bead_part,
+    lLDub* newEn,
+    const int neigh_num);
 
 void OP_System_MoveBeadsInListToPos(const int listSize, const int* beadList, const int (*newPos)[POS_MAX]);
 

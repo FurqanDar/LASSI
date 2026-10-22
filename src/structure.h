@@ -82,8 +82,12 @@ int NeighborSearch_SolSitesAround(const int* startVec);
 
 int NeighborSearch_AroundPoint_wRad_IgnBead(const int beadID, const int* startVec, const int nRad, int* neighList);
 
-int NeighborSearch_AroundPoint_wRad_wDists(const int beadID, const int* startVec, const int nRad, int* neighList,
-                                           float* distList);
+int NeighborSearch_AroundPoint_wRad_wDists(
+    const int beadID,
+    const int* startVec,
+    const int nRad,
+    int* neighList,
+    float* distList);
 
 int NeighborSearch_ForCluster_Ovlp(int const beadID, const int* startVec, int* neighList);
 
@@ -131,15 +135,24 @@ int UtilFunc_CompareInts(const void* a, const void* b);
 
 int BeadList_CanTopoAngle(const int size, int* beadList);
 
-int ChainListOP_AddUniqueChains_wSize(const int clusSize, int* clusList, const int newChainNums, const int* chainList,
-                                      const int maxClus);
+int ChainListOP_AddUniqueChains_wSize(
+    const int clusSize,
+    int* clusList,
+    const int newChainNums,
+    const int* chainList,
+    const int maxClus);
 
 int ClusListOP_AddChainID(const int clusSize, int* clusList, const int chainID);
 
 int ClusListOP_AddIfUniqueChainID(const int clusSize, int* clusList, const int chainID);
 
-int ChainListOP_AddUniqueChains_wSize_Check(const int clusSize, int* clusList, const int newChainNums,
-                                            const int* chainList, const int maxClus, const int* oldList);
+int ChainListOP_AddUniqueChains_wSize_Check(
+    const int clusSize,
+    int* clusList,
+    const int newChainNums,
+    const int* chainList,
+    const int maxClus,
+    const int* oldList);
 
 void ChainListOP_GetChainTypes(int* const naTypesList, const int* const naChainIDs, const int nListSize);
 
@@ -159,7 +172,9 @@ int ListOP_GetRandomIndexForVal_Int(const int nVal, const int nListSize, const i
 
 int ListOP_Get2ndLargestVal_Int(const int nListSize, const int* const naInputList);
 
-void ListOP_GenHistFromCounts_Int(int* const restrict naOutFreqHist, const int* const restrict naInputList,
-                                  const int nSize);
+void ListOP_GenHistFromCounts_Int(
+    int* const restrict naOutFreqHist,
+    const int* const restrict naInputList,
+    const int nSize);
 
 #endif // _STRUCTURE_H_

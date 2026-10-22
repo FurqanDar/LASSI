@@ -32,315 +32,317 @@ int Parse_Keyfile(char* filename)
     int nErr = 0; // error code
 
     for (i = 0; i < MAX_MV; i++)
-        {
-            g_mc.faMCFreq[i] = 0.0f; // initialization; to be normalized
-        }
-    g_system.nBiasPotential_Mode    = 0;
-    g_system.nAnnealing_Mode        = -1;
+    {
+        g_mc.faMCFreq[i] = 0.0f; // initialization; to be normalized
+    }
+    g_system.nBiasPotential_Mode = 0;
+    g_system.nAnnealing_Mode = -1;
     while (fgets(strLine, sizeof(strLine), infile) != NULL)
-        {
-            nLine++;
+    {
+        nLine++;
 
-            strKeyword[0] = '#';
-            sscanf(strLine, "%s", strKeyword);
+        strKeyword[0] = '#';
+        sscanf(strLine, "%s", strKeyword);
 
-            if (strKeyword[0] == '#')
-                { // if the first character is #,
-                  // ignore the line
-                }
-            else
-                {
-                    for (i = 0; strLine[i] != '\0'; i++)
-                        {
-                            if (strLine[i] == '#')
-                                {
-                                    strLine[i] = '\0'; // ignore the content after #
-                                    break;
-                                }
-                        }
-
-                    if (strcmp(strKeyword, "BOX_SIZE") == 0)
-                        {
-                            sscanf(strLine, "%*s %s %s %s", strTempArr[0], strTempArr[1], strTempArr[2]);
-                            if (strTempArr[1][0] < '0' || strTempArr[1][0] > '9')
-                                {
-                                    g_system.naBoxSize[0] = atoi(strTempArr[0]);
-                                    g_system.naBoxSize[1] = g_system.naBoxSize[0];
-                                    g_system.naBoxSize[2] = g_system.naBoxSize[0];
-                                }
-                            else
-                                {
-                                    if (strTempArr[2][0] < '0' || strTempArr[2][0] > '9')
-                                        {
-                                            g_system.naBoxSize[0] = atoi(strTempArr[0]);
-                                            g_system.naBoxSize[1] = atoi(strTempArr[1]);
-                                            g_system.naBoxSize[2] = 0; // error handling required
-                                        }
-                                    else
-                                        {
-                                            g_system.naBoxSize[0] = atoi(strTempArr[0]);
-                                            g_system.naBoxSize[1] = atoi(strTempArr[1]);
-                                            g_system.naBoxSize[2] = atoi(strTempArr[2]);
-                                        }
-                                }
-                            g_analysis.nRDF_TotBins = g_system.naBoxSize[0] * 4;
-                        }
-                    else if (strcmp(strKeyword, "MC_TEMP") == 0)
-                        {
-                            sscanf(strLine, "%*s %f", &g_mc.fKT);
-                        }
-                    else if (strcmp(strKeyword, "N_STEPS") == 0)
-                        {
-                            sscanf(strLine, "%*s %ld", &g_mc.nMCStepsPerCycle);
-                        }
-                    else if (strcmp(strKeyword, "PREEQ_STEPS") == 0)
-                        {
-                            sscanf(strLine, "%*s %ld", &g_mc.nMCStepsForTherm);
-                        }
-                    else if (strcmp(strKeyword, "PREEQ_TEMP") == 0)
-                        {
-                            sscanf(strLine, "%*s %f", &g_mc.fPreKT);
-                        }
-                    else if (strcmp(strKeyword, "MC_TEMP_RATE") == 0)
-                        {
-                            sscanf(strLine, "%*s %f", &g_mc.fMC_TempRate);
-                        }
-                    else if (strcmp(strKeyword, "MC_TEMP_MODE") == 0)
-                        {
-                            sscanf(strLine, "%*s %d", &g_system.nAnnealing_Mode);
-                        }
-                    else if (strcmp(strKeyword, "MC_DELTA_TEMP") == 0)
-                        {
-                            sscanf(strLine, "%*s %f", &g_mc.fDeltaTemp);
-                        }
-                    else if (strcmp(strKeyword, "MC_INVERT_TEMP") == 0)
-                        {
-                            sscanf(strLine, "%*s %d", &g_system.nTemp_inv);
-                        }
-                    else if (strcmp(strKeyword, "MC_CYCLE_NUM") == 0)
-                        {
-                            sscanf(strLine, "%*s %d", &g_mc.nTotCycleNum);
-                        }
-                    else if (strcmp(strKeyword, "MC_INDENT_MODE") == 0)
-                        {
-                            sscanf(strLine, "%*s %d", &g_system.nBiasPotential_Mode);
-                        }
-                    else if (strcmp(strKeyword, "MV_TRANS_FREQ") == 0)
-                        {
-                            sscanf(strLine, "%*s %f", &g_mc.faMCFreq[MV_TRANS]);
-                        }
-                    else if (strcmp(strKeyword, "MV_CLSTR_FREQ") == 0)
-                        {
-                            sscanf(strLine, "%*s %f", &g_mc.faMCFreq[MV_CLSTR]);
-                        }
-                    else if (strcmp(strKeyword, "MV_SMCLSTR_FREQ") == 0)
-                        {
-                            sscanf(strLine, "%*s %f", &g_mc.faMCFreq[MV_SMCLSTR]);
-                        }
-                    else if (strcmp(strKeyword, "MV_STROT_FREQ") == 0)
-                        {
-                            sscanf(strLine, "%*s %f", &g_mc.faMCFreq[MV_STROT]);
-                        }
-                    else if (strcmp(strKeyword, "MV_LOCAL_FREQ") == 0)
-                        {
-                            sscanf(strLine, "%*s %f", &g_mc.faMCFreq[MV_LOCAL]);
-                        }
-                    else if (strcmp(strKeyword, "MV_SNAKE_FREQ") == 0)
-                        {
-                            sscanf(strLine, "%*s %f", &g_mc.faMCFreq[MV_SNAKE]);
-                        }
-                    else if (strcmp(strKeyword, "MV_DBPVT_FREQ") == 0)
-                        {
-                            sscanf(strLine, "%*s %f", &g_mc.faMCFreq[MV_DBPVT]);
-                        }
-                    else if (strcmp(strKeyword, "MV_COLOCAL_FREQ") == 0)
-                        {
-                            sscanf(strLine, "%*s %f", &g_mc.faMCFreq[MV_COLOCAL]);
-                        }
-                    else if (strcmp(strKeyword, "MV_MTLOCAL_FREQ") == 0)
-                        {
-                            sscanf(strLine, "%*s %f", &g_mc.faMCFreq[MV_MTLOCAL]);
-                        }
-                    else if (strcmp(strKeyword, "MV_PIVOT_FREQ") == 0)
-                        {
-                            sscanf(strLine, "%*s %f", &g_mc.faMCFreq[MV_PIVOT]);
-                        }
-                    else if (strcmp(strKeyword, "MV_BRROT_FREQ") == 0)
-                        {
-                            sscanf(strLine, "%*s %f", &g_mc.faMCFreq[MV_BRROT]);
-                        }
-                    else if (strcmp(strKeyword, "MV_PR_SMCLSTR") == 0)
-                        {
-                            sscanf(strLine, "%*s %f", &g_mc.faMCFreq[MV_PR_SMCLSTR]);
-                        }
-                    else if (strcmp(strKeyword, "MV_PR_CLSTR") == 0)
-                        {
-                            sscanf(strLine, "%*s %f", &g_mc.faMCFreq[MV_PR_CLSTR]);
-                        }
-                    else if (strcmp(strKeyword, "RESTART_FILE") == 0)
-                        {
-                            sscanf(strLine, "%*s %s", g_reports.strRestartFile);
-                        }
-                    else if (strcmp(strKeyword, "STRUCT_FILETYPE") == 0)
-                        {
-                            sscanf(strLine, "%*s %d", &nStructFiletype);
-                        }
-                    else if (strcmp(strKeyword, "STRUCT_FILE") == 0)
-                        {
-                            sscanf(strLine, "%*s %s", strStructFile);
-                        }
-                    else if (strcmp(strKeyword, "ENERGY_FILE") == 0)
-                        {
-                            sscanf(strLine, "%*s %s", strEnergyFile);
-                        }
-                    else if (strcmp(strKeyword, "RANDOM_SEED") == 0)
-                        {
-                            sscanf(strLine, "%*s %d", &g_mc.nRNG_Seed);
-                            g_mc.nRNG_Seed = g_mc.nRNG_Seed == 0 ? time(NULL) : g_mc.nRNG_Seed;
-                        }
-                    else if (strcmp(strKeyword, "REPORT_PREFIX") == 0)
-                        {
-                            sscanf(strLine, "%*s %s", g_reports.strReportPrefix);
-                        }
-                    else if (strcmp(strKeyword, "REPORT_LOG_FREQ") == 0)
-                        {
-                            sscanf(strLine, "%*s %ld", &g_reports.naReportFreqs[REPORT_LOG]);
-                        }
-                    else if (strcmp(strKeyword, "REPORT_ENERGY_FREQ") == 0)
-                        {
-                            sscanf(strLine, "%*s %ld", &g_reports.naReportFreqs[REPORT_ENERGY]);
-                        }
-                    else if (strcmp(strKeyword, "REPORT_CONFIG_FREQ") == 0)
-                        {
-                            sscanf(strLine, "%*s %ld", &g_reports.naReportFreqs[REPORT_CONFIG]);
-                        }
-                    else if (strcmp(strKeyword, "REPORT_MCMOVE_FREQ") == 0)
-                        {
-                            sscanf(strLine, "%*s %ld", &g_reports.naReportFreqs[REPORT_MCMOVE]);
-                        }
-                    else if (strcmp(strKeyword, "REPORT_NETWORK_FREQ") == 0)
-                        {
-                            sscanf(strLine, "%*s %ld", &g_reports.naReportFreqs[REPORT_NETWORK]);
-                        }
-                    else if (strcmp(strKeyword, "REPORT_RDFTOT_FREQ") == 0)
-                        {
-                            sscanf(strLine, "%*s %ld", &g_reports.naReportFreqs[REPORT_RDFTOT]);
-                        }
-                    else if (strcmp(strKeyword, "REPORT_COMDEN_FREQ") == 0)
-                        {
-                            sscanf(strLine, "%*s %ld", &g_reports.naReportFreqs[REPORT_COMDEN]);
-                        }
-                    else if (strcmp(strKeyword, "ANALYSIS_CLUSTER_MODE") == 0)
-                        {
-                            sscanf(strLine, "%*s %d", &g_analysis.nClusteringMode);
-                        }
-                    else if (strcmp(strKeyword, "REPORT_CONFIG_MODE") == 0)
-                        {
-                            sscanf(strLine, "%*s %ld", &g_reports.nTrajMode);
-                        }
-                    else if (strcmp(strKeyword, "BIAS_INDENT_RADIUS") == 0)
-                        {
-                            sscanf(strLine, "%*s %f", &g_mc.fSquishRad);
-                        }
-                    else if (strcmp(strKeyword, "BIAS_INDENT_STIFF") == 0)
-                        {
-                            sscanf(strLine, "%*s %f", &g_mc.fSquish_Stiff);
-                        }
-                    else if (strcmp(strKeyword, "BIAS_KEEP_ON") == 0)
-                        {
-                            sscanf(strLine, "%*s %d", &g_system.nBiasPotential_KeepON);
-                        }
-                    else if (strcmp(strKeyword, "BIAS_COUPLED_TO_TEMP") == 0)
-                        {
-                            sscanf(strLine, "%*s %d", &g_system.nBiasPotential_CoupledToTemp);
-                        }
-                    else
-                        {
-                            fprintf(stderr, "ERROR: unable to parse line %d in %s.\n%s", nLine, filename, strLine);
-                            exit(1);
-                        }
-                }
+        if (strKeyword[0] == '#')
+        { // if the first character is #,
+          // ignore the line
         }
+        else
+        {
+            for (i = 0; strLine[i] != '\0'; i++)
+            {
+                if (strLine[i] == '#')
+                {
+                    strLine[i] = '\0'; // ignore the content after #
+                    break;
+                }
+            }
+
+            if (strcmp(strKeyword, "BOX_SIZE") == 0)
+            {
+                sscanf(strLine, "%*s %s %s %s", strTempArr[0], strTempArr[1], strTempArr[2]);
+                if (strTempArr[1][0] < '0' || strTempArr[1][0] > '9')
+                {
+                    g_system.naBoxSize[0] = atoi(strTempArr[0]);
+                    g_system.naBoxSize[1] = g_system.naBoxSize[0];
+                    g_system.naBoxSize[2] = g_system.naBoxSize[0];
+                }
+                else
+                {
+                    if (strTempArr[2][0] < '0' || strTempArr[2][0] > '9')
+                    {
+                        g_system.naBoxSize[0] = atoi(strTempArr[0]);
+                        g_system.naBoxSize[1] = atoi(strTempArr[1]);
+                        g_system.naBoxSize[2] = 0; // error handling required
+                    }
+                    else
+                    {
+                        g_system.naBoxSize[0] = atoi(strTempArr[0]);
+                        g_system.naBoxSize[1] = atoi(strTempArr[1]);
+                        g_system.naBoxSize[2] = atoi(strTempArr[2]);
+                    }
+                }
+                g_analysis.nRDF_TotBins = g_system.naBoxSize[0] * 4;
+            }
+            else if (strcmp(strKeyword, "MC_TEMP") == 0)
+            {
+                sscanf(strLine, "%*s %f", &g_mc.fKT);
+            }
+            else if (strcmp(strKeyword, "N_STEPS") == 0)
+            {
+                sscanf(strLine, "%*s %ld", &g_mc.nMCStepsPerCycle);
+            }
+            else if (strcmp(strKeyword, "PREEQ_STEPS") == 0)
+            {
+                sscanf(strLine, "%*s %ld", &g_mc.nMCStepsForTherm);
+            }
+            else if (strcmp(strKeyword, "PREEQ_TEMP") == 0)
+            {
+                sscanf(strLine, "%*s %f", &g_mc.fPreKT);
+            }
+            else if (strcmp(strKeyword, "MC_TEMP_RATE") == 0)
+            {
+                sscanf(strLine, "%*s %f", &g_mc.fMC_TempRate);
+            }
+            else if (strcmp(strKeyword, "MC_TEMP_MODE") == 0)
+            {
+                sscanf(strLine, "%*s %d", &g_system.nAnnealing_Mode);
+            }
+            else if (strcmp(strKeyword, "MC_DELTA_TEMP") == 0)
+            {
+                sscanf(strLine, "%*s %f", &g_mc.fDeltaTemp);
+            }
+            else if (strcmp(strKeyword, "MC_INVERT_TEMP") == 0)
+            {
+                sscanf(strLine, "%*s %d", &g_system.nTemp_inv);
+            }
+            else if (strcmp(strKeyword, "MC_CYCLE_NUM") == 0)
+            {
+                sscanf(strLine, "%*s %d", &g_mc.nTotCycleNum);
+            }
+            else if (strcmp(strKeyword, "MC_INDENT_MODE") == 0)
+            {
+                sscanf(strLine, "%*s %d", &g_system.nBiasPotential_Mode);
+            }
+            else if (strcmp(strKeyword, "MV_TRANS_FREQ") == 0)
+            {
+                sscanf(strLine, "%*s %f", &g_mc.faMCFreq[MV_TRANS]);
+            }
+            else if (strcmp(strKeyword, "MV_CLSTR_FREQ") == 0)
+            {
+                sscanf(strLine, "%*s %f", &g_mc.faMCFreq[MV_CLSTR]);
+            }
+            else if (strcmp(strKeyword, "MV_SMCLSTR_FREQ") == 0)
+            {
+                sscanf(strLine, "%*s %f", &g_mc.faMCFreq[MV_SMCLSTR]);
+            }
+            else if (strcmp(strKeyword, "MV_STROT_FREQ") == 0)
+            {
+                sscanf(strLine, "%*s %f", &g_mc.faMCFreq[MV_STROT]);
+            }
+            else if (strcmp(strKeyword, "MV_LOCAL_FREQ") == 0)
+            {
+                sscanf(strLine, "%*s %f", &g_mc.faMCFreq[MV_LOCAL]);
+            }
+            else if (strcmp(strKeyword, "MV_SNAKE_FREQ") == 0)
+            {
+                sscanf(strLine, "%*s %f", &g_mc.faMCFreq[MV_SNAKE]);
+            }
+            else if (strcmp(strKeyword, "MV_DBPVT_FREQ") == 0)
+            {
+                sscanf(strLine, "%*s %f", &g_mc.faMCFreq[MV_DBPVT]);
+            }
+            else if (strcmp(strKeyword, "MV_COLOCAL_FREQ") == 0)
+            {
+                sscanf(strLine, "%*s %f", &g_mc.faMCFreq[MV_COLOCAL]);
+            }
+            else if (strcmp(strKeyword, "MV_MTLOCAL_FREQ") == 0)
+            {
+                sscanf(strLine, "%*s %f", &g_mc.faMCFreq[MV_MTLOCAL]);
+            }
+            else if (strcmp(strKeyword, "MV_PIVOT_FREQ") == 0)
+            {
+                sscanf(strLine, "%*s %f", &g_mc.faMCFreq[MV_PIVOT]);
+            }
+            else if (strcmp(strKeyword, "MV_BRROT_FREQ") == 0)
+            {
+                sscanf(strLine, "%*s %f", &g_mc.faMCFreq[MV_BRROT]);
+            }
+            else if (strcmp(strKeyword, "MV_PR_SMCLSTR") == 0)
+            {
+                sscanf(strLine, "%*s %f", &g_mc.faMCFreq[MV_PR_SMCLSTR]);
+            }
+            else if (strcmp(strKeyword, "MV_PR_CLSTR") == 0)
+            {
+                sscanf(strLine, "%*s %f", &g_mc.faMCFreq[MV_PR_CLSTR]);
+            }
+            else if (strcmp(strKeyword, "RESTART_FILE") == 0)
+            {
+                sscanf(strLine, "%*s %s", g_reports.strRestartFile);
+            }
+            else if (strcmp(strKeyword, "STRUCT_FILETYPE") == 0)
+            {
+                sscanf(strLine, "%*s %d", &nStructFiletype);
+            }
+            else if (strcmp(strKeyword, "STRUCT_FILE") == 0)
+            {
+                sscanf(strLine, "%*s %s", strStructFile);
+            }
+            else if (strcmp(strKeyword, "ENERGY_FILE") == 0)
+            {
+                sscanf(strLine, "%*s %s", strEnergyFile);
+            }
+            else if (strcmp(strKeyword, "RANDOM_SEED") == 0)
+            {
+                sscanf(strLine, "%*s %d", &g_mc.nRNG_Seed);
+                g_mc.nRNG_Seed = g_mc.nRNG_Seed == 0 ? time(NULL) : g_mc.nRNG_Seed;
+            }
+            else if (strcmp(strKeyword, "REPORT_PREFIX") == 0)
+            {
+                sscanf(strLine, "%*s %s", g_reports.strReportPrefix);
+            }
+            else if (strcmp(strKeyword, "REPORT_LOG_FREQ") == 0)
+            {
+                sscanf(strLine, "%*s %ld", &g_reports.naReportFreqs[REPORT_LOG]);
+            }
+            else if (strcmp(strKeyword, "REPORT_ENERGY_FREQ") == 0)
+            {
+                sscanf(strLine, "%*s %ld", &g_reports.naReportFreqs[REPORT_ENERGY]);
+            }
+            else if (strcmp(strKeyword, "REPORT_CONFIG_FREQ") == 0)
+            {
+                sscanf(strLine, "%*s %ld", &g_reports.naReportFreqs[REPORT_CONFIG]);
+            }
+            else if (strcmp(strKeyword, "REPORT_MCMOVE_FREQ") == 0)
+            {
+                sscanf(strLine, "%*s %ld", &g_reports.naReportFreqs[REPORT_MCMOVE]);
+            }
+            else if (strcmp(strKeyword, "REPORT_NETWORK_FREQ") == 0)
+            {
+                sscanf(strLine, "%*s %ld", &g_reports.naReportFreqs[REPORT_NETWORK]);
+            }
+            else if (strcmp(strKeyword, "REPORT_RDFTOT_FREQ") == 0)
+            {
+                sscanf(strLine, "%*s %ld", &g_reports.naReportFreqs[REPORT_RDFTOT]);
+            }
+            else if (strcmp(strKeyword, "REPORT_COMDEN_FREQ") == 0)
+            {
+                sscanf(strLine, "%*s %ld", &g_reports.naReportFreqs[REPORT_COMDEN]);
+            }
+            else if (strcmp(strKeyword, "ANALYSIS_CLUSTER_MODE") == 0)
+            {
+                sscanf(strLine, "%*s %d", &g_analysis.nClusteringMode);
+            }
+            else if (strcmp(strKeyword, "REPORT_CONFIG_MODE") == 0)
+            {
+                sscanf(strLine, "%*s %ld", &g_reports.nTrajMode);
+            }
+            else if (strcmp(strKeyword, "BIAS_INDENT_RADIUS") == 0)
+            {
+                sscanf(strLine, "%*s %f", &g_mc.fSquishRad);
+            }
+            else if (strcmp(strKeyword, "BIAS_INDENT_STIFF") == 0)
+            {
+                sscanf(strLine, "%*s %f", &g_mc.fSquish_Stiff);
+            }
+            else if (strcmp(strKeyword, "BIAS_KEEP_ON") == 0)
+            {
+                sscanf(strLine, "%*s %d", &g_system.nBiasPotential_KeepON);
+            }
+            else if (strcmp(strKeyword, "BIAS_COUPLED_TO_TEMP") == 0)
+            {
+                sscanf(strLine, "%*s %d", &g_system.nBiasPotential_CoupledToTemp);
+            }
+            else
+            {
+                fprintf(stderr, "ERROR: unable to parse line %d in %s.\n%s", nLine, filename, strLine);
+                exit(1);
+            }
+        }
+    }
 
     fclose(infile);
 
-    g_system.nBiasPotential_KeepON       = g_system.nBiasPotential_KeepON == 1 ? 1 : 0;
+    g_system.nBiasPotential_KeepON = g_system.nBiasPotential_KeepON == 1 ? 1 : 0;
     g_system.nBiasPotential_CoupledToTemp = g_system.nBiasPotential_CoupledToTemp == 1 ? 1 : 0;
 
     if (g_system.nBiasPotential_CoupledToTemp && g_system.nBiasPotential_KeepON)
-        {
-            fprintf(stderr, "KeyFile error <%s>: Cannot have BIAS_COUPLED_TO_TEMP=1 and BIAS_KEEP_ON=1\n", filename);
-            exit(1);
-        }
+    {
+        fprintf(stderr, "KeyFile error <%s>: Cannot have BIAS_COUPLED_TO_TEMP=1 and BIAS_KEEP_ON=1\n", filename);
+        exit(1);
+    }
 
     float freq_tot = 0.0f;
     for (i = MV_NULL + 1; i < MAX_MV; i++)
-        {
-            freq_tot += g_mc.faMCFreq[i];
-        }
+    {
+        freq_tot += g_mc.faMCFreq[i];
+    }
 
     if (freq_tot == 0)
+    {
+        for (i = MV_NULL + 1; i < MAX_MV; i++)
         {
-            for (i = MV_NULL + 1; i < MAX_MV; i++)
-                {
-                    g_mc.faMCFreq[i] = 1.0f / (float) (MAX_MV - 1);
-                }
+            g_mc.faMCFreq[i] = 1.0f / (float)(MAX_MV - 1);
         }
+    }
     else
+    {
+        for (i = MV_NULL + 1; i < MAX_MV; i++)
         {
-            for (i = MV_NULL + 1; i < MAX_MV; i++)
-                {
-                    g_mc.faMCFreq[i] /= freq_tot;
-                }
+            g_mc.faMCFreq[i] /= freq_tot;
         }
+    }
 
     if (strEnergyFile[0] != '\0')
-        {
-            nErr = Parse_EnergyFile(strEnergyFile);
-        }
+    {
+        nErr = Parse_EnergyFile(strEnergyFile);
+    }
 
     if (strStructFile[0] != '\0')
+    {
+        Parse_StructureFile_CalcBeadsAndChains(
+            strStructFile,
+            &g_system.tot_beads,
+            &g_system.tot_chains,
+            &g_system.tot_chain_types);
+
+        CreateBeadsAndChains(g_system.tot_beads, g_system.tot_chains);
+
+        Parse_StructureFile(strStructFile);
+
+        if (nStructFiletype == 0)
         {
-
-            Parse_StructureFile_CalcBeadsAndChains(strStructFile, &g_system.tot_beads, &g_system.tot_chains,
-                                                   &g_system.tot_chain_types);
-
-            CreateBeadsAndChains(g_system.tot_beads, g_system.tot_chains);
-
-            Parse_StructureFile(strStructFile);
-
-            if (nStructFiletype == 0)
-                {
-                    g_system.bReadConf = 0;
-                }
-            else if (nStructFiletype == 1)
-                {
-                    printf("Reading restart file provided to generate initial "
-                           "configuration.\n");
-                    g_system.bReadConf = 1;
-                }
-            else
-                {
-                    fprintf(stderr, "ERROR: undefined value in STRUCT_FILETYPE of %s.\nCrashing!\n", filename);
-                    exit(1);
-                }
+            g_system.bReadConf = 0;
         }
+        else if (nStructFiletype == 1)
+        {
+            printf("Reading restart file provided to generate initial "
+                   "configuration.\n");
+            g_system.bReadConf = 1;
+        }
+        else
+        {
+            fprintf(stderr, "ERROR: undefined value in STRUCT_FILETYPE of %s.\nCrashing!\n", filename);
+            exit(1);
+        }
+    }
     else
-        {
-            g_system.bReadConf = -1;
-        }
+    {
+        g_system.bReadConf = -1;
+    }
     if (g_system.bReadConf == 1)
+    {
+        if (g_reports.strRestartFile[0] != '\0')
         {
-            if (g_reports.strRestartFile[0] != '\0')
-                {
-                    printf("Restart file is %s\n", g_reports.strRestartFile);
-                }
-            else
-                {
-                    nErr = 5;
-                    printf("No restart file provided.\n");
-                }
+            printf("Restart file is %s\n", g_reports.strRestartFile);
         }
+        else
+        {
+            nErr = 5;
+            printf("No restart file provided.\n");
+        }
+    }
 
     return nErr;
 }
@@ -350,24 +352,22 @@ void ForEnergyMatrix_FillWithZeros()
     int i, j, k;
 
     for (i = 0; i < MAX_AA; i++)
+    {
+        for (j = 0; j < MAX_AA; j++)
         {
-            for (j = 0; j < MAX_AA; j++)
-                {
-                    for (k = 0; k < MAX_E; k++)
-                        {
-                            g_energy.faEnergy[i][j][k] = 0.f;
-                        }
-                }
+            for (k = 0; k < MAX_E; k++)
+            {
+                g_energy.faEnergy[i][j][k] = 0.f;
+            }
         }
+    }
 }
 
 /// Parse_EnergyFile - reads the energy file
-/// Have to painstakingly go through every different keyword that exists in the energy file. Reads all the matrices
-/// \param strEnFile
-/// \return
+/// Have to painstakingly go through every different keyword that exists in the energy file. Reads
+/// all the matrices \param strEnFile \return
 int Parse_EnergyFile(char* strEnFile)
 {
-
     ForEnergyMatrix_FillWithZeros();
 
     int nRes = 0;
@@ -376,7 +376,7 @@ int Parse_EnergyFile(char* strEnFile)
     infile = fopen(strEnFile, "r");
 
     char strLine[256];
-    int nFlag   = 0;
+    int nFlag = 0;
     char bOrder = 0;
     char strKey[256];
     int nRow;
@@ -385,161 +385,162 @@ int Parse_EnergyFile(char* strEnFile)
     int nEntry = 0;
 
     while (fgets(strLine, sizeof(strLine), infile) != NULL)
-        {
-            if (strLine[0] == '#')
-                { // All key-words start with '#'
-                    sscanf(&strLine[1], "%s", strKey);
-                    // STICKERS must be the first key-word
-                    if (strcmp(strKey, "STICKERS") == 0)
-                        {
-                            nFlag = -1;
-                        }
-                    else if (bOrder == 0)
-                        {
-                            fprintf(stderr, "ERROR: #STICKERS is not the first entry in %s.\n", strEnFile);
-                            nRes = 1;
-                            break;
-                        }
-                    else
-                        { // Checking for all other keywords
-                            if (strcmp(strKey, "OVERLAP_POT") == 0)
-                                {
-                                    nFlag = 2 * (E_OVLP);
-                                }
-                            else if (strcmp(strKey, "CONTACT_POT") == 0)
-                                {
-                                    nFlag = 2 * (E_CONT);
-                                }
-                            else if (strcmp(strKey, "CONTACT_RAD") == 0)
-                                {
-                                    nFlag = 2 * (E_CONT) + 1;
-                                }
-                            else if (strcmp(strKey, "SC_SC_POT") == 0)
-                                {
-                                    nFlag = 2 * (E_SC_SC);
-                                }
-                            else if (strcmp(strKey, "FSOL_POT") == 0)
-                                {
-                                    nFlag = 2 * (E_F_SOL);
-                                }
-                            else if (strcmp(strKey, "T_IND_POT") == 0)
-                                {
-                                    nFlag = 2 * (E_T_IND);
-                                }
-                            else if (strcmp(strKey, "STIFF_POT") == 0)
-                                {
-                                    nFlag = 2 * (E_STIFF);
-                                }
-                            else if (strcmp(strKey, "LINKER_LENGTH") == 0)
-                                {
-                                    nFlag = -3;
-                                }
-                            else if (strcmp(strKey, "LINKER_SPRCON") == 0)
-                                {
-                                    nFlag = -4;
-                                }
-                            else if (strcmp(strKey, "LINKER_EQLEN") == 0)
-                                {
-                                    nFlag = -5;
-                                }
-                            else
-                                {
-                                    fprintf(stderr, "ERROR: irregular expression in %s: %s\n", strEnFile, strKey);
-                                    nRes = 2;
-                                    break;
-                                }
-                        }
-                    // Should know which key-word we are dealing with.
-                    // Next line should have numerical values. Either one number, or
-                    // nBeadType numbers
-                    nRow = 0;
-                } // The line did not contain a keyword. Either empty or has numbers.
-            else if (strcmp(strLine, "\r\n") && strcmp(strLine, "\n"))
-                { // ignore empty lines
-                    if (nFlag == -1)
-                        { // sticker
-                            sscanf(strLine, "%d", &g_energy.nBeadTypes);
-                            if (g_energy.nBeadTypes > MAX_AA)
-                                {
-                                    fprintf(stderr, "ERROR: the number of AA types exceeds MAX_AA in %s.\n", strEnFile);
-                                    nRes = 3;
-                                    break;
-                                }
-                            bOrder = 1;
-                        }
-                    else if (nFlag == -3)
-                        { // linker_length
-                            sscanf(strLine, "%f", &g_system.fLinkerLength);
-                        }
-                    else if (nFlag == -4)
-                        { // linker_sprcon
-                            sscanf(strLine, "%f", &g_system.fLinkerSprCon);
-                        }
-                    else if (nFlag == -5)
-                        { // linker_eqlen
-                            sscanf(strLine, "%f", &g_system.fLinkerEqLen);
-                        }
-                    else if (nFlag == 0)
-                        {
-                            fprintf(stderr, "ERROR: nFlag is not assigned in %s.\n", strEnFile);
-                            nRes = 4;
-                            break;
-                        }
-                    else
-                        {                                      // Saving energy and radius matrices
-                            nEntry = str2farr(strLine, fTemp); // Counting how many columns
-                            if (nEntry != g_energy.nBeadTypes)
-                                { // If columns not the same as sticker number
-                                    if (nEntry == 1)
-                                        { // If only 1-value, all-values in  that
-                                          // matrix are this one
-                                            for (i = 0; i < g_energy.nBeadTypes; i++)
-                                                {
-                                                    for (j = 0; j < g_energy.nBeadTypes; j++)
-                                                        {
-                                                            if (nFlag % 2 == 0)
-                                                                { // energy
-                                                                    g_energy.faEnergy[i][j][(int) (nFlag / 2)] = fTemp[0];
-                                                                }
-                                                            else
-                                                                { // radius
-                                                                    g_energy.faEnRad[i][j][(int) (nFlag / 2)] = fTemp[0];
-                                                                }
-                                                        }
-                                                }
-                                        }
-                                    else
-                                        {
-                                            fprintf(stderr,
-                                                    "ERROR: irregular expression in energy "
-                                                    "matrices of %s.\n",
-                                                    strEnFile);
-                                            nRes = 4;
-                                            break;
-                                        }
-                                }
-                            else
-                                { // Column number same as sticker-number; save the
-                                  // matrix
-                                    if (nFlag % 2 == 0)
-                                        { // energy
-                                            for (i = 0; i < g_energy.nBeadTypes; i++)
-                                                {
-                                                    g_energy.faEnergy[nRow][i][(int) (nFlag / 2)] = fTemp[i];
-                                                }
-                                        }
-                                    else
-                                        { // radius
-                                            for (i = 0; i < g_energy.nBeadTypes; i++)
-                                                {
-                                                    g_energy.faEnRad[nRow][i][(int) (nFlag / 2)] = fTemp[i];
-                                                }
-                                        }
-                                    nRow++;
-                                }
-                        }
+    {
+        if (strLine[0] == '#')
+        { // All key-words start with '#'
+            sscanf(&strLine[1], "%s", strKey);
+            // STICKERS must be the first key-word
+            if (strcmp(strKey, "STICKERS") == 0)
+            {
+                nFlag = -1;
+            }
+            else if (bOrder == 0)
+            {
+                fprintf(stderr, "ERROR: #STICKERS is not the first entry in %s.\n", strEnFile);
+                nRes = 1;
+                break;
+            }
+            else
+            { // Checking for all other keywords
+                if (strcmp(strKey, "OVERLAP_POT") == 0)
+                {
+                    nFlag = 2 * (E_OVLP);
                 }
+                else if (strcmp(strKey, "CONTACT_POT") == 0)
+                {
+                    nFlag = 2 * (E_CONT);
+                }
+                else if (strcmp(strKey, "CONTACT_RAD") == 0)
+                {
+                    nFlag = 2 * (E_CONT) + 1;
+                }
+                else if (strcmp(strKey, "SC_SC_POT") == 0)
+                {
+                    nFlag = 2 * (E_SC_SC);
+                }
+                else if (strcmp(strKey, "FSOL_POT") == 0)
+                {
+                    nFlag = 2 * (E_F_SOL);
+                }
+                else if (strcmp(strKey, "T_IND_POT") == 0)
+                {
+                    nFlag = 2 * (E_T_IND);
+                }
+                else if (strcmp(strKey, "STIFF_POT") == 0)
+                {
+                    nFlag = 2 * (E_STIFF);
+                }
+                else if (strcmp(strKey, "LINKER_LENGTH") == 0)
+                {
+                    nFlag = -3;
+                }
+                else if (strcmp(strKey, "LINKER_SPRCON") == 0)
+                {
+                    nFlag = -4;
+                }
+                else if (strcmp(strKey, "LINKER_EQLEN") == 0)
+                {
+                    nFlag = -5;
+                }
+                else
+                {
+                    fprintf(stderr, "ERROR: irregular expression in %s: %s\n", strEnFile, strKey);
+                    nRes = 2;
+                    break;
+                }
+            }
+            // Should know which key-word we are dealing with.
+            // Next line should have numerical values. Either one number, or
+            // nBeadType numbers
+            nRow = 0;
+        } // The line did not contain a keyword. Either empty or has numbers.
+        else if (strcmp(strLine, "\r\n") && strcmp(strLine, "\n"))
+        { // ignore empty lines
+            if (nFlag == -1)
+            { // sticker
+                sscanf(strLine, "%d", &g_energy.nBeadTypes);
+                if (g_energy.nBeadTypes > MAX_AA)
+                {
+                    fprintf(stderr, "ERROR: the number of AA types exceeds MAX_AA in %s.\n", strEnFile);
+                    nRes = 3;
+                    break;
+                }
+                bOrder = 1;
+            }
+            else if (nFlag == -3)
+            { // linker_length
+                sscanf(strLine, "%f", &g_system.fLinkerLength);
+            }
+            else if (nFlag == -4)
+            { // linker_sprcon
+                sscanf(strLine, "%f", &g_system.fLinkerSprCon);
+            }
+            else if (nFlag == -5)
+            { // linker_eqlen
+                sscanf(strLine, "%f", &g_system.fLinkerEqLen);
+            }
+            else if (nFlag == 0)
+            {
+                fprintf(stderr, "ERROR: nFlag is not assigned in %s.\n", strEnFile);
+                nRes = 4;
+                break;
+            }
+            else
+            {                                      // Saving energy and radius matrices
+                nEntry = str2farr(strLine, fTemp); // Counting how many columns
+                if (nEntry != g_energy.nBeadTypes)
+                { // If columns not the same as sticker number
+                    if (nEntry == 1)
+                    { // If only 1-value, all-values in  that
+                      // matrix are this one
+                        for (i = 0; i < g_energy.nBeadTypes; i++)
+                        {
+                            for (j = 0; j < g_energy.nBeadTypes; j++)
+                            {
+                                if (nFlag % 2 == 0)
+                                { // energy
+                                    g_energy.faEnergy[i][j][(int)(nFlag / 2)] = fTemp[0];
+                                }
+                                else
+                                { // radius
+                                    g_energy.faEnRad[i][j][(int)(nFlag / 2)] = fTemp[0];
+                                }
+                            }
+                        }
+                    }
+                    else
+                    {
+                        fprintf(
+                            stderr,
+                            "ERROR: irregular expression in energy "
+                            "matrices of %s.\n",
+                            strEnFile);
+                        nRes = 4;
+                        break;
+                    }
+                }
+                else
+                { // Column number same as sticker-number; save the
+                  // matrix
+                    if (nFlag % 2 == 0)
+                    { // energy
+                        for (i = 0; i < g_energy.nBeadTypes; i++)
+                        {
+                            g_energy.faEnergy[nRow][i][(int)(nFlag / 2)] = fTemp[i];
+                        }
+                    }
+                    else
+                    { // radius
+                        for (i = 0; i < g_energy.nBeadTypes; i++)
+                        {
+                            g_energy.faEnRad[nRow][i][(int)(nFlag / 2)] = fTemp[i];
+                        }
+                    }
+                    nRow++;
+                }
+            }
         }
+    }
 
     fclose(infile);
 
@@ -554,22 +555,22 @@ int Parse_EnergyFile(char* strEnFile)
 /// \return Changes fArray to include be the array in
 int str2farr(char strRaw[], float fArray[MAX_AA])
 {
-    int i         = 0;
+    int i = 0;
     char* strTemp = strRaw;
     char* token;
 
     for (i = 0; i < MAX_AA; i++)
+    {
+        token = strtok_r(strTemp, " \t", &strTemp);
+        if (token == NULL)
         {
-            token = strtok_r(strTemp, " \t", &strTemp);
-            if (token == NULL)
-                {
-                    break;
-                }
-            else
-                {
-                    fArray[i] = atof(token);
-                }
+            break;
         }
+        else
+        {
+            fArray[i] = atof(token);
+        }
+    }
 
     return i;
 }
@@ -642,155 +643,155 @@ void Parse_StructureFile(char* filename)
 
     // Initialize the g_system.bead_info and g_system.chain_info
     for (i = 0; i < g_system.tot_beads; i++)
+    {
+        for (j = 0; j < BEADINFO_MAX; j++)
         {
-            for (j = 0; j < BEADINFO_MAX; j++)
-                {
-                    g_system.bead_info[i][j] = -1;
-                }
-            for (j = 0; j < MAX_BONDS; j++)
-                {
-                    g_system.topo_info[i][j]  = -1;
-                    g_system.linker_len[i][j] = -1;
-                }
+            g_system.bead_info[i][j] = -1;
         }
+        for (j = 0; j < MAX_BONDS; j++)
+        {
+            g_system.topo_info[i][j] = -1;
+            g_system.linker_len[i][j] = -1;
+        }
+    }
 
     for (i = 0; i < g_system.tot_chains; i++)
+    {
+        for (j = 0; j < CHAININFO_MAX; j++)
         {
-            for (j = 0; j < CHAININFO_MAX; j++)
-                {
-                    g_system.chain_info[i][j] = -1;
-                }
+            g_system.chain_info[i][j] = -1;
         }
+    }
 
     // Initialization of the counters and iterators
-    nCursor     = -1;
-    nCursor2    = -1;
-    nChainID    = -1;
-    nChainType  = -1;
-    nFlag       = -1;
-    nTemp       = -1;
-    nBEADS      = 0;
+    nCursor = -1;
+    nCursor2 = -1;
+    nChainID = -1;
+    nChainType = -1;
+    nFlag = -1;
+    nTemp = -1;
+    nBEADS = 0;
     nChainStart = 0;
-    nCopies     = 0;
+    nCopies = 0;
     while ((fgets(strLine, sizeof(strLine), inFile) != NULL) && (nFlag == -1))
-        {
-            // Keep reading the file until it ends or it's incorrectly formatted.
+    {
+        // Keep reading the file until it ends or it's incorrectly formatted.
 
-            strKeyword[0] = '#';               // This is the commenting character in all input files.
-            sscanf(strLine, "%s", strKeyword); // Plain old read the line.
+        strKeyword[0] = '#';               // This is the commenting character in all input files.
+        sscanf(strLine, "%s", strKeyword); // Plain old read the line.
 
-            if (strKeyword[0] != '#')
-                { // If the line is not a comment, see what keyword it is
-                    for (i = 0; strLine[i] != '\0'; i++)
-                        { // Keep reading till end of that line
-                            if (strLine[i] == '#')
-                                {                      // This line now has a comment, so
-                                                       // stop reading further
-                                    strLine[i] = '\0'; // Just assume we have reached the end of the line
-                                    break;
-                                }
-                        }
-                    if (strcmp(strKeyword, "NEW{") == 0)
-                        { // This signifies a new molecule type has been started
-                            nFlag = 1;
-                        }
-                    if (strcmp(strKeyword, "}END") == 0)
-                        { // This signifies a new molecule type has been started
-                            nFlag = -1;
-                        }
+        if (strKeyword[0] != '#')
+        { // If the line is not a comment, see what keyword it is
+            for (i = 0; strLine[i] != '\0'; i++)
+            { // Keep reading till end of that line
+                if (strLine[i] == '#')
+                {                      // This line now has a comment, so
+                                       // stop reading further
+                    strLine[i] = '\0'; // Just assume we have reached the end of the line
+                    break;
                 }
-
-            if (nFlag == 1)
-                { // This signifies that a new molecule has started
-                    // It's assumed that the next line contains the number of copies for
-                    // this molecule.
-                    nChainType++;
-                    g_system.nChainTypeIsLinear[nChainType] = 1; // Assume all chains are linear to begin with.
-                    nChainStart += nBEADS;
-                    nChainID++;
-                    nBEADS = 0;
-                    fgets(strLine, sizeof(strLine),
-                          inFile); // Reading the next line, which has nMOLS
-                    sscanf(strLine, "%d",
-                           &nCopies); // Remembering how many copies top make.
-                    while (fgets(strLine, sizeof(strLine), inFile) != NULL && nFlag == 1)
-                        {
-                            sscanf(strLine, "%s", strKeyword); // Just reading as a string
-                            if (strcmp(strKeyword, "}END") == 0)
-                                { // End of this molecule
-                                    nFlag = -1;
-                                    break;
-                                }
-                            sscanf(strLine, "%d %d %d %d", &curID, &curType, &curLinker, &curPartner);
-                            curID += nChainStart; // Accounting for previously defined beads
-                            if (g_system.bead_info[curID][BEAD_TYPE] == -1)
-                                { // This is to make sure that each bead is counted
-                                  // once only even if it has many bonds.
-                                    nBEADS++;
-                                    g_system.bead_info[curID][BEAD_TYPE]    = curType;
-                                    g_system.bead_info[curID][BEAD_CHAINID] = nChainID;
-                                    nCursor = 0; // This is a counter for number of bonds, which
-                                                 // should reset when you have a 'new' bead.
-                                }
-
-                            if (curPartner != -1)
-                                { // This bead has a bonded partner
-                                    if (nCursor > 1)
-                                        { // This signifies that the chain is not
-                                          // linear because a bead has more than two bonds
-                                          // because indicies start at 0.
-                                            g_system.nChainTypeIsLinear[nChainType] = 0;
-                                        }
-                                    curPartner += nChainStart;                  // Accounts for all beads before,
-                                                                                // like above.
-                                    g_system.topo_info[curID][nCursor] = curPartner; // Adding the ID of the partner
-                                    g_system.linker_len[curID][nCursor] =
-                                        curLinker * (int) g_system.fLinkerLength; // Adding the linker constraint.
-                                    nCursor++;
-                                }
-                        }
-                    g_system.chain_info[nChainID][CHAIN_START]  = nChainStart;
-                    g_system.chain_info[nChainID][CHAIN_LENGTH] = nBEADS;
-                    g_system.chain_info[nChainID][CHAIN_TYPE]   = nChainType;
-                    // We just fully store the first chain 'manually'. Now we just copy
-                    // the chain nCopies times.
-                    for (k = 1; k < nCopies; k++)
-                        {                          // Now we just copy this molecule nMOL-1 times
-                            nChainStart += nBEADS; // This accounts for chain lengths.
-                            nChainID++;            // Going to the next chainID
-                            g_system.chain_info[nChainID][CHAIN_START]  = nChainStart;
-                            g_system.chain_info[nChainID][CHAIN_LENGTH] = nBEADS;
-                            g_system.chain_info[nChainID][CHAIN_TYPE]   = nChainType;
-
-                            for (i = 0; i < nBEADS; i++)
-                                {
-                                    curID                              = i + nChainStart;
-                                    nTemp                              = curID - nBEADS;
-                                    g_system.bead_info[curID][BEAD_TYPE]    = g_system.bead_info[nTemp][BEAD_TYPE];
-                                    g_system.bead_info[curID][BEAD_CHAINID] = nChainID;
-                                    for (j = 0; j < MAX_BONDS; j++)
-                                        {
-                                            g_system.linker_len[curID][j] = g_system.linker_len[nTemp][j];
-                                            if (g_system.topo_info[nTemp][j] != -1)
-                                                {
-                                                    g_system.topo_info[curID][j] =
-                                                        g_system.topo_info[nTemp][j] + nBEADS; // Because we must account for
-                                                                                          // chain lengths
-                                                }
-                                        }
-                                }
-                        }
-                    nFlag = -1; // Resetting the flag.
-                }
-
-            // This is to make sure that the reading was done correctly.
-            if (nFlag != -1)
-                {
-                    printf("Incorrectly formatted input structure file. I must crash "
-                           ":(\n\n");
-                    exit(1);
-                }
+            }
+            if (strcmp(strKeyword, "NEW{") == 0)
+            { // This signifies a new molecule type has been started
+                nFlag = 1;
+            }
+            if (strcmp(strKeyword, "}END") == 0)
+            { // This signifies a new molecule type has been started
+                nFlag = -1;
+            }
         }
+
+        if (nFlag == 1)
+        { // This signifies that a new molecule has started
+            // It's assumed that the next line contains the number of copies for
+            // this molecule.
+            nChainType++;
+            g_system.nChainTypeIsLinear[nChainType] = 1; // Assume all chains are linear to begin with.
+            nChainStart += nBEADS;
+            nChainID++;
+            nBEADS = 0;
+            fgets(strLine, sizeof(strLine),
+                  inFile); // Reading the next line, which has nMOLS
+            sscanf(strLine, "%d",
+                   &nCopies); // Remembering how many copies top make.
+            while (fgets(strLine, sizeof(strLine), inFile) != NULL && nFlag == 1)
+            {
+                sscanf(strLine, "%s", strKeyword); // Just reading as a string
+                if (strcmp(strKeyword, "}END") == 0)
+                { // End of this molecule
+                    nFlag = -1;
+                    break;
+                }
+                sscanf(strLine, "%d %d %d %d", &curID, &curType, &curLinker, &curPartner);
+                curID += nChainStart; // Accounting for previously defined beads
+                if (g_system.bead_info[curID][BEAD_TYPE] == -1)
+                { // This is to make sure that each bead is counted
+                  // once only even if it has many bonds.
+                    nBEADS++;
+                    g_system.bead_info[curID][BEAD_TYPE] = curType;
+                    g_system.bead_info[curID][BEAD_CHAINID] = nChainID;
+                    nCursor = 0; // This is a counter for number of bonds, which
+                                 // should reset when you have a 'new' bead.
+                }
+
+                if (curPartner != -1)
+                { // This bead has a bonded partner
+                    if (nCursor > 1)
+                    { // This signifies that the chain is not
+                      // linear because a bead has more than two bonds
+                      // because indicies start at 0.
+                        g_system.nChainTypeIsLinear[nChainType] = 0;
+                    }
+                    curPartner += nChainStart;                       // Accounts for all beads before,
+                                                                     // like above.
+                    g_system.topo_info[curID][nCursor] = curPartner; // Adding the ID of the partner
+                    g_system.linker_len[curID][nCursor] =
+                        curLinker * (int)g_system.fLinkerLength; // Adding the linker constraint.
+                    nCursor++;
+                }
+            }
+            g_system.chain_info[nChainID][CHAIN_START] = nChainStart;
+            g_system.chain_info[nChainID][CHAIN_LENGTH] = nBEADS;
+            g_system.chain_info[nChainID][CHAIN_TYPE] = nChainType;
+            // We just fully store the first chain 'manually'. Now we just copy
+            // the chain nCopies times.
+            for (k = 1; k < nCopies; k++)
+            {                          // Now we just copy this molecule nMOL-1 times
+                nChainStart += nBEADS; // This accounts for chain lengths.
+                nChainID++;            // Going to the next chainID
+                g_system.chain_info[nChainID][CHAIN_START] = nChainStart;
+                g_system.chain_info[nChainID][CHAIN_LENGTH] = nBEADS;
+                g_system.chain_info[nChainID][CHAIN_TYPE] = nChainType;
+
+                for (i = 0; i < nBEADS; i++)
+                {
+                    curID = i + nChainStart;
+                    nTemp = curID - nBEADS;
+                    g_system.bead_info[curID][BEAD_TYPE] = g_system.bead_info[nTemp][BEAD_TYPE];
+                    g_system.bead_info[curID][BEAD_CHAINID] = nChainID;
+                    for (j = 0; j < MAX_BONDS; j++)
+                    {
+                        g_system.linker_len[curID][j] = g_system.linker_len[nTemp][j];
+                        if (g_system.topo_info[nTemp][j] != -1)
+                        {
+                            g_system.topo_info[curID][j] =
+                                g_system.topo_info[nTemp][j] + nBEADS; // Because we must account
+                                                                       // for chain lengths
+                        }
+                    }
+                }
+            }
+            nFlag = -1; // Resetting the flag.
+        }
+
+        // This is to make sure that the reading was done correctly.
+        if (nFlag != -1)
+        {
+            printf("Incorrectly formatted input structure file. I must crash "
+                   ":(\n\n");
+            exit(1);
+        }
+    }
     fclose(inFile);
 }
 
@@ -800,16 +801,15 @@ void Parse_StructureFile(char* filename)
 /// \param n_bead_num: Stores how many total beads are in the structure file.
 /// \param n_chain_num: Stores how many total chains are in the structure file.
 /// \param n_chain_types: Stores how many different chain-types are in the file.
-void Parse_StructureFile_CalcBeadsAndChains(char* filename, int* n_bead_num, int* n_chain_num,
-                                            int* n_chain_types)
+void Parse_StructureFile_CalcBeadsAndChains(char* filename, int* n_bead_num, int* n_chain_num, int* n_chain_types)
 {
-    int dum_beads       = 0;
-    int dum_chains      = 0;
+    int dum_beads = 0;
+    int dum_chains = 0;
     int dum_chain_types = 0;
-    int per_chain_num   = 0;
-    int per_ch_bd_num   = 0;
-    int errCode         = 0;
-    int nFlag           = -1;
+    int per_chain_num = 0;
+    int per_ch_bd_num = 0;
+    int errCode = 0;
+    int nFlag = -1;
     char strLine[1000];
     char strKey[1000];
 
@@ -817,76 +817,76 @@ void Parse_StructureFile_CalcBeadsAndChains(char* filename, int* n_bead_num, int
 
     // So that this function always sets the values to 0.
     *n_chain_types = 0;
-    *n_bead_num    = 0;
-    *n_chain_num   = 0;
+    *n_bead_num = 0;
+    *n_chain_num = 0;
 
     FILE* inFile;
     inFile = fopen(filename, "r");
 
     while (fgets(strLine, sizeof(strLine), inFile) != NULL && errCode == 0)
-        {
-            sscanf(strLine, "%s", strKey);
-            if (strKey[0] == '#')
-                { // Ignore comments
-                    continue;
-                }
-
-            if (strcmp(strKey, "NEW{") == 0)
-                { // New molecule is starting
-                    per_ch_bd_num = 0;
-                    fgets(strLine, sizeof(strLine), inFile);
-                    sscanf(strLine, "%s", strKey);
-                    if (strKey[0] == '#')
-                        {
-                            errCode = 1;
-                            break;
-                        }
-
-                    nFlag = sscanf(strLine, "%d", &per_chain_num);
-                    if (nFlag != 1)
-                        {
-                            errCode = 1;
-                            break;
-                        }
-
-                    dum_chain_types++;
-                    dum_chains += per_chain_num;
-
-                    n_new_bd_id   = 0;
-                    n_old_bd_id   = -1;
-                    per_ch_bd_num = 0;
-                    while ((fgets(strLine, sizeof(strLine), inFile) != NULL) && (errCode == 0))
-                        {
-                            sscanf(strLine, "%s", strKey);
-                            if (strKey[0] == '#')
-                                {
-                                    errCode = 1;
-                                    break;
-                                }
-                            if (strcmp(strKey, "}END") == 0)
-                                { // Molecule has ended
-                                    dum_beads += per_ch_bd_num * per_chain_num;
-                                    break;
-                                }
-
-                            nFlag = sscanf(strLine, "%d", &n_new_bd_id);
-                            if (nFlag != 1)
-                                {
-                                    errCode = 1;
-                                    break;
-                                }
-
-                            if (n_new_bd_id != n_old_bd_id)
-                                {
-                                    per_ch_bd_num++;
-                                }
-                            n_old_bd_id = n_new_bd_id;
-                        }
-                }
+    {
+        sscanf(strLine, "%s", strKey);
+        if (strKey[0] == '#')
+        { // Ignore comments
+            continue;
         }
 
-    *n_bead_num    = dum_beads;
-    *n_chain_num   = dum_chains;
+        if (strcmp(strKey, "NEW{") == 0)
+        { // New molecule is starting
+            per_ch_bd_num = 0;
+            fgets(strLine, sizeof(strLine), inFile);
+            sscanf(strLine, "%s", strKey);
+            if (strKey[0] == '#')
+            {
+                errCode = 1;
+                break;
+            }
+
+            nFlag = sscanf(strLine, "%d", &per_chain_num);
+            if (nFlag != 1)
+            {
+                errCode = 1;
+                break;
+            }
+
+            dum_chain_types++;
+            dum_chains += per_chain_num;
+
+            n_new_bd_id = 0;
+            n_old_bd_id = -1;
+            per_ch_bd_num = 0;
+            while ((fgets(strLine, sizeof(strLine), inFile) != NULL) && (errCode == 0))
+            {
+                sscanf(strLine, "%s", strKey);
+                if (strKey[0] == '#')
+                {
+                    errCode = 1;
+                    break;
+                }
+                if (strcmp(strKey, "}END") == 0)
+                { // Molecule has ended
+                    dum_beads += per_ch_bd_num * per_chain_num;
+                    break;
+                }
+
+                nFlag = sscanf(strLine, "%d", &n_new_bd_id);
+                if (nFlag != 1)
+                {
+                    errCode = 1;
+                    break;
+                }
+
+                if (n_new_bd_id != n_old_bd_id)
+                {
+                    per_ch_bd_num++;
+                }
+                n_old_bd_id = n_new_bd_id;
+            }
+        }
+    }
+
+    *n_bead_num = dum_beads;
+    *n_chain_num = dum_chains;
     *n_chain_types = dum_chain_types;
 
     fclose(inFile);
