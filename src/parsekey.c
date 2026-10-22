@@ -83,7 +83,7 @@ int Parse_Keyfile(char* filename)
                                             g_system.naBoxSize[2] = atoi(strTempArr[2]);
                                         }
                                 }
-                            nRDF_TotBins_glb = g_system.naBoxSize[0] * 4;
+                            g_analysis.nRDF_TotBins = g_system.naBoxSize[0] * 4;
                         }
                     else if (strcmp(strKeyword, "MC_TEMP") == 0)
                         {
@@ -232,7 +232,7 @@ int Parse_Keyfile(char* filename)
                         }
                     else if (strcmp(strKeyword, "ANALYSIS_CLUSTER_MODE") == 0)
                         {
-                            sscanf(strLine, "%*s %d", &nClusteringMode_glb);
+                            sscanf(strLine, "%*s %d", &g_analysis.nClusteringMode);
                         }
                     else if (strcmp(strKeyword, "REPORT_CONFIG_MODE") == 0)
                         {

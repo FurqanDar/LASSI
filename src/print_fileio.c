@@ -43,7 +43,7 @@ void Write_ClusterDist(char* filename, long nGen)
             fprintf(fp, "#%ld\n", nGen);
             for (i = 0; i <= g_system.tot_chains; i++)
                 {
-                    fprintf(fp, "%ld\t", laClusHistList_glb[i]);
+                    fprintf(fp, "%ld\t", g_analysis.laClusHistList[i]);
                 }
             fprintf(fp, "\n");
         }
@@ -83,7 +83,7 @@ void Write_GyrTen(char* filename, long nGen)
                         {
                             continue;
                         } // Not smart enough to make a better indexing function
-                    fprintf(fp, "%f\t", faGyrTensor_glb[i]);
+                    fprintf(fp, "%f\t", g_analysis.faGyrTensor[i]);
                 }
             fprintf(fp, "\n");
         }
@@ -440,11 +440,11 @@ void Write_RDF_ComponentWise(char* filename, long nGen)
         }
     else
         {
-            for (k = 0; k < nRDF_TotComps_glb; k++)
+            for (k = 0; k < g_analysis.nRDF_TotComps; k++)
                 {
-                    for (i = 0; i < nRDF_TotBins_glb; i++)
+                    for (i = 0; i < g_analysis.nRDF_TotBins; i++)
                         {
-                            fprintf(fp, "%.5Lf\t", ldaRDF_Arr_glb[RDFArr_Index(0, k, i)]);
+                            fprintf(fp, "%.5Lf\t", g_analysis.ldaRDF_Arr[RDFArr_Index(0, k, i)]);
                         }
                     fprintf(fp, "\n");
                 }
@@ -547,22 +547,22 @@ void Write_SysProp(char* filename)
     fp = fopen(filename, "w");
     fprintf(fp, "#Contains various averaged quatities.\n");
     // Gyration Radius
-    fprintf(fp, "#Total Rg\n%f\t%f\n#Cluster Hist\n", faSysGyrRad_glb / (float) nTotGyrRadCounter_glb,
+    fprintf(fp, "#Total Rg\n%f\t%f\n#Cluster Hist\n", g_analysis.faSysGyrRad / (float) g_analysis.nTotGyrRadCounter,
             (float) g_system.naBoxSize[0] / 2.);
     // Cluster Histogram
-    fprintf(fp, "%f\t", (float) nLargestClusterRightNow_glb / (float) nTotClusCounter_glb);
+    fprintf(fp, "%f\t", (float) g_analysis.nLargestClusterRightNow / (float) g_analysis.nTotClusCounter);
     for (i = 1; i <= g_system.tot_chains; i++)
         {
-            fprintf(fp, "%f\t", (float) laClusHistList_glb[i] / (float) nTotClusCounter_glb);
+            fprintf(fp, "%f\t", (float) g_analysis.laClusHistList[i] / (float) g_analysis.nTotClusCounter);
         }
     // Split RDFs
     fprintf(fp, "\n#Split RDFs. ALL-ALL; DIAGONALS and then from 0 onwards \n");
-    for (j = 0; j < nRDF_TotComps_glb; j++)
+    for (j = 0; j < g_analysis.nRDF_TotComps; j++)
         {
-            for (i = 0; i < nRDF_TotBins_glb; i++)
+            for (i = 0; i < g_analysis.nRDF_TotBins; i++)
                 {
-                    // fprintf(fp, "%LE\t", ldRDF_ARR[j][i] / (float)nTotRDFCounter_glb);
-                    fprintf(fp, "%LE\t", ldaRDF_Arr_glb[RDFArr_Index(0, j, i)] / (float) nTotRDFCounter_glb);
+                    // fprintf(fp, "%LE\t", ldRDF_ARR[j][i] / (float)g_analysis.nTotRDFCounter);
+                    fprintf(fp, "%LE\t", g_analysis.ldaRDF_Arr[RDFArr_Index(0, j, i)] / (float) g_analysis.nTotRDFCounter);
                 }
             fprintf(fp, "\n");
         }
@@ -584,11 +584,11 @@ void FileIO_WriteTo_RDFFile_TotFromGLB(const int run_it)
     for (i = 0; i < run_it; i++)
         {
             fprintf(fp, "#Run_Cycle = %d\n", i);
-            for (j = 0; j < nRDF_TotComps_glb; j++)
+            for (j = 0; j < g_analysis.nRDF_TotComps; j++)
                 {
-                    for (k = 0; k < nRDF_TotBins_glb; k++)
+                    for (k = 0; k < g_analysis.nRDF_TotBins; k++)
                         {
-                            fprintf(fp, "%LE\t", ldaTOTRDF_Arr_glb[RDFArr_Index(i, j, k)]);
+                            fprintf(fp, "%LE\t", g_analysis.ldaTOTRDF_Arr[RDFArr_Index(i, j, k)]);
                         }
                     fprintf(fp, "\n");
                 }
@@ -612,11 +612,11 @@ void FileIO_WriteTo_COMDenFile_TotFromGLB(const int run_it)
     for (i = 0; i < run_it; i++)
         {
             fprintf(fp, "#Run_Cycle = %d\n", i);
-            for (j = 0; j < nRadDen_TotComps_glb; j++)
+            for (j = 0; j < g_analysis.nRadDen_TotComps; j++)
                 {
-                    for (k = 0; k < nRDF_TotBins_glb; k++)
+                    for (k = 0; k < g_analysis.nRDF_TotBins; k++)
                         {
-                            fprintf(fp, "%LE\t", ldaTOTRadDen_Arr_glb[RadDenArr_Index(i, j, k)]);
+                            fprintf(fp, "%LE\t", g_analysis.ldaTOTRadDen_Arr[RadDenArr_Index(i, j, k)]);
                         }
                     fprintf(fp, "\n");
                 }
@@ -642,7 +642,7 @@ void FileIO_WriteTo_ClusFile_TotFromGLB(const int run_it)
             fprintf(fp, "#Run_Cycle = %d\n", i);
             for (k = 0; k <= g_system.tot_chains; k++)
                 {
-                    fprintf(fp, "%LE\t", ldaTOTCLUS_Arr_glb[i][k]);
+                    fprintf(fp, "%LE\t", g_analysis.ldaTOTCLUS_Arr[i][k]);
                 }
             fprintf(fp, "\n");
         }
@@ -670,7 +670,7 @@ void FileIO_WriteTo_MolClusFile_TotFromGLB(const int run_it)
                 {
                     for (k = 0; k < g_system.tot_chains; k++)
                         {
-                            fprintf(fp, "%LE\t", ldaTOTMOLCLUS_Arr_glb[MolClusArr_Index(i, j, k)]);
+                            fprintf(fp, "%LE\t", g_analysis.ldaTOTMOLCLUS_Arr[MolClusArr_Index(i, j, k)]);
                         }
                     fprintf(fp, "\n");
                 }
@@ -695,8 +695,8 @@ void FileIO_WriteTo_GyrRadFile_TotFromGLB(const int run_it)
     for (i = 0; i < run_it; i++)
         {
             fprintf(fp, "#Run_Cycle = %d\n", i);
-            fprintf(fp, "%LE\t", ldaTOTRg_Arr_glb[i][0]);
-            fprintf(fp, "%LE\n", ldaTOTRg_Arr_glb[i][1]);
+            fprintf(fp, "%LE\t", g_analysis.ldaTOTRg_Arr[i][0]);
+            fprintf(fp, "%LE\n", g_analysis.ldaTOTRg_Arr[i][1]);
         }
     fprintf(fp, "#Done");
     fclose(fp);
@@ -930,61 +930,61 @@ void CopyData_All(const int run_it)
 }
 
 
-/// CopyData_RDF: Copies ldaRDF_Arr_glb into ldaTOTRDF_Arr_glb
+/// CopyData_RDF: Copies g_analysis.ldaRDF_Arr into g_analysis.ldaTOTRDF_Arr
 /// \param run_it: which run cycle we are on. Should be >= 0.
 void CopyData_RDF(const int run_it)
 {
     int i, j;
-    const long double normFactor = 1.0 / (long double) nTotRDFCounter_glb;
-    for (i = 0; i < nRDF_TotComps_glb; i++)
+    const long double normFactor = 1.0 / (long double) g_analysis.nTotRDFCounter;
+    for (i = 0; i < g_analysis.nRDF_TotComps; i++)
         {
-            for (j = 0; j < nRDF_TotBins_glb; j++)
+            for (j = 0; j < g_analysis.nRDF_TotBins; j++)
                 {
-                    ldaTOTRDF_Arr_glb[RDFArr_Index(run_it, i, j)] = ldaRDF_Arr_glb[RDFArr_Index(0, i, j)] * normFactor;
+                    g_analysis.ldaTOTRDF_Arr[RDFArr_Index(run_it, i, j)] = g_analysis.ldaRDF_Arr[RDFArr_Index(0, i, j)] * normFactor;
                 }
         }
 }
 
 
-/// CopyData_RDF: Copies ldaRadDen_Arr_glb into ldaTOTRadDen_Arr_glb
+/// CopyData_RDF: Copies g_analysis.ldaRadDen_Arr into g_analysis.ldaTOTRadDen_Arr
 /// \param run_it: which run cycle we are on. Should be >= 0.
 void CopyData_COMDen(const int run_it)
 {
     int i, j;
-    const long double normFactor = 1.0 / (long double) nTotRadDenCounter_glb;
-    for (i = 0; i < nRadDen_TotComps_glb; i++)
+    const long double normFactor = 1.0 / (long double) g_analysis.nTotRadDenCounter;
+    for (i = 0; i < g_analysis.nRadDen_TotComps; i++)
         {
-            for (j = 0; j < nRDF_TotBins_glb; j++)
+            for (j = 0; j < g_analysis.nRDF_TotBins; j++)
                 {
-                    ldaTOTRadDen_Arr_glb[RadDenArr_Index(run_it, i, j)] =
-                        ldaRadDen_Arr_glb[RadDenArr_Index(0, i, j)] * normFactor;
+                    g_analysis.ldaTOTRadDen_Arr[RadDenArr_Index(run_it, i, j)] =
+                        g_analysis.ldaRadDen_Arr[RadDenArr_Index(0, i, j)] * normFactor;
                 }
         }
 }
 
 
-/// CopyData_Clus - Copies ldMOLClUS_Arr into ldaTOTMOLCLUS_Arr_glb. Also copies laClusHistList_glb into
-/// ldaTOTCLUS_Arr_glb. And stores the Gyration radius.
+/// CopyData_Clus - Copies ldMOLClUS_Arr into g_analysis.ldaTOTMOLCLUS_Arr. Also copies g_analysis.laClusHistList into
+/// g_analysis.ldaTOTCLUS_Arr. And stores the Gyration radius.
 /// \param run_it: which run cycle we are on. Should be >= 0.
 void CopyData_Clus(const int run_it)
 {
     int i, j;
-    const long double normFactor  = 1.0 / (long double) nTotClusCounter_glb;
-    ldaTOTCLUS_Arr_glb[run_it][0] = (long double) nLargestClusterRightNow_glb * normFactor;
+    const long double normFactor  = 1.0 / (long double) g_analysis.nTotClusCounter;
+    g_analysis.ldaTOTCLUS_Arr[run_it][0] = (long double) g_analysis.nLargestClusterRightNow * normFactor;
     for (i = 1; i <= g_system.tot_chains; i++)
         {
-            ldaTOTCLUS_Arr_glb[run_it][i] = (long double) laClusHistList_glb[i] * normFactor;
+            g_analysis.ldaTOTCLUS_Arr[run_it][i] = (long double) g_analysis.laClusHistList[i] * normFactor;
         }
     for (i = 0; i < g_system.tot_chains; i++)
         {
             for (j = 0; j < g_system.tot_chain_types; j++)
                 {
-                    ldaTOTMOLCLUS_Arr_glb[MolClusArr_Index(run_it, j, i)] =
-                        ldaMOLCLUS_Arr_glb[MolClusArr_Index(0, j, i)] * normFactor;
+                    g_analysis.ldaTOTMOLCLUS_Arr[MolClusArr_Index(run_it, j, i)] =
+                        g_analysis.ldaMOLCLUS_Arr[MolClusArr_Index(0, j, i)] * normFactor;
                 }
         }
-    ldaTOTRg_Arr_glb[run_it][0] = (long double) faSysGyrRad_glb / (long double) nTotGyrRadCounter_glb;
-    ldaTOTRg_Arr_glb[run_it][1] = (long double) g_system.naBoxSize[0] / 2.0;
+    g_analysis.ldaTOTRg_Arr[run_it][0] = (long double) g_analysis.faSysGyrRad / (long double) g_analysis.nTotGyrRadCounter;
+    g_analysis.ldaTOTRg_Arr[run_it][1] = (long double) g_system.naBoxSize[0] / 2.0;
 }
 
 
@@ -997,8 +997,8 @@ void FileIOUtil_AppendTo_GyrRadFile_ForRun(const int run_it)
     sprintf(dumFile, "%s_GR.dat", g_reports.strReportPrefix); // Name Of the ClusterHistogram Files
     fp = fopen(dumFile, "a");
 
-    fprintf(fp, "#Run_Cycle = %d; Avg Over %d Samples\n", run_it, nTotClusCounter_glb);
-    fprintf(fp, "%LE\t", (long double) faSysGyrRad_glb / (long double) nTotGyrRadCounter_glb);
+    fprintf(fp, "#Run_Cycle = %d; Avg Over %d Samples\n", run_it, g_analysis.nTotClusCounter);
+    fprintf(fp, "%LE\t", (long double) g_analysis.faSysGyrRad / (long double) g_analysis.nTotGyrRadCounter);
     fprintf(fp, "%LE\n", (long double) g_system.naBoxSize[0] / 2.0);
 
     fclose(fp);
@@ -1014,14 +1014,14 @@ void FileIOUtil_AppendTo_ClusFile_ForRun(const int run_it)
     char dumFile[512];
     sprintf(dumFile, "%s_CLUS.dat", g_reports.strReportPrefix); // Name Of the ClusterHistogram Files
     fp = fopen(dumFile, "a");
-    fprintf(fp, "#Run_Cycle = %d; Avg Over %d Samples\n", run_it, nTotClusCounter_glb);
-    const double normFactor = 1.0 / (double) nTotClusCounter_glb;
+    fprintf(fp, "#Run_Cycle = %d; Avg Over %d Samples\n", run_it, g_analysis.nTotClusCounter);
+    const double normFactor = 1.0 / (double) g_analysis.nTotClusCounter;
 
-    laClusHistList_glb[0] = nLargestClusterRightNow_glb;
+    g_analysis.laClusHistList[0] = g_analysis.nLargestClusterRightNow;
 
     for (i = 0; i <= g_system.tot_chains; i++)
         {
-            fprintf(fp, "%E\t", (double) laClusHistList_glb[i] * normFactor);
+            fprintf(fp, "%E\t", (double) g_analysis.laClusHistList[i] * normFactor);
         }
     fprintf(fp, "\n");
     fclose(fp);
@@ -1037,15 +1037,15 @@ void FileIOUtil_AppendTo_MolClusFile_ForRun(const int run_it)
     char dumFile[512];
     sprintf(dumFile, "%s_MolClus.dat", g_reports.strReportPrefix); // Name Of the ClusterHistogram Files
     fp = fopen(dumFile, "a");
-    fprintf(fp, "#Run_Cycle = %d; Avg Over %d Samples\n", run_it, nTotClusCounter_glb);
+    fprintf(fp, "#Run_Cycle = %d; Avg Over %d Samples\n", run_it, g_analysis.nTotClusCounter);
 
-    const long double normFactor = 1.0 / (long double) nTotClusCounter_glb;
+    const long double normFactor = 1.0 / (long double) g_analysis.nTotClusCounter;
 
     for (j = 0; j < g_system.tot_chain_types; j++)
         {
             for (i = 0; i < g_system.tot_chains; i++)
                 {
-                    fprintf(fp, "%LE\t", ldaMOLCLUS_Arr_glb[MolClusArr_Index(0, j, i)] * normFactor);
+                    fprintf(fp, "%LE\t", g_analysis.ldaMOLCLUS_Arr[MolClusArr_Index(0, j, i)] * normFactor);
                 }
             fprintf(fp, "\n");
         }
@@ -1062,15 +1062,15 @@ void FileIOUtil_AppendTo_RDFFile_ForRun(const int run_it)
     char dumFile[512];
     sprintf(dumFile, "%s_RDF.dat", g_reports.strReportPrefix); // Name Of the ClusterHistogram Files
     fp = fopen(dumFile, "a");
-    fprintf(fp, "#Run_Cycle = %d; Avg Over %d Samples\n", run_it, nTotRDFCounter_glb);
+    fprintf(fp, "#Run_Cycle = %d; Avg Over %d Samples\n", run_it, g_analysis.nTotRDFCounter);
 
-    const long double normFactor = 1.0 / (long double) nTotRDFCounter_glb;
+    const long double normFactor = 1.0 / (long double) g_analysis.nTotRDFCounter;
 
-    for (j = 0; j < nRDF_TotComps_glb; j++)
+    for (j = 0; j < g_analysis.nRDF_TotComps; j++)
         {
-            for (i = 0; i < nRDF_TotBins_glb; i++)
+            for (i = 0; i < g_analysis.nRDF_TotBins; i++)
                 {
-                    fprintf(fp, "%LE\t", ldaRDF_Arr_glb[RDFArr_Index(0, j, i)] * normFactor);
+                    fprintf(fp, "%LE\t", g_analysis.ldaRDF_Arr[RDFArr_Index(0, j, i)] * normFactor);
                 }
             fprintf(fp, "\n");
         }
@@ -1087,15 +1087,15 @@ void FileIOUtil_AppendTo_COMDenFile_ForRun(const int run_it)
     char dumFile[512];
     sprintf(dumFile, "%s_COMDen.dat", g_reports.strReportPrefix);
     fp = fopen(dumFile, "a");
-    fprintf(fp, "#Run_Cycle = %d; Avg Over %d Samples\n", run_it, nTotRadDenCounter_glb);
+    fprintf(fp, "#Run_Cycle = %d; Avg Over %d Samples\n", run_it, g_analysis.nTotRadDenCounter);
 
-    const long double normFactor = 1.0 / (long double) nTotRadDenCounter_glb;
+    const long double normFactor = 1.0 / (long double) g_analysis.nTotRadDenCounter;
 
-    for (j = 0; j < nRadDen_TotComps_glb; j++)
+    for (j = 0; j < g_analysis.nRadDen_TotComps; j++)
         {
-            for (i = 0; i < nRDF_TotBins_glb; i++)
+            for (i = 0; i < g_analysis.nRDF_TotBins; i++)
                 {
-                    fprintf(fp, "%LE\t", ldaRadDen_Arr_glb[RadDenArr_Index(0, j, i)] * normFactor);
+                    fprintf(fp, "%LE\t", g_analysis.ldaRadDen_Arr[RadDenArr_Index(0, j, i)] * normFactor);
                 }
             fprintf(fp, "\n");
         }

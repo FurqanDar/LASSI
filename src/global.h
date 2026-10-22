@@ -234,30 +234,6 @@ extern AnalysisState g_analysis;
 
 /* Reports *_glb shims removed after Phase 2.5 call-site migration to g_reports.* */
 
-#define nClusteringMode_glb                g_analysis.nClusteringMode
-#define naClusterMatrix_glb                g_analysis.naClusterMatrix
-#define naList_glb                         g_analysis.naList
-#define laClusHistList_glb                 g_analysis.laClusHistList
-#define naChainCheckList_glb               g_analysis.naChainCheckList
-#define nTotClusCounter_glb                g_analysis.nTotClusCounter
-#define ldaTOTCLUS_Arr_glb                 g_analysis.ldaTOTCLUS_Arr
-#define ldaMOLCLUS_Arr_glb                 g_analysis.ldaMOLCLUS_Arr
-#define ldaTOTMOLCLUS_Arr_glb              g_analysis.ldaTOTMOLCLUS_Arr
-#define nLargestClusterRightNow_glb        g_analysis.nLargestClusterRightNow
-#define nLimitedClusterSize_glb            g_analysis.nLimitedClusterSize
-#define ldaTOTRDF_Arr_glb                  g_analysis.ldaTOTRDF_Arr
-#define ldaTOTRadDen_Arr_glb               g_analysis.ldaTOTRadDen_Arr
-#define ldaRDF_Arr_glb                     g_analysis.ldaRDF_Arr
-#define ldaRadDen_Arr_glb                  g_analysis.ldaRadDen_Arr
-#define nRDF_TotComps_glb                  g_analysis.nRDF_TotComps
-#define nTotRDFCounter_glb                 g_analysis.nTotRDFCounter
-#define nRDF_TotBins_glb                   g_analysis.nRDF_TotBins
-#define nRadDen_TotComps_glb               g_analysis.nRadDen_TotComps
-#define nRadDen_CompShift_glb              g_analysis.nRadDen_CompShift
-#define nTotRadDenCounter_glb              g_analysis.nTotRadDenCounter
-#define faGyrTensor_glb                    g_analysis.faGyrTensor
-#define faSysGyrRad_glb                    g_analysis.faSysGyrRad
-#define ldaTOTRg_Arr_glb                   g_analysis.ldaTOTRg_Arr
-#define nTotGyrRadCounter_glb              g_analysis.nTotGyrRadCounter
+/* AnalysisState *_glb shims removed after Phase 2 call-site migration to g_analysis.* */
 
 #endif // _GLOBAL_H_

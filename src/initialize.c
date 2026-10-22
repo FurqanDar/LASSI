@@ -13,59 +13,59 @@ void Memory_Initialization_AtStart(void)
 
     Memory_Allocate_NeighborLists();
 
-    strcpy(arr_name, "laClusHistList_glb");
-    laClusHistList_glb = Create1DLong((2 + g_system.tot_chains), arr_name);
+    strcpy(arr_name, "g_analysis.laClusHistList");
+    g_analysis.laClusHistList = Create1DLong((2 + g_system.tot_chains), arr_name);
 
-    strcpy(arr_name, "naChainCheckList_glb");
-    naChainCheckList_glb = Create1DInt(2 + g_system.tot_chains, arr_name);
+    strcpy(arr_name, "g_analysis.naChainCheckList");
+    g_analysis.naChainCheckList = Create1DInt(2 + g_system.tot_chains, arr_name);
 
     strcpy(arr_name, "fKTCycle");
     g_mc.faKT_Cycle = Create1DFloat(1 + g_mc.nTotCycleNum, arr_name);
 
-    strcpy(arr_name, "naList_glb");
-    naList_glb = Create1DInt(2 + g_system.tot_chains, arr_name);
+    strcpy(arr_name, "g_analysis.naList");
+    g_analysis.naList = Create1DInt(2 + g_system.tot_chains, arr_name);
 
-    strcpy(arr_name, "naClusterMatrix_glb");
-    naClusterMatrix_glb = Create2DInt(g_system.tot_chains + 2, g_system.tot_chains + 2, arr_name);
+    strcpy(arr_name, "g_analysis.naClusterMatrix");
+    g_analysis.naClusterMatrix = Create2DInt(g_system.tot_chains + 2, g_system.tot_chains + 2, arr_name);
 
     if (g_reports.naReportFreqs[REPORT_NETWORK] != 0)
         {
             strcpy(arr_name, "ldTotClusArr");
-            ldaTOTCLUS_Arr_glb = Create2DLongdouble(2 + g_system.tot_chains, g_mc.nTotCycleNum, arr_name);
+            g_analysis.ldaTOTCLUS_Arr = Create2DLongdouble(2 + g_system.tot_chains, g_mc.nTotCycleNum, arr_name);
 
             strcpy(arr_name, "ldMolClusArr");
-            ldaMOLCLUS_Arr_glb = Create1DLongdouble(((g_system.tot_chains + 1) * g_system.tot_chain_types), arr_name);
+            g_analysis.ldaMOLCLUS_Arr = Create1DLongdouble(((g_system.tot_chains + 1) * g_system.tot_chain_types), arr_name);
 
             strcpy(arr_name, "ldTotMolClusArr");
-            ldaTOTMOLCLUS_Arr_glb =
+            g_analysis.ldaTOTMOLCLUS_Arr =
                 Create1DLongdouble((g_system.tot_chains * g_system.tot_chain_types * g_mc.nTotCycleNum), arr_name);
 
             strcpy(arr_name, "ldTotGyrRad");
-            ldaTOTRg_Arr_glb = Create2DLongdouble(2, g_mc.nTotCycleNum, arr_name);
+            g_analysis.ldaTOTRg_Arr = Create2DLongdouble(2, g_mc.nTotCycleNum, arr_name);
         }
-    nRDF_TotComps_glb = 2 + g_energy.nBeadTypes + g_energy.nBeadTypes * g_energy.nBeadTypes;
-    nRDF_TotComps_glb /= 2;
+    g_analysis.nRDF_TotComps = 2 + g_energy.nBeadTypes + g_energy.nBeadTypes * g_energy.nBeadTypes;
+    g_analysis.nRDF_TotComps /= 2;
     if (g_reports.naReportFreqs[REPORT_RDFTOT] != 0)
         {
 
             strcpy(arr_name, "ldTotRDFArr");
-            ldaTOTRDF_Arr_glb = Create1DLongdouble((g_mc.nTotCycleNum * nRDF_TotComps_glb * nRDF_TotBins_glb), arr_name);
+            g_analysis.ldaTOTRDF_Arr = Create1DLongdouble((g_mc.nTotCycleNum * g_analysis.nRDF_TotComps * g_analysis.nRDF_TotBins), arr_name);
 
             strcpy(arr_name, "ldRDFArr");
-            ldaRDF_Arr_glb = Create1DLongdouble((nRDF_TotComps_glb * nRDF_TotBins_glb), arr_name);
+            g_analysis.ldaRDF_Arr = Create1DLongdouble((g_analysis.nRDF_TotComps * g_analysis.nRDF_TotBins), arr_name);
         }
 
     if (g_reports.naReportFreqs[REPORT_COMDEN] != 0)
         {
-            nRadDen_TotComps_glb  = 2 * g_system.tot_chain_types * (g_system.tot_chain_types + 1);
-            nRadDen_CompShift_glb = g_system.tot_chain_types * (g_system.tot_chain_types + 1);
+            g_analysis.nRadDen_TotComps  = 2 * g_system.tot_chain_types * (g_system.tot_chain_types + 1);
+            g_analysis.nRadDen_CompShift = g_system.tot_chain_types * (g_system.tot_chain_types + 1);
 
             strcpy(arr_name, "ldRadDenArr");
-            ldaRadDen_Arr_glb = Create1DLongdouble(nRadDen_TotComps_glb * nRDF_TotBins_glb, arr_name);
+            g_analysis.ldaRadDen_Arr = Create1DLongdouble(g_analysis.nRadDen_TotComps * g_analysis.nRDF_TotBins, arr_name);
 
             strcpy(arr_name, "ldTotRadDenArr");
-            ldaTOTRadDen_Arr_glb =
-                Create1DLongdouble(nRadDen_TotComps_glb * g_mc.nTotCycleNum * nRDF_TotBins_glb, arr_name);
+            g_analysis.ldaTOTRadDen_Arr =
+                Create1DLongdouble(g_analysis.nRadDen_TotComps * g_mc.nTotCycleNum * g_analysis.nRDF_TotBins, arr_name);
         }
 
     if (g_reports.nTrajMode == -1)
@@ -105,44 +105,44 @@ void Memory_Allocate_NeighborLists(void)
 
 void Memory_VerifyMalloc(void)
 {
-    if (laClusHistList_glb == NULL)
+    if (g_analysis.laClusHistList == NULL)
         {
-            printf("laClusHistList_glb malloc failed\n");
+            printf("g_analysis.laClusHistList malloc failed\n");
             exit(1);
         }
-    if (naChainCheckList_glb == NULL)
+    if (g_analysis.naChainCheckList == NULL)
         {
-            printf("naChainCheckList_glb malloc failed\n");
+            printf("g_analysis.naChainCheckList malloc failed\n");
             exit(1);
         }
-    if (ldaRDF_Arr_glb == NULL && g_reports.naReportFreqs[REPORT_RDFTOT] != 0)
+    if (g_analysis.ldaRDF_Arr == NULL && g_reports.naReportFreqs[REPORT_RDFTOT] != 0)
         {
-            printf("ldaRDF_Arr_glb malloc failed\n");
+            printf("g_analysis.ldaRDF_Arr malloc failed\n");
             exit(1);
         }
-    if (ldaTOTRDF_Arr_glb == NULL && g_reports.naReportFreqs[REPORT_RDFTOT] != 0)
+    if (g_analysis.ldaTOTRDF_Arr == NULL && g_reports.naReportFreqs[REPORT_RDFTOT] != 0)
         {
-            printf("ldaTOTRDF_Arr_glb malloc failed\n");
+            printf("g_analysis.ldaTOTRDF_Arr malloc failed\n");
             exit(1);
         }
-    if (ldaRadDen_Arr_glb == NULL && g_reports.naReportFreqs[REPORT_COMDEN] != 0)
+    if (g_analysis.ldaRadDen_Arr == NULL && g_reports.naReportFreqs[REPORT_COMDEN] != 0)
         {
-            printf("ldaRadDen_Arr_glb malloc failed\n");
+            printf("g_analysis.ldaRadDen_Arr malloc failed\n");
             exit(1);
         }
-    if (ldaTOTRadDen_Arr_glb == NULL && g_reports.naReportFreqs[REPORT_COMDEN] != 0)
+    if (g_analysis.ldaTOTRadDen_Arr == NULL && g_reports.naReportFreqs[REPORT_COMDEN] != 0)
         {
-            printf("ldaTOTRadDen_Arr_glb malloc failed\n");
+            printf("g_analysis.ldaTOTRadDen_Arr malloc failed\n");
             exit(1);
         }
-    if (ldaMOLCLUS_Arr_glb == NULL && g_reports.naReportFreqs[REPORT_NETWORK] != 0)
+    if (g_analysis.ldaMOLCLUS_Arr == NULL && g_reports.naReportFreqs[REPORT_NETWORK] != 0)
         {
-            printf("ldaMOLCLUS_Arr_glb malloc failed\n");
+            printf("g_analysis.ldaMOLCLUS_Arr malloc failed\n");
             exit(1);
         }
-    if (ldaTOTMOLCLUS_Arr_glb == NULL && g_reports.naReportFreqs[REPORT_NETWORK] != 0)
+    if (g_analysis.ldaTOTMOLCLUS_Arr == NULL && g_reports.naReportFreqs[REPORT_NETWORK] != 0)
         {
-            printf("ldaTOTMOLCLUS_Arr_glb malloc failed\n");
+            printf("g_analysis.ldaTOTMOLCLUS_Arr malloc failed\n");
             exit(1);
         }
     if ((g_reports.naTOTTRAJ_Arr == NULL) && (g_reports.nTrajMode == -1))
@@ -317,11 +317,11 @@ void Global_Array_Initialization_AtStart(void)
     // Initializing arrays required for cluster analyses.
     for (i = 0; i <= g_system.tot_chains; i++)
         {
-            naChainCheckList_glb[i] = 0;
-            laClusHistList_glb[i]   = 0;
+            g_analysis.naChainCheckList[i] = 0;
+            g_analysis.laClusHistList[i]   = 0;
             for (j = 0; j <= g_system.tot_chains; j++)
                 {
-                    naClusterMatrix_glb[i][j] = -1;
+                    g_analysis.naClusterMatrix[i][j] = -1;
                 }
         }
 
@@ -331,37 +331,37 @@ void Global_Array_Initialization_AtStart(void)
                 { // For MolWise Clus arrays
                     for (j = 0; j < g_system.tot_chain_types; j++)
                         {
-                            ldaMOLCLUS_Arr_glb[MolClusArr_Index(0, j, i)] = 0.;
+                            g_analysis.ldaMOLCLUS_Arr[MolClusArr_Index(0, j, i)] = 0.;
                             for (k = 0; k < g_mc.nTotCycleNum; k++)
                                 {
-                                    ldaTOTMOLCLUS_Arr_glb[MolClusArr_Index(k, j, i)] = 0.;
+                                    g_analysis.ldaTOTMOLCLUS_Arr[MolClusArr_Index(k, j, i)] = 0.;
                                 }
                         }
                 }
             for (k = 0; k < g_mc.nTotCycleNum; k++)
                 { // For GyrRad
-                    ldaTOTRg_Arr_glb[k][0] = 0.;
-                    ldaTOTRg_Arr_glb[k][1] = 0.;
+                    g_analysis.ldaTOTRg_Arr[k][0] = 0.;
+                    g_analysis.ldaTOTRg_Arr[k][1] = 0.;
                 }
             for (k = 0; k < g_mc.nTotCycleNum; k++)
                 { // For ClusterDists
                     for (i = 0; i <= g_system.tot_chains; i++)
                         {
-                            ldaTOTCLUS_Arr_glb[k][i] = 0.;
+                            g_analysis.ldaTOTCLUS_Arr[k][i] = 0.;
                         }
                 }
         }
 
     if (g_reports.naReportFreqs[REPORT_RDFTOT] != 0)
         {
-            for (i = 0; i < nRDF_TotBins_glb; i++)
+            for (i = 0; i < g_analysis.nRDF_TotBins; i++)
                 { // For Radial distributions
-                    for (j = 0; j < nRDF_TotComps_glb; j++)
+                    for (j = 0; j < g_analysis.nRDF_TotComps; j++)
                         { // For RDFs
-                            ldaTOTRDF_Arr_glb[RDFArr_Index(0, j, i)] = 0.;
+                            g_analysis.ldaTOTRDF_Arr[RDFArr_Index(0, j, i)] = 0.;
                             for (k = 0; k < g_mc.nTotCycleNum; k++)
                                 {
-                                    ldaTOTRDF_Arr_glb[RDFArr_Index(k, j, i)] = 0.;
+                                    g_analysis.ldaTOTRDF_Arr[RDFArr_Index(k, j, i)] = 0.;
                                 }
                         }
                 }
@@ -369,14 +369,14 @@ void Global_Array_Initialization_AtStart(void)
 
     if (g_reports.naReportFreqs[REPORT_COMDEN] != 0)
         {
-            for (j = 0; j < nRadDen_TotComps_glb; j++)
+            for (j = 0; j < g_analysis.nRadDen_TotComps; j++)
                 { // For Density Dists wrt COM
-                    for (i = 0; i < nRDF_TotBins_glb; i++)
+                    for (i = 0; i < g_analysis.nRDF_TotBins; i++)
                         { // For Radial distributions
-                            ldaRadDen_Arr_glb[RadDenArr_Index(0, j, i)] = 0.;
+                            g_analysis.ldaRadDen_Arr[RadDenArr_Index(0, j, i)] = 0.;
                             for (k = 0; k < g_mc.nTotCycleNum; k++)
                                 {
-                                    ldaTOTRadDen_Arr_glb[RadDenArr_Index(k, j, i)] = 0.;
+                                    g_analysis.ldaTOTRadDen_Arr[RadDenArr_Index(k, j, i)] = 0.;
                                 }
                         }
                 }
@@ -414,19 +414,19 @@ void Global_Array_Initialization_AtStart(void)
 
     g_mc.fSquishRad_Sq               = g_mc.fSquishRad * g_mc.fSquishRad;
     g_energy.ldLogOfSmallestPossibleProb = logl((lLDub) 1. / (lLDub) RAND_MAX);
-    nLimitedClusterSize_glb         = (int) g_system.tot_chains / 2;
+    g_analysis.nLimitedClusterSize         = (int) g_system.tot_chains / 2;
 
     printf("All setup has been completed!\n");
 }
 
 void Reset_Counters(void)
 {
-    faSysGyrRad_glb             = 0.f;
-    nTotGyrRadCounter_glb       = 0;
-    nTotRDFCounter_glb          = 0;
-    nTotRadDenCounter_glb       = 0;
-    nTotClusCounter_glb         = 0;
-    nLargestClusterRightNow_glb = 0;
+    g_analysis.faSysGyrRad             = 0.f;
+    g_analysis.nTotGyrRadCounter       = 0;
+    g_analysis.nTotRDFCounter          = 0;
+    g_analysis.nTotRadDenCounter       = 0;
+    g_analysis.nTotClusCounter         = 0;
+    g_analysis.nLargestClusterRightNow = 0;
     g_reports.nTrajCurFrame           = 0;
 }
 
@@ -438,39 +438,39 @@ void Reset_Global_Arrays(void)
     int i, j;
     for (i = 0; i <= g_system.tot_chains; i++)
         {
-            naChainCheckList_glb[i] = -1;
-            laClusHistList_glb[i]   = 0;
+            g_analysis.naChainCheckList[i] = -1;
+            g_analysis.laClusHistList[i]   = 0;
             for (j = 0; j <= g_system.tot_chains; j++)
                 {
-                    naClusterMatrix_glb[i][j] = -1;
+                    g_analysis.naClusterMatrix[i][j] = -1;
                 }
             if (g_reports.naReportFreqs[REPORT_NETWORK])
                 {
                     for (j = 0; j < g_system.tot_chain_types; j++)
                         {
-                            ldaMOLCLUS_Arr_glb[MolClusArr_Index(0, j, i)] = 0.;
+                            g_analysis.ldaMOLCLUS_Arr[MolClusArr_Index(0, j, i)] = 0.;
                         }
                 }
         }
     // Initializing arrays for pair-distribution calculations
     if (g_reports.naReportFreqs[REPORT_RDFTOT])
         {
-            for (j = 0; j < nRDF_TotComps_glb; j++)
+            for (j = 0; j < g_analysis.nRDF_TotComps; j++)
                 {
-                    for (i = 0; i < nRDF_TotBins_glb; i++)
+                    for (i = 0; i < g_analysis.nRDF_TotBins; i++)
                         {
-                            ldaRDF_Arr_glb[RDFArr_Index(0, j, i)] = 0.;
+                            g_analysis.ldaRDF_Arr[RDFArr_Index(0, j, i)] = 0.;
                         }
                 }
         }
     if (g_reports.naReportFreqs[REPORT_COMDEN])
         {
             // Initalizing for density histograms wrt to the COM
-            for (j = 0; j < nRadDen_TotComps_glb; j++)
+            for (j = 0; j < g_analysis.nRadDen_TotComps; j++)
                 {
-                    for (i = 0; i < nRDF_TotBins_glb; i++)
+                    for (i = 0; i < g_analysis.nRDF_TotBins; i++)
                         {
-                            ldaRadDen_Arr_glb[RadDenArr_Index(0, j, i)] = 0.;
+                            g_analysis.ldaRadDen_Arr[RadDenArr_Index(0, j, i)] = 0.;
                         }
                 }
         }
