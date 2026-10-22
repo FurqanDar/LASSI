@@ -1,6 +1,19 @@
-#include "mcmove.h"
+#include "mcmove_internal.h"
 #include "energy.h"
 #include "structure.h"
+
+/* File-local rotation kernels and unused/legacy helpers. */
+static void Rot_X_90(int beadID, const int tmpR[POS_MAX]);
+static void Rot_X_180(int beadID, const int tmpR[POS_MAX]);
+static void Rot_X_270(int beadID, const int tmpR[POS_MAX]);
+static void Rot_Y_90(int beadID, const int tmpR[POS_MAX]);
+static void Rot_Y_180(int beadID, const int tmpR[POS_MAX]);
+static void Rot_Y_270(int beadID, const int tmpR[POS_MAX]);
+static void Rot_Z_90(int beadID, const int tmpR[POS_MAX]);
+static void Rot_Z_180(int beadID, const int tmpR[POS_MAX]);
+static void Rot_Z_270(int beadID, const int tmpR[POS_MAX]);
+static void OP_ShuffleRotIndecies(void);
+static int Check_RotStatesNew(int const beadID, int const resi, float const MyTemp);
 
 /// OP_Rotation - given the rotation operation PivotM, rotate beadID using
 /// tmpR[POS_MAX] as the origin. Note the global array g_system.naTempR[POS_MAX] stores
@@ -69,7 +82,7 @@ void OP_Rotation(int PivotM, int beadID, int* tmpR)
     }
 }
 
-void Rot_X_90(int beadID, const int tmpR[POS_MAX])
+static void Rot_X_90(int beadID, const int tmpR[POS_MAX])
 {
     int j;
     // Performs a rotation by 90 degrees around x-axis. tmpR is the new origin.
@@ -84,7 +97,7 @@ void Rot_X_90(int beadID, const int tmpR[POS_MAX])
     g_system.naTempR[POS_Z] = (g_system.naTempR[POS_Z] + g_system.naBoxSize[POS_Z]) % g_system.naBoxSize[POS_Z];
 }
 
-void Rot_X_180(int beadID, const int tmpR[POS_MAX])
+static void Rot_X_180(int beadID, const int tmpR[POS_MAX])
 {
     int j;
     // Performs a rotation by 180 degrees around x-axis. tmpR is the new origin
@@ -100,7 +113,7 @@ void Rot_X_180(int beadID, const int tmpR[POS_MAX])
     g_system.naTempR[POS_Z] = (g_system.naTempR[POS_Z] + g_system.naBoxSize[POS_Z]) % g_system.naBoxSize[POS_Z];
 }
 
-void Rot_X_270(int beadID, const int tmpR[POS_MAX])
+static void Rot_X_270(int beadID, const int tmpR[POS_MAX])
 {
     int j;
     // Performs a rotation by 270 degrees around x-axis. tmpR is the new origin.
@@ -115,7 +128,7 @@ void Rot_X_270(int beadID, const int tmpR[POS_MAX])
     g_system.naTempR[POS_Z] = (g_system.naTempR[POS_Z] + g_system.naBoxSize[POS_Z]) % g_system.naBoxSize[POS_Z];
 }
 
-void Rot_Y_90(int beadID, const int tmpR[POS_MAX])
+static void Rot_Y_90(int beadID, const int tmpR[POS_MAX])
 {
     int j;
     // Performs a rotation by 90 degrees around x-axis. tmpR is the new origin.
@@ -130,7 +143,7 @@ void Rot_Y_90(int beadID, const int tmpR[POS_MAX])
     g_system.naTempR[POS_Z] = (g_system.naTempR[POS_Z] + g_system.naBoxSize[POS_Z]) % g_system.naBoxSize[POS_Z];
 }
 
-void Rot_Y_180(int beadID, const int tmpR[POS_MAX])
+static void Rot_Y_180(int beadID, const int tmpR[POS_MAX])
 {
     int j;
     // Performs a rotation by 270 degrees around x-axis. tmpR is the new origin.
@@ -145,7 +158,7 @@ void Rot_Y_180(int beadID, const int tmpR[POS_MAX])
     g_system.naTempR[POS_Z] = (g_system.naTempR[POS_Z] + g_system.naBoxSize[POS_Z]) % g_system.naBoxSize[POS_Z];
 }
 
-void Rot_Y_270(int beadID, const int tmpR[POS_MAX])
+static void Rot_Y_270(int beadID, const int tmpR[POS_MAX])
 {
     int j;
     // Performs a rotation by 270 degrees around x-axis. tmpR is the new origin.
@@ -160,7 +173,7 @@ void Rot_Y_270(int beadID, const int tmpR[POS_MAX])
     g_system.naTempR[POS_Z] = (g_system.naTempR[POS_Z] + g_system.naBoxSize[POS_Z]) % g_system.naBoxSize[POS_Z];
 }
 
-void Rot_Z_90(int beadID, const int tmpR[POS_MAX])
+static void Rot_Z_90(int beadID, const int tmpR[POS_MAX])
 {
     int j;
     // Performs a rotation by 270 degrees around x-axis. tmpR is the new origin.
@@ -177,7 +190,7 @@ void Rot_Z_90(int beadID, const int tmpR[POS_MAX])
         (g_system.bead_info[beadID][POS_Y] + g_system.naBoxSize[POS_Y]) % g_system.naBoxSize[POS_Y];
 }
 
-void Rot_Z_180(int beadID, const int tmpR[POS_MAX])
+static void Rot_Z_180(int beadID, const int tmpR[POS_MAX])
 {
     int j;
     // Performs a rotation by 270 degrees around x-axis. tmpR is the new origin.
@@ -194,7 +207,7 @@ void Rot_Z_180(int beadID, const int tmpR[POS_MAX])
         (g_system.bead_info[beadID][POS_Y] + g_system.naBoxSize[POS_Y]) % g_system.naBoxSize[POS_Y];
 }
 
-void Rot_Z_270(int beadID, const int tmpR[POS_MAX])
+static void Rot_Z_270(int beadID, const int tmpR[POS_MAX])
 {
     int j;
     // Performs a rotation by 270 degrees around x-axis. tmpR is the new origin.
@@ -214,7 +227,7 @@ void Rot_Z_270(int beadID, const int tmpR[POS_MAX])
 /// OP_ShuffleRotIndecies - randomly shuffles the incdecies to sample the
 /// rotational states around a bead. Ensures that we fully, but randomly, sample
 /// the states. The implementation was taken from the provided URL.
-void OP_ShuffleRotIndecies(void)
+static void OP_ShuffleRotIndecies(void)
 {
     // Algorithm taken from
     // https://www.w3resource.com/c-programming-exercises/array/c-array-exercise-77.php
@@ -499,7 +512,7 @@ int Check_RotStatesOld(int const beadID, int const resi, float const MyTemp)
 /// \param resi
 /// \param MyTemp
 /// \return The total number of possible candidates
-int Check_RotStatesNew(int const beadID, int const resi, float const MyTemp)
+static int Check_RotStatesNew(int const beadID, int const resi, float const MyTemp)
 {
     int i, j, k, tmpBead;
     int CandNums = 0;

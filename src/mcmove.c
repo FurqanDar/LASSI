@@ -1,4 +1,4 @@
-#include "mcmove.h"
+#include "mcmove_internal.h"
 
 /*
  * MV_* strategy tables. Each entry is a thin runner that preserves the old

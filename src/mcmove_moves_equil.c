@@ -1,4 +1,4 @@
-#include "mcmove.h"
+#include "mcmove_internal.h"
 #include "energy.h"
 #include "structure.h"
 
