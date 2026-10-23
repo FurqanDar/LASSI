@@ -81,16 +81,16 @@ typedef long double lLDub;
 
 /*
  * Phase 2.1: domain structs with a single process-wide instance each.
- * Compatibility shims (#define …_glb) keep existing call sites working;
- * later 2.2+ PRs migrate call sites to struct fields / accessors.
+ * Phase 7.1: fields tagged durable vs scratch (see docs/scratch-vs-durable.md).
+ * Anonymous nested groups are C11 layout-only groupings — field names/access
+ * (g_system.naOldOvlpNeighs, …) are unchanged.
  */
 
 /// Lattice configuration, topology flags, neighbor scratch, linker params.
 typedef struct SystemState
 {
-    // configurations and structural info
+    /* ---- durable: configuration / topology / lattice ---- */
     lInt** bead_info;
-    lInt** old_bead;
     lInt** chain_info;
     lInt** topo_info;
     lInt** linker_len;
@@ -102,10 +102,8 @@ typedef struct SystemState
     lInt nBiasPotential_Mode, RotBias_Mode;
     lInt nBiasPotential_KeepON, nBiasPotential_CoupledToTemp;
 
-    // system setup
     lInt naBoxSize[POS_MAX];
-    lInt naLocalArr[MAX_ROTSTATES - 1][3];
-    lInt naRot_IndArr[MAX_ROTSTATES - 1];
+    lInt naLocalArr[MAX_ROTSTATES - 1][3]; /* durable setup table (filled at init) */
     char bReadConf;
     char bSystemHasTopo;
     char bSystemHasCont;
@@ -113,7 +111,6 @@ typedef struct SystemState
     char bSystemHasFSol;
     char bSystemHasSCSC;
 
-    // topology / interaction capability flags
     lInt nBeadTypeIsSticker[MAX_AA];
     lInt nChainTypeIsLinear[MAX_CHAINTYPES];
     lInt nBeadTypeCanOvlp[MAX_AA];
@@ -125,47 +122,60 @@ typedef struct SystemState
     float fLinkerSprCon;
     float fLinkerEqLen;
 
-    // neighbor-search scratch
-    lInt* naOldOvlpNeighs;
-    lInt* naNewOvlpNeighs;
-    lInt* naOldContNeighs;
-    lInt* naNewContNeighs;
-
-    lInt naTempR[POS_MAX];
-
-    // lattice
     lInt* naTotLattice;
+
+    /* ---- scratch: per-move / per-search (allocation may span the run) ---- */
+    struct
+    {
+        lInt** old_bead; /* trial backup for reject/restore */
+        lInt* naOldOvlpNeighs;
+        lInt* naNewOvlpNeighs;
+        lInt* naOldContNeighs;
+        lInt* naNewContNeighs;
+        lInt naTempR[POS_MAX];
+        lInt naRot_IndArr[MAX_ROTSTATES - 1]; /* rotation shuffle indices */
+    };
 } SystemState;
 
 /// Energy matrices, Boltzmann factors, current energy vector.
 typedef struct EnergyTables
 {
+    /* ---- durable: parsed tables + current energy ---- */
     lInt nBeadTypes;
     float faEnergy[MAX_AA][MAX_AA][MAX_E];
     float faEnRad[MAX_AA][MAX_AA][MAX_E];
-    lInt naRotTrial[MAX_VALENCY][MAX_ROTSTATES];
-    lLDub ldaBoltzFac[MAX_ROTSTATES - 1];
-    lLDub ldaBoltzNorm[MAX_VALENCY];
-    lLDub ldaBoltzFacNorm[MAX_AA][MAX_AA];
     lLDub ldLogOfSmallestPossibleProb;
     float faCurrEn[MAX_E];
+
+    /* ---- scratch: rotational trial / Boltzmann working sets ---- */
+    struct
+    {
+        lInt naRotTrial[MAX_VALENCY][MAX_ROTSTATES];
+        lLDub ldaBoltzFac[MAX_ROTSTATES - 1];
+        lLDub ldaBoltzNorm[MAX_VALENCY];
+        lLDub ldaBoltzFacNorm[MAX_AA][MAX_AA];
+    };
 } EnergyTables;
 
 /// MC temperatures, frequencies, step counts, acceptance matrix, RNG seed.
 typedef struct McControl
 {
+    /* ---- durable control / runtime ---- */
     float fKT, fPreKT, fCuTemp, fDeltaTemp, fMC_TempRate, fSquishRad, fSquishRad_Sq, fSquish_Stiff;
     float* faKT_Cycle;
     lLong nMCStepsPerCycle, nMCStepsForTherm;
     float faMCFreq[MAX_MV];
     lInt nTotCycleNum;
     lInt nRNG_Seed;
+
+    /* ---- cycle buffer: cleared in Reset_Global_Arrays ---- */
     lLong naMCAccepMat[2][MAX_MV];
 } McControl;
 
 /// Report filenames / prefixes and trajectory buffers.
 typedef struct Reports
 {
+    /* ---- durable: paths / freqs from config ---- */
     char strReportPrefix[400];
     char strFileEnergy[512];
     char strFileTraj[512];
@@ -174,6 +184,8 @@ typedef struct Reports
     char strRestartFile[512];
     lLong naReportFreqs[MAX_REPORT];
     lLong nTrajMode;
+
+    /* ---- cycle buffer: experimental traj accumulation ---- */
     lInt* naTOTTRAJ_Arr;
     lLong nTraj_FramesPerCycle;
     lInt nTrajCurFrame;
@@ -182,36 +194,42 @@ typedef struct Reports
 /// Cluster, RDF / radial density, and gyration analysis state.
 typedef struct AnalysisState
 {
-    // cluster analysis
+    /* ---- durable: mode / sizing metadata ---- */
     lInt nClusteringMode;
-    lInt** naClusterMatrix;
-    lInt* naList;
-    lLong* laClusHistList;
-    lInt* naChainCheckList;
-    lInt nTotClusCounter;
-    lLDub** ldaTOTCLUS_Arr;
-    lLDub* ldaMOLCLUS_Arr;
-    lLDub* ldaTOTMOLCLUS_Arr;
-    lInt nLargestClusterRightNow;
     lInt nLimitedClusterSize;
-
-    // radial densities and PDFs
-    lLDub* ldaTOTRDF_Arr;
-    lLDub* ldaTOTRadDen_Arr;
-    lLDub* ldaRDF_Arr;
-    lLDub* ldaRadDen_Arr;
     lInt nRDF_TotComps;
-    lInt nTotRDFCounter;
     lInt nRDF_TotBins;
     lInt nRadDen_TotComps;
     lInt nRadDen_CompShift;
-    lInt nTotRadDenCounter;
 
-    // gyration tensor
-    float faGyrTensor[7];
-    float faSysGyrRad;
-    lLDub** ldaTOTRg_Arr;
-    lInt nTotGyrRadCounter;
+    /* ---- scratch / cycle working sets (cleared by Reset_Global_Arrays) ---- */
+    struct
+    {
+        lInt** naClusterMatrix;
+        lInt* naList;
+        lLong* laClusHistList;
+        lInt* naChainCheckList;
+        lLDub* ldaMOLCLUS_Arr;
+        lLDub* ldaRDF_Arr;
+        lLDub* ldaRadDen_Arr;
+        float faGyrTensor[7];
+        float faSysGyrRad;
+        lInt nTotClusCounter;
+        lInt nLargestClusterRightNow;
+        lInt nTotRDFCounter;
+        lInt nTotRadDenCounter;
+        lInt nTotGyrRadCounter;
+    };
+
+    /* ---- durable accumulators across cycles (ldaTOT*) ---- */
+    struct
+    {
+        lLDub** ldaTOTCLUS_Arr;
+        lLDub* ldaTOTMOLCLUS_Arr;
+        lLDub* ldaTOTRDF_Arr;
+        lLDub* ldaTOTRadDen_Arr;
+        lLDub** ldaTOTRg_Arr;
+    };
 } AnalysisState;
 
 /*

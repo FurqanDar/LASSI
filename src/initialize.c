@@ -429,6 +429,8 @@ void Global_Array_Initialization_AtStart(const SimulationConfig* cfg)
     printf("All setup has been completed!\n");
 }
 
+/// Reset_Counters - clear analysis/report cycle counters (Phase 7.1: scratch /
+/// cycle buffers; does not touch durable ldaTOT* accumulators).
 void Reset_Counters(void)
 {
     g_analysis.faSysGyrRad = 0.f;
@@ -440,11 +442,11 @@ void Reset_Counters(void)
     g_reports.nTrajCurFrame = 0;
 }
 
-/// Reset_Global_Arrays - resets the various global counters and arrays for
-/// system analysis.
+/// Reset_Global_Arrays - clear analysis cycle working sets and MC accept
+/// matrix, then Reset_Counters. Durable ldaTOT* accumulators are left intact.
 void Reset_Global_Arrays(void)
 {
-    // Zero-ing out all the arrays used for data tracking!
+    // Zero-ing out cycle scratch / histograms used for data tracking.
     int i, j;
     for (i = 0; i <= g_system.tot_chains; i++)
     {
