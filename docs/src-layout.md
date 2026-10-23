@@ -13,15 +13,17 @@ is implied by this split.
 | `initialize.c` / `initialize.h` | System setup; AtStart / initial-conditions entrypoints take `const SimulationConfig*` |
 | `global.h` / `globals.c` | Shared globals, domain structs, `SimulationConfig` (scratch vs durable tags — see below) |
 
-## Monte Carlo moves (`mcmove.h`)
+## Monte Carlo moves (`mcmove.h` / `mcmove_internal.h`)
 
 | Files | Role |
 |-------|------|
+| `mcmove.h` | Public API: `MC_Step` / `MC_Step_Therm` only |
+| `mcmove_internal.h` | Cross-TU `Move_*` / `OP_*` / rot helpers (mcmove*.c only) |
 | `mcmove.c` | Thin `MC_Step` / `MC_Step_Therm` over `MV_*` runner tables |
 | `mcmove_moves.c` | Production `Move_*` |
 | `mcmove_moves_equil.c` | Thermalization `Move_*_Equil` |
 | `mcmove_ops.c` | `OP_*` lattice/bead helpers, Rosenbluth, MH |
-| `mcmove_rot.c` | `Rot_*`, rot-state checks, shuffle |
+| `mcmove_rot.c` | `Rot_*` (file-local), rot-state checks, shuffle |
 
 ## Lattice / structure (`structure.h`)
 

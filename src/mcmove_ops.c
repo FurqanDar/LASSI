@@ -1,6 +1,18 @@
-#include "mcmove.h"
+#include "mcmove_internal.h"
 #include "energy.h"
 #include "structure.h"
+
+/* File-local helpers (not in mcmove_internal.h). */
+static void OP_CopyBead(int* restrict copy_arr, const int* restrict orig_arr);
+static void OP_RestoreBeadsFromOld(const int firstB, const int lastB);
+static void OP_MoveBeadTo_ForMTLocal(int beadID, const int* newPos);
+static void OP_Inv_MoveBeadsTo_InList(
+    const int listSize,
+    const int beadList[MAX_BONDS + 1],
+    const int newPos[MAX_BONDS + 1][POS_MAX]);
+static void OP_Beads_BreakBond(const int beadID);
+static void OP_Beads_RestoreBond(const int beadID);
+static void OP_Inv_MoveBeads_InList_ToPos(const int listSize, const int* beadList);
 
 /// Check_ChainDisp - checks if moving chainID by vec_disp[POS_MAX] will lead to
 /// sterix clash.
@@ -111,7 +123,7 @@ void OP_System_RestoreChain(int chainID)
 /// OP_CopyBead: Copies BEADINFO_MAX elements of orig_arr into copy_arr
 /// \param copy_arr
 /// \param orig_arr
-void OP_CopyBead(int* restrict copy_arr, const int* restrict orig_arr)
+static void OP_CopyBead(int* restrict copy_arr, const int* restrict orig_arr)
 {
     int j;
     for (j = 0; j < BEADINFO_MAX; j++)
@@ -137,7 +149,7 @@ void OP_CopyBeadsToOld(const int firstB, const int lastB)
 /// This is sort of a wrapper for ease.
 /// \param firstB
 /// \param lastB
-void OP_RestoreBeadsFromOld(const int firstB, const int lastB)
+static void OP_RestoreBeadsFromOld(const int firstB, const int lastB)
 {
     int i, j;
     for (i = firstB; i < lastB; i++)
@@ -258,7 +270,7 @@ void OP_System_MoveBeadTo_Inv(int beadID)
 /// MultiLocal move.
 /// \param beadID
 /// \param newPos
-void OP_MoveBeadTo_ForMTLocal(int beadID, const int* newPos)
+static void OP_MoveBeadTo_ForMTLocal(int beadID, const int* newPos)
 { // Updates position to new one and handles
   // lattice specifically for shake move
     int i;
@@ -284,7 +296,7 @@ void OP_System_MoveBeadsInListToPos(const int listSize, const int* beadList, con
     OP_Lattice_PlaceBeadsInList(listSize, beadList);
 }
 
-void OP_Inv_MoveBeadsTo_InList(
+static void OP_Inv_MoveBeadsTo_InList(
     const int listSize,
     const int beadList[MAX_BONDS + 1],
     const int newPos[MAX_BONDS + 1][POS_MAX])
@@ -490,7 +502,7 @@ void OP_Beads_BreakBondsInList(const int listSize, const int* beadList)
     }
 }
 
-void OP_Beads_BreakBond(const int beadID)
+static void OP_Beads_BreakBond(const int beadID)
 {
     const int bP = g_system.bead_info[beadID][BEAD_FACE];
     if (bP != -1)
@@ -510,7 +522,7 @@ void OP_Beads_RestoreBondsInList(const int listSize, const int* beadList)
     }
 }
 
-void OP_Beads_RestoreBond(const int beadID)
+static void OP_Beads_RestoreBond(const int beadID)
 {
     const int bP = g_system.bead_info[beadID][BEAD_FACE];
     if (bP != -1)
@@ -519,7 +531,7 @@ void OP_Beads_RestoreBond(const int beadID)
     }
 }
 
-void OP_Inv_MoveBeads_InList_ToPos(const int listSize, const int* beadList)
+static void OP_Inv_MoveBeads_InList_ToPos(const int listSize, const int* beadList)
 {
     int i, tmpBead;
     for (i = 0; i < listSize; i++)

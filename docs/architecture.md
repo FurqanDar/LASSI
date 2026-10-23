@@ -12,7 +12,7 @@ In practice:
 |-------|---------|-------------|
 | Lattice / structure | `structure*.c`, `structure.h` | `global.h` only (plus peer structure units via `structure.h`) |
 | Energy | `energy.c`, `energy.h` | structure, `global.h` |
-| Moves | `mcmove*.c`, `mcmove.h` | energy, structure, `cluster_mc.h` (move-facing cluster queries only), `global.h` |
+| Moves | `mcmove*.c`, `mcmove.h` (public), `mcmove_internal.h` (family-only) | energy, structure, `cluster_mc.h` (move-facing cluster queries only), `global.h` |
 | Analysis / I/O | `cluster.*`, `analysis.c`, `print*.c`, `print.h` | moves (if needed), energy, structure, `global.h` |
 | Main / parse | `main.c`, `parsekey.*`, `initialize.*` | any layer above |
 
