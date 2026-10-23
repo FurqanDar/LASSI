@@ -14,36 +14,36 @@ void Memory_Initialization_AtStart(const SimulationConfig* cfg)
 
     Memory_Allocate_NeighborLists();
 
-    strcpy(arr_name, "g_analysis.laClusHistList");
-    g_analysis.laClusHistList = Create1DLong((2 + g_system.tot_chains), arr_name);
+    strcpy(arr_name, "g_analysis.cycle.laClusHistList");
+    g_analysis.cycle.laClusHistList = Create1DLong((2 + g_system.tot_chains), arr_name);
 
-    strcpy(arr_name, "g_analysis.naChainCheckList");
-    g_analysis.naChainCheckList = Create1DInt(2 + g_system.tot_chains, arr_name);
+    strcpy(arr_name, "g_analysis.cycle.naChainCheckList");
+    g_analysis.cycle.naChainCheckList = Create1DInt(2 + g_system.tot_chains, arr_name);
 
     strcpy(arr_name, "fKTCycle");
     g_mc.faKT_Cycle = Create1DFloat(1 + cfg->nTotCycleNum, arr_name);
 
-    strcpy(arr_name, "g_analysis.naList");
-    g_analysis.naList = Create1DInt(2 + g_system.tot_chains, arr_name);
+    strcpy(arr_name, "g_analysis.cycle.naList");
+    g_analysis.cycle.naList = Create1DInt(2 + g_system.tot_chains, arr_name);
 
-    strcpy(arr_name, "g_analysis.naClusterMatrix");
-    g_analysis.naClusterMatrix = Create2DInt(g_system.tot_chains + 2, g_system.tot_chains + 2, arr_name);
+    strcpy(arr_name, "g_analysis.cycle.naClusterMatrix");
+    g_analysis.cycle.naClusterMatrix = Create2DInt(g_system.tot_chains + 2, g_system.tot_chains + 2, arr_name);
 
     if (cfg->naReportFreqs[REPORT_NETWORK] != 0)
     {
         strcpy(arr_name, "ldTotClusArr");
-        g_analysis.ldaTOTCLUS_Arr = Create2DLongdouble(2 + g_system.tot_chains, cfg->nTotCycleNum, arr_name);
+        g_analysis.totals.ldaTOTCLUS_Arr = Create2DLongdouble(2 + g_system.tot_chains, cfg->nTotCycleNum, arr_name);
 
         strcpy(arr_name, "ldMolClusArr");
-        g_analysis.ldaMOLCLUS_Arr =
+        g_analysis.cycle.ldaMOLCLUS_Arr =
             Create1DLongdouble(((g_system.tot_chains + 1) * g_system.tot_chain_types), arr_name);
 
         strcpy(arr_name, "ldTotMolClusArr");
-        g_analysis.ldaTOTMOLCLUS_Arr =
+        g_analysis.totals.ldaTOTMOLCLUS_Arr =
             Create1DLongdouble((g_system.tot_chains * g_system.tot_chain_types * cfg->nTotCycleNum), arr_name);
 
         strcpy(arr_name, "ldTotGyrRad");
-        g_analysis.ldaTOTRg_Arr = Create2DLongdouble(2, cfg->nTotCycleNum, arr_name);
+        g_analysis.totals.ldaTOTRg_Arr = Create2DLongdouble(2, cfg->nTotCycleNum, arr_name);
     }
     g_analysis.nRDF_TotComps = 2 + g_energy.nBeadTypes + g_energy.nBeadTypes * g_energy.nBeadTypes;
     g_analysis.nRDF_TotComps /= 2;
@@ -52,11 +52,11 @@ void Memory_Initialization_AtStart(const SimulationConfig* cfg)
     if (cfg->naReportFreqs[REPORT_RDFTOT] != 0)
     {
         strcpy(arr_name, "ldTotRDFArr");
-        g_analysis.ldaTOTRDF_Arr =
+        g_analysis.totals.ldaTOTRDF_Arr =
             Create1DLongdouble((cfg->nTotCycleNum * g_analysis.nRDF_TotComps * rdf_bins), arr_name);
 
         strcpy(arr_name, "ldRDFArr");
-        g_analysis.ldaRDF_Arr = Create1DLongdouble((g_analysis.nRDF_TotComps * rdf_bins), arr_name);
+        g_analysis.cycle.ldaRDF_Arr = Create1DLongdouble((g_analysis.nRDF_TotComps * rdf_bins), arr_name);
     }
 
     if (cfg->naReportFreqs[REPORT_COMDEN] != 0)
@@ -65,23 +65,23 @@ void Memory_Initialization_AtStart(const SimulationConfig* cfg)
         g_analysis.nRadDen_CompShift = g_system.tot_chain_types * (g_system.tot_chain_types + 1);
 
         strcpy(arr_name, "ldRadDenArr");
-        g_analysis.ldaRadDen_Arr = Create1DLongdouble(g_analysis.nRadDen_TotComps * rdf_bins, arr_name);
+        g_analysis.cycle.ldaRadDen_Arr = Create1DLongdouble(g_analysis.nRadDen_TotComps * rdf_bins, arr_name);
 
         strcpy(arr_name, "ldTotRadDenArr");
-        g_analysis.ldaTOTRadDen_Arr =
+        g_analysis.totals.ldaTOTRadDen_Arr =
             Create1DLongdouble(g_analysis.nRadDen_TotComps * cfg->nTotCycleNum * rdf_bins, arr_name);
     }
 
     if (cfg->nTrajMode == -1)
     {
-        g_reports.nTraj_FramesPerCycle = cfg->nMCStepsPerCycle / cfg->naReportFreqs[REPORT_CONFIG] + 1;
+        g_reports.cycle.nTraj_FramesPerCycle = cfg->nMCStepsPerCycle / cfg->naReportFreqs[REPORT_CONFIG] + 1;
         printf("\n***********************************************\n");
         printf("This feature is still experimental!\n");
         printf("\n***********************************************\n");
 
         strcpy(arr_name, "nTotTrajArr");
-        g_reports.naTOTTRAJ_Arr =
-            Create1DInt(g_reports.nTraj_FramesPerCycle * g_system.tot_beads * BEADINFO_MAX, arr_name);
+        g_reports.cycle.naTOTTRAJ_Arr =
+            Create1DInt(g_reports.cycle.nTraj_FramesPerCycle * g_system.tot_beads * BEADINFO_MAX, arr_name);
     }
 
     printf("Successfully allocated memory! Arrays initialized.\n");
@@ -95,64 +95,64 @@ void Memory_Allocate_NeighborLists(void)
 
     num_of_points = 1 * 2 + 1;
     num_of_points = num_of_points * num_of_points * num_of_points;
-    strcpy(arr_name, "g_system.naOldOvlpNeighs");
-    g_system.naOldOvlpNeighs = Create1DInt(num_of_points, arr_name);
-    strcpy(arr_name, "g_system.naNewOvlpNeighs");
-    g_system.naNewOvlpNeighs = Create1DInt(num_of_points, arr_name);
+    strcpy(arr_name, "g_system.scratch.naOldOvlpNeighs");
+    g_system.scratch.naOldOvlpNeighs = Create1DInt(num_of_points, arr_name);
+    strcpy(arr_name, "g_system.scratch.naNewOvlpNeighs");
+    g_system.scratch.naNewOvlpNeighs = Create1DInt(num_of_points, arr_name);
 
     num_of_points = LARGEST_RADIUS * 2 + 1;
     num_of_points = num_of_points * num_of_points * num_of_points;
-    strcpy(arr_name, "g_system.naOldContNeighs");
-    g_system.naOldContNeighs = Create1DInt(num_of_points, arr_name);
-    strcpy(arr_name, "g_system.naNewContNeighs");
-    g_system.naNewContNeighs = Create1DInt(num_of_points, arr_name);
+    strcpy(arr_name, "g_system.scratch.naOldContNeighs");
+    g_system.scratch.naOldContNeighs = Create1DInt(num_of_points, arr_name);
+    strcpy(arr_name, "g_system.scratch.naNewContNeighs");
+    g_system.scratch.naNewContNeighs = Create1DInt(num_of_points, arr_name);
 }
 
 void Memory_VerifyMalloc(void)
 {
-    if (g_analysis.laClusHistList == NULL)
+    if (g_analysis.cycle.laClusHistList == NULL)
     {
-        printf("g_analysis.laClusHistList malloc failed\n");
+        printf("g_analysis.cycle.laClusHistList malloc failed\n");
         exit(1);
     }
-    if (g_analysis.naChainCheckList == NULL)
+    if (g_analysis.cycle.naChainCheckList == NULL)
     {
-        printf("g_analysis.naChainCheckList malloc failed\n");
+        printf("g_analysis.cycle.naChainCheckList malloc failed\n");
         exit(1);
     }
-    if (g_analysis.ldaRDF_Arr == NULL && g_reports.naReportFreqs[REPORT_RDFTOT] != 0)
+    if (g_analysis.cycle.ldaRDF_Arr == NULL && g_reports.naReportFreqs[REPORT_RDFTOT] != 0)
     {
-        printf("g_analysis.ldaRDF_Arr malloc failed\n");
+        printf("g_analysis.cycle.ldaRDF_Arr malloc failed\n");
         exit(1);
     }
-    if (g_analysis.ldaTOTRDF_Arr == NULL && g_reports.naReportFreqs[REPORT_RDFTOT] != 0)
+    if (g_analysis.totals.ldaTOTRDF_Arr == NULL && g_reports.naReportFreqs[REPORT_RDFTOT] != 0)
     {
-        printf("g_analysis.ldaTOTRDF_Arr malloc failed\n");
+        printf("g_analysis.totals.ldaTOTRDF_Arr malloc failed\n");
         exit(1);
     }
-    if (g_analysis.ldaRadDen_Arr == NULL && g_reports.naReportFreqs[REPORT_COMDEN] != 0)
+    if (g_analysis.cycle.ldaRadDen_Arr == NULL && g_reports.naReportFreqs[REPORT_COMDEN] != 0)
     {
-        printf("g_analysis.ldaRadDen_Arr malloc failed\n");
+        printf("g_analysis.cycle.ldaRadDen_Arr malloc failed\n");
         exit(1);
     }
-    if (g_analysis.ldaTOTRadDen_Arr == NULL && g_reports.naReportFreqs[REPORT_COMDEN] != 0)
+    if (g_analysis.totals.ldaTOTRadDen_Arr == NULL && g_reports.naReportFreqs[REPORT_COMDEN] != 0)
     {
-        printf("g_analysis.ldaTOTRadDen_Arr malloc failed\n");
+        printf("g_analysis.totals.ldaTOTRadDen_Arr malloc failed\n");
         exit(1);
     }
-    if (g_analysis.ldaMOLCLUS_Arr == NULL && g_reports.naReportFreqs[REPORT_NETWORK] != 0)
+    if (g_analysis.cycle.ldaMOLCLUS_Arr == NULL && g_reports.naReportFreqs[REPORT_NETWORK] != 0)
     {
-        printf("g_analysis.ldaMOLCLUS_Arr malloc failed\n");
+        printf("g_analysis.cycle.ldaMOLCLUS_Arr malloc failed\n");
         exit(1);
     }
-    if (g_analysis.ldaTOTMOLCLUS_Arr == NULL && g_reports.naReportFreqs[REPORT_NETWORK] != 0)
+    if (g_analysis.totals.ldaTOTMOLCLUS_Arr == NULL && g_reports.naReportFreqs[REPORT_NETWORK] != 0)
     {
-        printf("g_analysis.ldaTOTMOLCLUS_Arr malloc failed\n");
+        printf("g_analysis.totals.ldaTOTMOLCLUS_Arr malloc failed\n");
         exit(1);
     }
-    if ((g_reports.naTOTTRAJ_Arr == NULL) && (g_reports.nTrajMode == -1))
+    if ((g_reports.cycle.naTOTTRAJ_Arr == NULL) && (g_reports.nTrajMode == -1))
     {
-        printf("g_reports.naTOTTRAJ_Arr malloc failed\n");
+        printf("g_reports.cycle.naTOTTRAJ_Arr malloc failed\n");
         exit(1);
     }
 }
@@ -312,21 +312,21 @@ void Global_Array_Initialization_AtStart(const SimulationConfig* cfg)
     {
         for (j = 0; j < MAX_ROTSTATES; j++)
         {
-            g_energy.naRotTrial[i][j] = -1;
+            g_energy.scratch.naRotTrial[i][j] = -1;
         }
     }
     for (i = 0; i < MAX_ROTSTATES - 1; i++)
     {
-        g_system.naRot_IndArr[i] = i;
+        g_system.scratch.naRot_IndArr[i] = i;
     }
     // Initializing arrays required for cluster analyses.
     for (i = 0; i <= g_system.tot_chains; i++)
     {
-        g_analysis.naChainCheckList[i] = 0;
-        g_analysis.laClusHistList[i] = 0;
+        g_analysis.cycle.naChainCheckList[i] = 0;
+        g_analysis.cycle.laClusHistList[i] = 0;
         for (j = 0; j <= g_system.tot_chains; j++)
         {
-            g_analysis.naClusterMatrix[i][j] = -1;
+            g_analysis.cycle.naClusterMatrix[i][j] = -1;
         }
     }
 
@@ -336,23 +336,23 @@ void Global_Array_Initialization_AtStart(const SimulationConfig* cfg)
         { // For MolWise Clus arrays
             for (j = 0; j < g_system.tot_chain_types; j++)
             {
-                g_analysis.ldaMOLCLUS_Arr[MolClusArr_Index(0, j, i)] = 0.;
+                g_analysis.cycle.ldaMOLCLUS_Arr[MolClusArr_Index(0, j, i)] = 0.;
                 for (k = 0; k < cfg->nTotCycleNum; k++)
                 {
-                    g_analysis.ldaTOTMOLCLUS_Arr[MolClusArr_Index(k, j, i)] = 0.;
+                    g_analysis.totals.ldaTOTMOLCLUS_Arr[MolClusArr_Index(k, j, i)] = 0.;
                 }
             }
         }
         for (k = 0; k < cfg->nTotCycleNum; k++)
         { // For GyrRad
-            g_analysis.ldaTOTRg_Arr[k][0] = 0.;
-            g_analysis.ldaTOTRg_Arr[k][1] = 0.;
+            g_analysis.totals.ldaTOTRg_Arr[k][0] = 0.;
+            g_analysis.totals.ldaTOTRg_Arr[k][1] = 0.;
         }
         for (k = 0; k < cfg->nTotCycleNum; k++)
         { // For ClusterDists
             for (i = 0; i <= g_system.tot_chains; i++)
             {
-                g_analysis.ldaTOTCLUS_Arr[k][i] = 0.;
+                g_analysis.totals.ldaTOTCLUS_Arr[k][i] = 0.;
             }
         }
     }
@@ -363,10 +363,10 @@ void Global_Array_Initialization_AtStart(const SimulationConfig* cfg)
         { // For Radial distributions
             for (j = 0; j < g_analysis.nRDF_TotComps; j++)
             { // For RDFs
-                g_analysis.ldaTOTRDF_Arr[RDFArr_Index(0, j, i)] = 0.;
+                g_analysis.totals.ldaTOTRDF_Arr[RDFArr_Index(0, j, i)] = 0.;
                 for (k = 0; k < cfg->nTotCycleNum; k++)
                 {
-                    g_analysis.ldaTOTRDF_Arr[RDFArr_Index(k, j, i)] = 0.;
+                    g_analysis.totals.ldaTOTRDF_Arr[RDFArr_Index(k, j, i)] = 0.;
                 }
             }
         }
@@ -378,10 +378,10 @@ void Global_Array_Initialization_AtStart(const SimulationConfig* cfg)
         { // For Density Dists wrt COM
             for (i = 0; i < g_analysis.nRDF_TotBins; i++)
             { // For Radial distributions
-                g_analysis.ldaRadDen_Arr[RadDenArr_Index(0, j, i)] = 0.;
+                g_analysis.cycle.ldaRadDen_Arr[RadDenArr_Index(0, j, i)] = 0.;
                 for (k = 0; k < cfg->nTotCycleNum; k++)
                 {
-                    g_analysis.ldaTOTRadDen_Arr[RadDenArr_Index(k, j, i)] = 0.;
+                    g_analysis.totals.ldaTOTRadDen_Arr[RadDenArr_Index(k, j, i)] = 0.;
                 }
             }
         }
@@ -405,8 +405,8 @@ void Global_Array_Initialization_AtStart(const SimulationConfig* cfg)
     }
     for (i = 0; i < MAX_MV; i++)
     { // Zero out all the MCAccepts
-        g_mc.naMCAccepMat[0][i] = 0;
-        g_mc.naMCAccepMat[1][i] = 0;
+        g_mc.cycle.naMCAccepMat[0][i] = 0;
+        g_mc.cycle.naMCAccepMat[1][i] = 0;
     }
 
     for (i = 0; i < cfg->nTotCycleNum; i++)
@@ -429,71 +429,80 @@ void Global_Array_Initialization_AtStart(const SimulationConfig* cfg)
     printf("All setup has been completed!\n");
 }
 
-/// Reset_Counters - clear analysis/report cycle counters (Phase 7.1: scratch /
-/// cycle buffers; does not touch durable ldaTOT* accumulators).
+/// Reset_Counters - clear analysis/report cycle counters in nest members
+/// (g_analysis.cycle.*, g_reports.cycle.*). Does not touch durable totals.
 void Reset_Counters(void)
 {
-    g_analysis.faSysGyrRad = 0.f;
-    g_analysis.nTotGyrRadCounter = 0;
-    g_analysis.nTotRDFCounter = 0;
-    g_analysis.nTotRadDenCounter = 0;
-    g_analysis.nTotClusCounter = 0;
-    g_analysis.nLargestClusterRightNow = 0;
-    g_reports.nTrajCurFrame = 0;
+    g_analysis.cycle.faSysGyrRad = 0.f;
+    g_analysis.cycle.nTotGyrRadCounter = 0;
+    g_analysis.cycle.nTotRDFCounter = 0;
+    g_analysis.cycle.nTotRadDenCounter = 0;
+    g_analysis.cycle.nTotClusCounter = 0;
+    g_analysis.cycle.nLargestClusterRightNow = 0;
+    g_reports.cycle.nTrajCurFrame = 0;
 }
 
-/// Reset_Global_Arrays - clear analysis cycle working sets and MC accept
-/// matrix, then Reset_Counters. Durable ldaTOT* accumulators are left intact.
-void Reset_Global_Arrays(void)
+/// Reset_AnalysisCycleScratch - zero g_analysis.cycle working sets / histograms
+/// between cycles. Durable g_analysis.totals.* accumulators are left intact.
+void Reset_AnalysisCycleScratch(void)
 {
-    // Zero-ing out cycle scratch / histograms used for data tracking.
     int i, j;
     for (i = 0; i <= g_system.tot_chains; i++)
     {
-        g_analysis.naChainCheckList[i] = -1;
-        g_analysis.laClusHistList[i] = 0;
+        g_analysis.cycle.naChainCheckList[i] = -1;
+        g_analysis.cycle.laClusHistList[i] = 0;
         for (j = 0; j <= g_system.tot_chains; j++)
         {
-            g_analysis.naClusterMatrix[i][j] = -1;
+            g_analysis.cycle.naClusterMatrix[i][j] = -1;
         }
         if (g_reports.naReportFreqs[REPORT_NETWORK])
         {
             for (j = 0; j < g_system.tot_chain_types; j++)
             {
-                g_analysis.ldaMOLCLUS_Arr[MolClusArr_Index(0, j, i)] = 0.;
+                g_analysis.cycle.ldaMOLCLUS_Arr[MolClusArr_Index(0, j, i)] = 0.;
             }
         }
     }
-    // Initializing arrays for pair-distribution calculations
     if (g_reports.naReportFreqs[REPORT_RDFTOT])
     {
         for (j = 0; j < g_analysis.nRDF_TotComps; j++)
         {
             for (i = 0; i < g_analysis.nRDF_TotBins; i++)
             {
-                g_analysis.ldaRDF_Arr[RDFArr_Index(0, j, i)] = 0.;
+                g_analysis.cycle.ldaRDF_Arr[RDFArr_Index(0, j, i)] = 0.;
             }
         }
     }
     if (g_reports.naReportFreqs[REPORT_COMDEN])
     {
-        // Initalizing for density histograms wrt to the COM
         for (j = 0; j < g_analysis.nRadDen_TotComps; j++)
         {
             for (i = 0; i < g_analysis.nRDF_TotBins; i++)
             {
-                g_analysis.ldaRadDen_Arr[RadDenArr_Index(0, j, i)] = 0.;
+                g_analysis.cycle.ldaRadDen_Arr[RadDenArr_Index(0, j, i)] = 0.;
             }
         }
     }
-    // Setting counters
-    Reset_Counters();
-    // MCAccept arrays.
+}
+
+/// Reset_McCycleScratch - zero g_mc.cycle accept counts between cycles.
+void Reset_McCycleScratch(void)
+{
+    int i;
     for (i = 0; i < MAX_MV; i++)
     {
-        g_mc.naMCAccepMat[0][i] = 0;
-        g_mc.naMCAccepMat[1][i] = 0;
+        g_mc.cycle.naMCAccepMat[0][i] = 0;
+        g_mc.cycle.naMCAccepMat[1][i] = 0;
     }
+}
+
+/// Reset_Global_Arrays - cycle boundary teardown: analysis cycle scratch, MC
+/// cycle scratch, then counters. Same observable effect as before Phase 7.2.
+void Reset_Global_Arrays(void)
+{
+    Reset_AnalysisCycleScratch();
+    Reset_Counters();
+    Reset_McCycleScratch();
 }
 
 /// Initial_Conditions_Simple - randomly place all the molecules.
@@ -806,8 +815,9 @@ void Calculate_Rot_Bias(const float CurrentTemp)
     {
         for (j = 0; j < MAX_AA; j++)
         {
-            g_energy.ldaBoltzFacNorm[i][j] = (lLDub)expl(-(lLDub)g_energy.faEnergy[i][j][E_SC_SC] / (lLDub)CurrentTemp);
-            // printf("%LE; ", g_energy.ldaBoltzFacNorm[i][j]);
+            g_energy.scratch.ldaBoltzFacNorm[i][j] =
+                (lLDub)expl(-(lLDub)g_energy.faEnergy[i][j][E_SC_SC] / (lLDub)CurrentTemp);
+            // printf("%LE; ", g_energy.scratch.ldaBoltzFacNorm[i][j]);
         }
         // printf("\n");
     }

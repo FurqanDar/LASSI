@@ -1,8 +1,7 @@
-# Scratch vs durable state (Phase 7.1 inventory)
+# Scratch vs durable state (Phase 7.1 inventory + 7.2 nests)
 
-Ownership/lifetime tags for process-wide buffers. **No behavior change** in
-7.1 — see section comments (and light anonymous groups) in `src/global.h`.
-Phase 7.2+ may nest further and add explicit reset/teardown between cycles.
+Ownership/lifetime tags for process-wide buffers. Phase 7.2 nests scratch /
+cycle / totals under named members; **no intentional behavior change**.
 
 ## Definitions
 
@@ -10,7 +9,21 @@ Phase 7.2+ may nest further and add explicit reset/teardown between cycles.
 |------|---------|
 | **Durable** | Meaningful across many MC steps / cycles: topology, lattice occupancy, energy tables, config-derived control, cycle accumulators (`ldaTOT*`). |
 | **Scratch** | Ephemeral working storage: contents valid only for the current move, neighbor search, or analysis pass. Allocation may still live for the whole run. |
-| **Cycle buffer** | Cleared or rolled at cycle boundaries (`Reset_Global_Arrays` / `Reset_Counters`); holds in-progress histograms before fold into `ldaTOT*`. |
+| **Cycle buffer** | Cleared or rolled at cycle boundaries; holds in-progress histograms before fold into `ldaTOT*`. |
+
+## Nest layout (Phase 7.2)
+
+| Domain | Nest member | Typedef | Kind |
+|--------|-------------|---------|------|
+| `g_system` | `.scratch` | `SystemScratch` | Per-move / per-search scratch |
+| `g_energy` | `.scratch` | `EnergyScratch` | Rotational / Boltzmann scratch |
+| `g_mc` | `.cycle` | `McCycleScratch` | Cycle accept matrix |
+| `g_reports` | `.cycle` | `ReportsCycleScratch` | Cycle traj accumulation |
+| `g_analysis` | `.cycle` | `AnalysisCycleScratch` | Cycle working sets / histograms |
+| `g_analysis` | `.totals` | `AnalysisTotals` | Durable cross-cycle `ldaTOT*` |
+
+Call sites use nested access, e.g. `g_system.scratch.old_bead`,
+`g_analysis.cycle.naList`, `g_analysis.totals.ldaTOTRDF_Arr`.
 
 ## By domain
 
@@ -21,9 +34,9 @@ Phase 7.2+ may nest further and add explicit reset/teardown between cycles.
 | `bead_info`, `chain_info`, `topo_info`, `linker_len`, `naTotLattice` | Durable | Configuration / lattice occupancy |
 | counts, box, mode flags, capability flags, linker floats | Durable | |
 | `naLocalArr` | Durable (setup) | Fixed neighbor offsets filled once at init |
-| `old_bead` | Scratch contents | Trial backup for reject/restore; allocated for the run |
-| `naOld/NewOvlpNeighs`, `naOld/NewContNeighs`, `naTempR` | Scratch | Neighbor-search / trial coordinates |
-| `naRot_IndArr` | Scratch contents | Rotation shuffle indices |
+| `scratch.old_bead` | Scratch contents | Trial backup for reject/restore; allocated for the run |
+| `scratch.naOld/NewOvlpNeighs`, `scratch.naOld/NewContNeighs`, `scratch.naTempR` | Scratch | Neighbor-search / trial coordinates |
+| `scratch.naRot_IndArr` | Scratch contents | Rotation shuffle indices |
 
 ### `EnergyTables` (`g_energy`)
 
@@ -31,7 +44,7 @@ Phase 7.2+ may nest further and add explicit reset/teardown between cycles.
 |--------|------|-------|
 | `faEnergy`, `faEnRad`, `nBeadTypes` | Durable | Parsed tables |
 | `faCurrEn` | Durable runtime | Current system energy vector |
-| `naRotTrial`, `ldaBoltzFac*`, `ldaBoltzNorm` | Scratch | Rotational trial / Boltzmann temps |
+| `scratch.naRotTrial`, `scratch.ldaBoltzFac*`, `scratch.ldaBoltzNorm` | Scratch | Rotational trial / Boltzmann temps |
 
 ### `McControl` (`g_mc`)
 
@@ -39,30 +52,38 @@ Phase 7.2+ may nest further and add explicit reset/teardown between cycles.
 |--------|------|-------|
 | temps, freqs, step counts, seed, `faKT_Cycle` | Durable control | From config / init |
 | `fCuTemp`, `fSquishRad_Sq` | Durable runtime | |
-| `naMCAccepMat` | Cycle buffer | Zeroed in `Reset_Global_Arrays` |
+| `cycle.naMCAccepMat` | Cycle buffer | Zeroed in `Reset_McCycleScratch` |
 
 ### `Reports` (`g_reports`)
 
 | Fields | Kind | Notes |
 |--------|------|-------|
 | paths, freqs, `nTrajMode` | Durable | From config |
-| `naTOTTRAJ_Arr`, `nTrajCurFrame` | Cycle buffer | Experimental traj accumulation |
+| `cycle.naTOTTRAJ_Arr`, `cycle.nTrajCurFrame` | Cycle buffer | Experimental traj accumulation |
 
 ### `AnalysisState` (`g_analysis`)
 
 | Fields | Kind | Notes |
 |--------|------|-------|
 | `nClusteringMode`, size/comp metadata | Durable | |
-| `naClusterMatrix`, `naList`, `laClusHistList`, `naChainCheckList` | Scratch / cycle | Cluster pass working sets |
-| `ldaRDF_Arr`, `ldaRadDen_Arr`, `ldaMOLCLUS_Arr`, `faGyrTensor` | Cycle buffer | Current-cycle histograms |
-| `ldaTOTRDF_Arr`, `ldaTOTRadDen_Arr`, `ldaTOTCLUS_Arr`, `ldaTOTMOLCLUS_Arr`, `ldaTOTRg_Arr` | Durable accumulators | Across cycles |
-| `nTot*Counter`, `nLargestClusterRightNow` | Cycle counters | Cleared by `Reset_Counters` |
+| `cycle.naClusterMatrix`, `cycle.naList`, `cycle.laClusHistList`, `cycle.naChainCheckList` | Scratch / cycle | Cluster pass working sets |
+| `cycle.ldaRDF_Arr`, `cycle.ldaRadDen_Arr`, `cycle.ldaMOLCLUS_Arr`, `cycle.faGyrTensor` | Cycle buffer | Current-cycle histograms |
+| `totals.ldaTOTRDF_Arr`, `totals.ldaTOTRadDen_Arr`, `totals.ldaTOTCLUS_Arr`, `totals.ldaTOTMOLCLUS_Arr`, `totals.ldaTOTRg_Arr` | Durable accumulators | Across cycles |
+| `cycle.nTot*Counter`, `cycle.nLargestClusterRightNow` | Cycle counters | Cleared by `Reset_Counters` |
 
 ### `SimulationConfig` (`g_config`)
 
 Durable **inputs** only (keyfile). Not runtime scratch.
 
-## Reset hooks
+## Reset hooks (cycle boundary)
 
-- `Reset_Counters` — analysis/report cycle counters (scratch/cycle).
-- `Reset_Global_Arrays` — analysis cycle buffers + MC accept matrix; then `Reset_Counters`.
+Called from the run loop via `Reset_Global_Arrays` between cycles:
+
+| Helper | Clears |
+|--------|--------|
+| `Reset_AnalysisCycleScratch` | `g_analysis.cycle` working sets / histograms |
+| `Reset_Counters` | `g_analysis.cycle` counters + `g_reports.cycle.nTrajCurFrame` |
+| `Reset_McCycleScratch` | `g_mc.cycle.naMCAccepMat` |
+| `Reset_Global_Arrays` | Orchestrates the three above (same order/effect as pre-7.2) |
+
+No process-exit teardown of nest allocations (still owned for the whole run).

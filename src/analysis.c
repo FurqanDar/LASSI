@@ -33,7 +33,7 @@ void GyrTensor_GyrRad_Avg(void)
     int dumArg[POS_MAX] = {0};
     for (i = 0; i < 7; i++)
     { // Initializing to 0
-        g_analysis.faGyrTensor[i] = 0.f;
+        g_analysis.cycle.faGyrTensor[i] = 0.f;
     }
 
     for (i = 0; i < g_system.tot_beads; i++)
@@ -42,16 +42,16 @@ void GyrTensor_GyrRad_Avg(void)
         {
             dumArg[j] = abs(g_system.bead_info[i][j] - (int)tot_COM[j]);
             dumArg[j] = dumArg[j] > g_system.naBoxSize[j] / 2 ? g_system.naBoxSize[j] - dumArg[j] : dumArg[j];
-            g_analysis.faGyrTensor[j] += (float)(dumArg[j] * dumArg[j]);
+            g_analysis.cycle.faGyrTensor[j] += (float)(dumArg[j] * dumArg[j]);
         }
     }
 
-    // Adding to the total g_analysis.faSysGyrRad to be averaged at the end.
-    g_analysis.faSysGyrRad += sqrtf(
-        (g_analysis.faGyrTensor[0] + g_analysis.faGyrTensor[1] + g_analysis.faGyrTensor[2]) /
+    // Adding to the total g_analysis.cycle.faSysGyrRad to be averaged at the end.
+    g_analysis.cycle.faSysGyrRad += sqrtf(
+        (g_analysis.cycle.faGyrTensor[0] + g_analysis.cycle.faGyrTensor[1] + g_analysis.cycle.faGyrTensor[2]) /
         (float)g_system.tot_beads);
-    g_analysis.nTotGyrRadCounter++; // Remembering that we have calculated the radius; for final
-                                    // averaging.
+    g_analysis.cycle.nTotGyrRadCounter++; // Remembering that we have calculated the radius; for final
+                                          // averaging.
 }
 
 /// RDF_ComponentIndex - 1D index for the symmetric g_{ij} matrix given i and j.
@@ -76,7 +76,7 @@ static int RDF_ComponentIndex(const int i, const int j)
     }
 }
 
-/// RDFArr_Index - 1D index for g_analysis.ldaTOTRDF_Arr which is used to globally store the
+/// RDFArr_Index - 1D index for g_analysis.totals.ldaTOTRDF_Arr which is used to globally store the
 /// different RDFs \param run_cycle \param rdf_comp \param x_pos \return 1D index for the
 /// totalRDFArray
 int RDFArr_Index(const int run_cycle, const int rdf_comp, const int x_pos)
@@ -129,13 +129,13 @@ void RDF_ComponentWise_Avg(void)
             x = Dist_BeadToBead(i, j);
             // Note that Dist_BeadToBead(i,j) automatically ensures no distance is greater than
             // (L/2)*sqrt(3)
-            myBin = (int)floor(4. * x);                              // I am assuming for now that dr=1/4
-            g_analysis.ldaRDF_Arr[RDFArr_Index(0, 0, myBin)] += 2.0; // Adding a pair to that bin
+            myBin = (int)floor(4. * x);                                    // I am assuming for now that dr=1/4
+            g_analysis.cycle.ldaRDF_Arr[RDFArr_Index(0, 0, myBin)] += 2.0; // Adding a pair to that bin
             array_pos = RDF_ComponentIndex(resi, resj);
-            g_analysis.ldaRDF_Arr[RDFArr_Index(0, array_pos, myBin)] += 2.0;
+            g_analysis.cycle.ldaRDF_Arr[RDFArr_Index(0, array_pos, myBin)] += 2.0;
         }
     }
-    g_analysis.nTotRDFCounter++;
+    g_analysis.cycle.nTotRDFCounter++;
 }
 
 ///
@@ -208,7 +208,7 @@ static void
 Calc_CenterOfMass_OfCluster(lDub* const naCOM_out, const int cluster_size, const int* const restrict naClusList_in)
 {
     // This version measures the COM of a cluster of size c
-    //  cluster size, given the molecule ID's in g_analysis.naList.
+    //  cluster size, given the molecule ID's in g_analysis.cycle.naList.
     // The COM from this is not necessarily the COM of the system as a whole.
     int thisMol, i, j, k;         // Iterators
     int fB, lB;                   // Keep track of first and last beads of a given molecule
@@ -436,9 +436,9 @@ static void RadDen_Avg_MolTypeWise_FromSysCen(void)
         thisType = g_system.chain_info[thisType][CHAIN_TYPE];
         xDis = Dist_BeadToPoint_Double(i, sysCOM);
         myBin = (int)floor(4. * xDis);
-        g_analysis.ldaRadDen_Arr[RadDenArr_Index(0, thisType, myBin)] += 1.0;
+        g_analysis.cycle.ldaRadDen_Arr[RadDenArr_Index(0, thisType, myBin)] += 1.0;
     }
-    g_analysis.nTotRadDenCounter++;
+    g_analysis.cycle.nTotRadDenCounter++;
 }
 
 void RadDen_Avg_MolTypeWise_FromMolTypeCen_Old_CorrectVersion(void)
@@ -464,7 +464,7 @@ void RadDen_Avg_MolTypeWise_FromMolTypeCen_Old_CorrectVersion(void)
         thisComp = RadDen_ComponentIndex(-1, thisType);
         xDis = Dist_BeadToPoint(i, COM_int);
         myBin = (int)(4. * xDis);
-        g_analysis.ldaRadDen_Arr[RadDenArr_Index(0, thisComp, myBin)] += 1.0;
+        g_analysis.cycle.ldaRadDen_Arr[RadDenArr_Index(0, thisComp, myBin)] += 1.0;
     }
 
     for (cur_type = 0; cur_type < g_system.tot_chain_types; cur_type++)
@@ -481,7 +481,7 @@ void RadDen_Avg_MolTypeWise_FromMolTypeCen_Old_CorrectVersion(void)
             thisComp = RadDen_ComponentIndex(cur_type, thisType);
             xDis = Dist_BeadToPoint(i, COM_int);
             myBin = (int)(4. * xDis);
-            g_analysis.ldaRadDen_Arr[RadDenArr_Index(0, thisComp, myBin)] += 1.0;
+            g_analysis.cycle.ldaRadDen_Arr[RadDenArr_Index(0, thisComp, myBin)] += 1.0;
         }
     }
 
@@ -508,13 +508,13 @@ void RadDen_Avg_MolTypeWise_FromMolTypeCen_Old_CorrectVersion(void)
                 cur_DIS[POS_Z] *= cur_DIS[POS_Z];
                 xDis = sqrtf((float)(cur_DIS[POS_X]+cur_DIS[POS_Y]+cur_DIS[POS_Z] ));
                 myBin = (int) (4.*xDis);
-                g_analysis.ldaRadDen_Arr[RadDenArr_Index(0, thisComp, myBin)] += 1.0;
+                g_analysis.cycle.ldaRadDen_Arr[RadDenArr_Index(0, thisComp, myBin)] += 1.0;
             }
         }
     }
     */
 
-    g_analysis.nTotRadDenCounter++;
+    g_analysis.cycle.nTotRadDenCounter++;
 }
 
 void RadialDensityAnalysis_Perform_Analysis(void)
@@ -522,7 +522,7 @@ void RadialDensityAnalysis_Perform_Analysis(void)
     RadDenHistUtil_ForSystem_FromLargestClusterOfMolTypes();
     RadDenHistUtil_ForSystem_FromCenterOfMassOfMolTypes();
 
-    g_analysis.nTotRadDenCounter++;
+    g_analysis.cycle.nTotRadDenCounter++;
 }
 
 static void RadDenHistUtil_ForSystem_FromCenterOfMassOfMolTypes(void)
@@ -561,7 +561,7 @@ static void RadDenHistUtil_ForSystem_FromCenterOfMassOfMolTypes(void)
             {
                 fDis = Dist_BeadToPoint(i, naCOM_r);
                 nBin = (int)(4.f * fDis);
-                g_analysis.ldaRadDen_Arr[RadDenArr_Index(0, thisComp, nBin)] += 1.0;
+                g_analysis.cycle.ldaRadDen_Arr[RadDenArr_Index(0, thisComp, nBin)] += 1.0;
             }
         }
     }
@@ -621,7 +621,7 @@ static void RadDenHistUtil_ForSystem_FromLargestClusterOfMolTypes(void)
             {
                 fDis = Dist_BeadToPoint(i, naCOM_r);
                 nRadBin = (int)(4.f * fDis);
-                g_analysis.ldaRadDen_Arr[RadDenArr_Index(0, nRadDenMolComp, nRadBin)] += 1.0;
+                g_analysis.cycle.ldaRadDen_Arr[RadDenArr_Index(0, nRadDenMolComp, nRadBin)] += 1.0;
             }
         }
     }

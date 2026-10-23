@@ -957,15 +957,15 @@ void Energy_Total_System(void)
             cont_num = NeighborSearch_ForCont(
                 i,
                 g_system.bead_info[i],
-                g_system.naOldContNeighs,
-                g_system.naOldOvlpNeighs,
+                g_system.scratch.naOldContNeighs,
+                g_system.scratch.naOldOvlpNeighs,
                 &ovlp_num);
-            g_energy.faCurrEn[E_CONT] += Energy_OfCont_wNeighList(i, g_system.naOldContNeighs, cont_num);
+            g_energy.faCurrEn[E_CONT] += Energy_OfCont_wNeighList(i, g_system.scratch.naOldContNeighs, cont_num);
         }
         else if (g_system.nBeadTypeCanOvlp[resi] || g_system.nBeadTypeCanFSol[resi])
         {
-            ovlp_num = NeighborSearch_ForOvlp(i, g_system.bead_info[i], g_system.naOldOvlpNeighs);
-            g_energy.faCurrEn[E_OVLP] += Energy_OfOvlp_wNeighList(i, g_system.naOldOvlpNeighs, ovlp_num);
+            ovlp_num = NeighborSearch_ForOvlp(i, g_system.bead_info[i], g_system.scratch.naOldOvlpNeighs);
+            g_energy.faCurrEn[E_OVLP] += Energy_OfOvlp_wNeighList(i, g_system.scratch.naOldOvlpNeighs, ovlp_num);
             g_energy.faCurrEn[E_F_SOL] += Energy_Iso_EmptySiteSol(resi, 26 - ovlp_num);
         }
     }

@@ -962,5 +962,5 @@ void CreateBeadsAndChains(size_t n_bead_num, size_t n_chain_num)
     g_system.bead_info = Create2DInt(BEADINFO_MAX, n_bead_num, strTemp);
 
     strcpy(strTemp, "Old Bead.");
-    g_system.old_bead = Create2DInt(BEADINFO_MAX, n_bead_num, strTemp);
+    g_system.scratch.old_bead = Create2DInt(BEADINFO_MAX, n_bead_num, strTemp);
 }

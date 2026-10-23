@@ -56,8 +56,8 @@ int Move_Local_Equil(int beadID, float MyTemp)
         &newEn,
         &old_ovlp_num,
         &old_cont_num,
-        g_system.naOldOvlpNeighs,
-        g_system.naOldContNeighs);
+        g_system.scratch.naOldOvlpNeighs,
+        g_system.scratch.naOldContNeighs);
 
     int bondList[MAX_BONDS + 1];
     int bondNum = g_system.bSystemHasTopo ? OP_GetTopoBonds(beadID, bondList) : 0;
@@ -77,8 +77,8 @@ int Move_Local_Equil(int beadID, float MyTemp)
         &oldEn,
         &new_ovlp_num,
         &new_cont_num,
-        g_system.naNewOvlpNeighs,
-        g_system.naNewContNeighs);
+        g_system.scratch.naNewOvlpNeighs,
+        g_system.scratch.naNewContNeighs);
 
     newEn += bondNum ? Energy_Topo_Angle_ForList(bondNum, bondList) : 0.;
 
@@ -183,8 +183,8 @@ int Move_Snake_Equil(int chainID, float MyTemp)
             &newEn,
             &old_ovlp_num,
             &old_cont_num,
-            g_system.naOldOvlpNeighs,
-            g_system.naOldContNeighs);
+            g_system.scratch.naOldOvlpNeighs,
+            g_system.scratch.naOldContNeighs);
     }
     const int resi = g_system.bead_info[angBead_old][BEAD_TYPE];
     oldEn += g_energy.faEnergy[resi][resi][E_STIFF] ? Energy_Topo_Angle(angBead_old) : 0.;
@@ -215,8 +215,8 @@ int Move_Snake_Equil(int chainID, float MyTemp)
             &oldEn,
             &new_ovlp_num,
             &new_cont_num,
-            g_system.naNewOvlpNeighs,
-            g_system.naNewContNeighs);
+            g_system.scratch.naNewOvlpNeighs,
+            g_system.scratch.naNewContNeighs);
     }
 
     newEn += g_energy.faEnergy[resi][resi][E_STIFF] ? Energy_Topo_Angle(angBead_new) : 0.;
@@ -283,8 +283,8 @@ int Move_Trans_Equil(int chainID, float MyTemp)
             &newEn,
             &old_ovlp_num,
             &old_cont_num,
-            g_system.naOldOvlpNeighs,
-            g_system.naOldContNeighs);
+            g_system.scratch.naOldOvlpNeighs,
+            g_system.scratch.naOldContNeighs);
     }
 
     OP_System_DispChain_ForTrans(chainID,
@@ -307,8 +307,8 @@ int Move_Trans_Equil(int chainID, float MyTemp)
             &oldEn,
             &new_ovlp_num,
             &new_cont_num,
-            g_system.naNewOvlpNeighs,
-            g_system.naNewContNeighs);
+            g_system.scratch.naNewOvlpNeighs,
+            g_system.scratch.naNewContNeighs);
     }
 
     MCProb = (lLDub)rand() / (lLDub)RAND_MAX;
@@ -405,8 +405,8 @@ int Move_MultiLocal_Equil(int beadID, float MyTemp)
             &newEn,
             &old_ovlp_num,
             &old_cont_num,
-            g_system.naOldOvlpNeighs,
-            g_system.naOldContNeighs);
+            g_system.scratch.naOldOvlpNeighs,
+            g_system.scratch.naOldContNeighs);
     }
 
     int bondAngNum = 0;
@@ -453,8 +453,8 @@ int Move_MultiLocal_Equil(int beadID, float MyTemp)
             &oldEn,
             &new_ovlp_num,
             &new_cont_num,
-            g_system.naNewOvlpNeighs,
-            g_system.naNewContNeighs);
+            g_system.scratch.naNewOvlpNeighs,
+            g_system.scratch.naNewContNeighs);
     }
 
     newEn += bondAngNum ? Energy_Topo_Angle_ForList(bondAngNum, bondAngList) : 0.;
@@ -556,7 +556,7 @@ int Move_Pivot_Equil(int chainID, float MyTemp)
         // Use anchorbead as origin, and check what happens after the rotation
         // to every bead
         OP_Rotation(PivotM, tmpBead, anchorPos);
-        yTemp = Check_MoveBeadTo(g_system.naTempR);
+        yTemp = Check_MoveBeadTo(g_system.scratch.naTempR);
         if (yTemp == 0)
         {
             break;
@@ -593,8 +593,8 @@ int Move_Pivot_Equil(int chainID, float MyTemp)
             &newEn,
             &old_ovlp_num,
             &old_cont_num,
-            g_system.naOldOvlpNeighs,
-            g_system.naOldContNeighs);
+            g_system.scratch.naOldOvlpNeighs,
+            g_system.scratch.naOldContNeighs);
     }
 
     const int resi = g_system.bead_info[anchorBead][BEAD_TYPE];
@@ -604,7 +604,7 @@ int Move_Pivot_Equil(int chainID, float MyTemp)
     {
         tmpBead = beadsList[i];
         OP_Rotation(PivotM, tmpBead, anchorPos);
-        OP_System_MoveBeadTo(tmpBead, g_system.naTempR);
+        OP_System_MoveBeadTo(tmpBead, g_system.scratch.naTempR);
     }
 
     if (g_system.nBiasPotential_Mode != -1)
@@ -630,8 +630,8 @@ int Move_Pivot_Equil(int chainID, float MyTemp)
             &oldEn,
             &new_ovlp_num,
             &new_cont_num,
-            g_system.naNewOvlpNeighs,
-            g_system.naNewContNeighs);
+            g_system.scratch.naNewOvlpNeighs,
+            g_system.scratch.naNewContNeighs);
     }
 
     newEn += g_energy.faEnergy[resi][resi][E_STIFF] ? Energy_Topo_Angle(anchorBead) : 0.;
@@ -714,7 +714,7 @@ int Move_BranchedRot_Equil(int chainID, float MyTemp)
         // Use anchorbead as origin, and check what happens after the rotation
         // to every bead
         OP_Rotation(PivotM, tmpBead, anchorPos);
-        yTemp = Check_MoveBeadTo(g_system.naTempR);
+        yTemp = Check_MoveBeadTo(g_system.scratch.naTempR);
         if (yTemp == 0)
         {
             break;
@@ -751,15 +751,15 @@ int Move_BranchedRot_Equil(int chainID, float MyTemp)
             &newEn,
             &old_ovlp_num,
             &old_cont_num,
-            g_system.naOldOvlpNeighs,
-            g_system.naOldContNeighs);
+            g_system.scratch.naOldOvlpNeighs,
+            g_system.scratch.naOldContNeighs);
     }
 
     for (i = 0; i < beadNum; i++)
     {
         tmpBead = beadsList[i];
         OP_Rotation(PivotM, tmpBead, anchorPos);
-        OP_System_MoveBeadTo(tmpBead, g_system.naTempR);
+        OP_System_MoveBeadTo(tmpBead, g_system.scratch.naTempR);
     }
 
     if (g_system.nBiasPotential_Mode != -1)
@@ -784,8 +784,8 @@ int Move_BranchedRot_Equil(int chainID, float MyTemp)
             &oldEn,
             &new_ovlp_num,
             &new_cont_num,
-            g_system.naNewOvlpNeighs,
-            g_system.naNewContNeighs);
+            g_system.scratch.naNewOvlpNeighs,
+            g_system.scratch.naNewContNeighs);
     }
 
     lLDub MCProb = (lLDub)rand() / (lLDub)RAND_MAX;

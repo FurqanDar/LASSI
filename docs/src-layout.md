@@ -62,8 +62,8 @@ Regression gate: `make characterization`.
 
 ## Scratch vs durable
 
-See [`docs/scratch-vs-durable.md`](scratch-vs-durable.md) (Phase 7.1 inventory).
-Tagged in `src/global.h` domain structs.
+See [`docs/scratch-vs-durable.md`](scratch-vs-durable.md) (Phase 7.1 inventory;
+Phase 7.2 named nests: `scratch` / `cycle` / `totals`).
 
 ## Dependency direction
 
