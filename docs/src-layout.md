@@ -25,10 +25,12 @@ is implied by this split.
 | `mcmove_ops.c` | `OP_*` lattice/bead helpers, Rosenbluth, MH |
 | `mcmove_rot.c` | `Rot_*` (file-local), rot-state checks, shuffle |
 
-## Lattice / structure (`structure.h`)
+## Lattice / structure (`structure.h` / `structure_internal.h`)
 
 | Files | Role |
 |-------|------|
+| `structure.h` | Public lattice / legal / neighbor / list / analysis-index API |
+| `structure_internal.h` | Family-only cross-TU helpers (structure*.c only) |
 | `structure_lattice.c` | Lattice index, min-image distances, `LatPos_*`, `Vec3n_*` (pure cores + `g_system` wrappers) |
 | `structure_legal.c` | Linker-constraint / bead-list legality (`LinkerConstraint_DistOK`, `Check_Linker*`, `Check_BeadID_InList`) |
 | `structure.c` | Topology helpers, `LatticeUtil_*`, bead angle helpers |
@@ -42,7 +44,7 @@ is implied by this split.
 |-------|------|
 | `cluster.c` / `cluster.h` | Cluster finding and analysis |
 | `cluster_mc.h` | Move-facing cluster queries (see architecture.md) |
-| `analysis.c` | RDF, radial density, COM, gyration (decls still in `structure.h`) |
+| `analysis.c` | RDF, radial density, COM, gyration (public entrypoints still in `structure.h`) |
 | `print.c` | `DataPrinting_*` / `DataAnalysis_*` orchestration |
 | `print_screen.c` | Screen / log / sanity-fail messages |
 | `print_fileio.c` | Trajectories, energy/MC files, restarts, `CopyData_*` |

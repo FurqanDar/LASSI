@@ -4,6 +4,16 @@
 #include "structure.h"
 #include "cluster.h"
 
+/* File-local helpers (not in structure.h). */
+static int RDF_ComponentIndex(const int i, const int j);
+static int RadDen_ComponentIndex(const int i, const int j);
+static void Calc_SystemCenterOfMass(lDub* const tmpR);
+static void
+Calc_CenterOfMass_OfCluster(lDub* const naCOM_out, const int cluster_size, const int* const restrict naClusList_in);
+static void RadDen_Avg_MolTypeWise_FromSysCen(void);
+static void RadDenHistUtil_ForSystem_FromLargestClusterOfMolTypes(void);
+static void RadDenHistUtil_ForSystem_FromCenterOfMassOfMolTypes(void);
+
 /// GyrTensor_GyrRad_Avg - calculates the total radius of gyration of the system, while not being
 /// smart about the periodic boundaries. This is used as a proxy to detect phase separation, but is
 /// a relic of the old formalism. The RDF should be used in general. Although this can be used
@@ -50,7 +60,7 @@ void GyrTensor_GyrRad_Avg(void)
 /// \return The index of the array
 /// The way it is set up, the indexing goes through the diagonal and then 0-1, 0-2, ... 0-N, 1-2,
 /// ... 1-N and so on
-int RDF_ComponentIndex(const int i, const int j)
+static int RDF_ComponentIndex(const int i, const int j)
 {
     if (i == j)
     {
@@ -74,7 +84,7 @@ int RDFArr_Index(const int run_cycle, const int rdf_comp, const int x_pos)
     return x_pos + g_analysis.nRDF_TotBins * (rdf_comp + g_analysis.nRDF_TotComps * run_cycle);
 }
 
-int RadDen_ComponentIndex(const int i, const int j)
+static int RadDen_ComponentIndex(const int i, const int j)
 {
     if (i < 0)
     {
@@ -130,7 +140,7 @@ void RDF_ComponentWise_Avg(void)
 
 ///
 /// \param tmpR
-void Calc_SystemCenterOfMass(lDub* const tmpR)
+static void Calc_SystemCenterOfMass(lDub* const tmpR)
 {
     int i, j;                     // Iterators
     lDub tot_COM[POS_MAX] = {0.}; // This is where the COM will be stored
@@ -194,7 +204,8 @@ void Calc_SystemCenterOfMass(lDub* const tmpR)
 /// \param naCOM_out
 /// \param cluster_size
 /// \param naClusList_in
-void Calc_CenterOfMass_OfCluster(lDub* const naCOM_out, const int cluster_size, const int* const restrict naClusList_in)
+static void
+Calc_CenterOfMass_OfCluster(lDub* const naCOM_out, const int cluster_size, const int* const restrict naClusList_in)
 {
     // This version measures the COM of a cluster of size c
     //  cluster size, given the molecule ID's in g_analysis.naList.
@@ -410,7 +421,7 @@ void Calc_SystemCenterOfMass_WithoutMolType(lDub* tmpR, const int thisType)
     }
 }
 
-void RadDen_Avg_MolTypeWise_FromSysCen(void)
+static void RadDen_Avg_MolTypeWise_FromSysCen(void)
 {
     int i;        // Iterator for loop
     int thisType; // Tracks the type of the chain
@@ -514,7 +525,7 @@ void RadialDensityAnalysis_Perform_Analysis(void)
     g_analysis.nTotRadDenCounter++;
 }
 
-void RadDenHistUtil_ForSystem_FromCenterOfMassOfMolTypes(void)
+static void RadDenHistUtil_ForSystem_FromCenterOfMassOfMolTypes(void)
 {
     int i, j, k;
     int naCOM_r[POS_MAX] = {0};
@@ -556,7 +567,7 @@ void RadDenHistUtil_ForSystem_FromCenterOfMassOfMolTypes(void)
     }
 }
 
-void RadDenHistUtil_ForSystem_FromLargestClusterOfMolTypes(void)
+static void RadDenHistUtil_ForSystem_FromLargestClusterOfMolTypes(void)
 {
     int i, j, k;        // Iterators for loop
     int thisType;       // Tracks the type of the chain

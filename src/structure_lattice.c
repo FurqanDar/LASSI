@@ -1,4 +1,13 @@
-#include "structure.h"
+#include "structure_internal.h"
+
+/* File-local helpers (not in structure.h). */
+static int Lat_Ind_FromCoords(const int i, const int j, const int k);
+static float Dist_BeadToPoint_Float(const int beadID, const float* f1);
+static float Dist_PointToPoint_Float(const float* f1, const float* f2);
+static void Calculate_Distances_For_Radius(float* thisList, const int nRad);
+static void LatPos_add_noPBC(int* outVec, const int* firVec, const int* secVec);
+static int Vec3n_DotProd(const int* vec_1, const int* vec_2);
+static float Vec3n_AngleBetweenVecs(const int* vec_1, const int* vec_2);
 
 /*
  * Lattice index, min-image distances, and lattice-position helpers.
@@ -17,7 +26,7 @@ int Lat_Ind_FromCoords_Box(const int i, const int j, const int k, const int box_
 /// \param j
 /// \param k
 /// \return the 1D index location for (i,j,k) position
-int Lat_Ind_FromCoords(const int i, const int j, const int k)
+static int Lat_Ind_FromCoords(const int i, const int j, const int k)
 {
     return Lat_Ind_FromCoords_Box(i, j, k, g_system.naBoxSize[POS_X], g_system.naBoxSize[POS_Y]);
 }
@@ -57,7 +66,7 @@ float Dist_PointToPoint_Box(const int* const restrict f1, const int* const restr
 
 /// Dist_PointTotPoint_Float - euclidean distance between the vectors (arrays) f1 and f2 where f1
 /// and f2 are floats. \param f1 \param f2 \return
-float Dist_PointToPoint_Float(const float* f1, const float* f2)
+static float Dist_PointToPoint_Float(const float* f1, const float* f2)
 {
     float d[POS_MAX];
     int i;
@@ -106,7 +115,7 @@ float Dist_BeadToPoint_Double(const int beadID, const lDub* f1)
 /// \param beadID
 /// \param f1
 /// \return sqrt(dx^2 + dy^2 + dz^2)
-float Dist_BeadToPoint_Float(const int beadID, const float* f1)
+static float Dist_BeadToPoint_Float(const int beadID, const float* f1)
 {
     float d[POS_MAX];
     int i;
@@ -143,7 +152,7 @@ int Dist_VecMagSq(const int* const f1)
     return (f1[0] * f1[0] + f1[1] * f1[1] + f1[2] * f1[2]);
 }
 
-void Calculate_Distances_For_Radius(float* thisList, const int nRad)
+static void Calculate_Distances_For_Radius(float* thisList, const int nRad)
 {
     int r_disp[POS_MAX] = {0};
 
@@ -222,7 +231,7 @@ void LatPos_add_wPBC_ofComp(int* outVec, const int* firVec, const int* secVec, c
 
 /// LatPos_add_noPBC: Given the two arrays firVec and secVec, we store the sum of the two arrays in
 /// outVec. \param outVec \param firVec \param secVec
-void LatPos_add_noPBC(int* outVec, const int* firVec, const int* secVec)
+static void LatPos_add_noPBC(int* outVec, const int* firVec, const int* secVec)
 {
     short j;
     for (j = 0; j < POS_MAX; j++)
@@ -253,7 +262,7 @@ void BeadPos_sub_wPBC(int* outVec, const int* firVec, const int* secVec)
     }
 }
 
-int Vec3n_DotProd(const int* vec_1, const int* vec_2)
+static int Vec3n_DotProd(const int* vec_1, const int* vec_2)
 {
     return vec_1[0] * vec_2[0] + vec_1[1] * vec_2[1] + vec_1[2] * vec_2[2];
 }
@@ -274,7 +283,7 @@ float Vec3n_CosTheta(const int* v1, const int* v2)
     return dumCosTheta;
 }
 
-float Vec3n_AngleBetweenVecs(const int* vec_1, const int* vec_2)
+static float Vec3n_AngleBetweenVecs(const int* vec_1, const int* vec_2)
 {
     const float dumAng = Vec3n_CosTheta(vec_1, vec_2);
     return acosf(dumAng);

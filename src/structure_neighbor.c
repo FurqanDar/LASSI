@@ -1,4 +1,13 @@
-#include "structure.h"
+#include "structure_internal.h"
+
+/* File-local helpers (not in structure.h). */
+static int NeighborSearch_SolSitesAround(const int* startVec);
+static int NeighborSearch_AroundPoint_wRad_wDists(
+    const int beadID,
+    const int* startVec,
+    const int nRad,
+    int* neighList,
+    float* distList);
 
 /// NeighborSearch_ForOvlp: Given the beadID, which should be at startVec, we calculate all the
 /// neighbors within the +-1 cube. We return the number of neighbors. \param beadID \param startVec
@@ -107,7 +116,7 @@ int NeighborSearch_EmptySitesAround_wRad(const int* startVec, const int nRad)
 /// NeighborSearch_SolSitesAround: number of solvation sites around this point. Finds the number of
 /// empty lattice sites in the 26 closest sites. \param startVec \return Empty sites around this
 /// point.
-int NeighborSearch_SolSitesAround(const int* startVec)
+static int NeighborSearch_SolSitesAround(const int* startVec)
 {
     return NeighborSearch_EmptySitesAround_wRad(startVec, 1);
 }
@@ -160,7 +169,7 @@ int NeighborSearch_AroundPoint_wRad_IgnBead(const int beadID, const int* startVe
     return neigh_num;
 }
 
-int NeighborSearch_AroundPoint_wRad_wDists(
+static int NeighborSearch_AroundPoint_wRad_wDists(
     const int beadID,
     const int* startVec,
     const int nRad,
