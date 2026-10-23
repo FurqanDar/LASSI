@@ -194,7 +194,7 @@ int MC_Step(float fMCTemp)
 {
     const int mode = MC_PickMode();
     const int nAccept = s_mcMoves_Prod[mode](fMCTemp);
-    g_mc.naMCAccepMat[nAccept][mode]++;
+    g_mc.cycle.naMCAccepMat[nAccept][mode]++;
     return mode * 12 + nAccept;
 }
 
@@ -205,6 +205,6 @@ int MC_Step_Therm(float fMCTemp)
 {
     const int mode = MC_PickMode();
     const int nAccept = s_mcMoves_Therm[mode](fMCTemp);
-    g_mc.naMCAccepMat[nAccept][mode]++;
+    g_mc.cycle.naMCAccepMat[nAccept][mode]++;
     return mode * 12 + nAccept;
 }

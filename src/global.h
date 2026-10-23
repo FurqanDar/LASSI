@@ -81,10 +81,22 @@ typedef long double lLDub;
 
 /*
  * Phase 2.1: domain structs with a single process-wide instance each.
- * Phase 7.1: fields tagged durable vs scratch (see docs/scratch-vs-durable.md).
- * Anonymous nested groups are C11 layout-only groupings — field names/access
- * (g_system.naOldOvlpNeighs, …) are unchanged.
+ * Phase 7.1: durable vs scratch tags (docs/scratch-vs-durable.md).
+ * Phase 7.2: named nests (scratch / cycle / totals); call sites use
+ * g_system.scratch.*, g_analysis.cycle.*, g_analysis.totals.*, etc.
  */
+
+/// Per-move / per-search working storage (allocation spans the run).
+typedef struct SystemScratch
+{
+    lInt** old_bead; /* trial backup for reject/restore */
+    lInt* naOldOvlpNeighs;
+    lInt* naNewOvlpNeighs;
+    lInt* naOldContNeighs;
+    lInt* naNewContNeighs;
+    lInt naTempR[POS_MAX];
+    lInt naRot_IndArr[MAX_ROTSTATES - 1]; /* rotation shuffle indices */
+} SystemScratch;
 
 /// Lattice configuration, topology flags, neighbor scratch, linker params.
 typedef struct SystemState
@@ -124,18 +136,17 @@ typedef struct SystemState
 
     lInt* naTotLattice;
 
-    /* ---- scratch: per-move / per-search (allocation may span the run) ---- */
-    struct
-    {
-        lInt** old_bead; /* trial backup for reject/restore */
-        lInt* naOldOvlpNeighs;
-        lInt* naNewOvlpNeighs;
-        lInt* naOldContNeighs;
-        lInt* naNewContNeighs;
-        lInt naTempR[POS_MAX];
-        lInt naRot_IndArr[MAX_ROTSTATES - 1]; /* rotation shuffle indices */
-    };
+    SystemScratch scratch;
 } SystemState;
+
+/// Rotational trial / Boltzmann working sets.
+typedef struct EnergyScratch
+{
+    lInt naRotTrial[MAX_VALENCY][MAX_ROTSTATES];
+    lLDub ldaBoltzFac[MAX_ROTSTATES - 1];
+    lLDub ldaBoltzNorm[MAX_VALENCY];
+    lLDub ldaBoltzFacNorm[MAX_AA][MAX_AA];
+} EnergyScratch;
 
 /// Energy matrices, Boltzmann factors, current energy vector.
 typedef struct EnergyTables
@@ -147,15 +158,14 @@ typedef struct EnergyTables
     lLDub ldLogOfSmallestPossibleProb;
     float faCurrEn[MAX_E];
 
-    /* ---- scratch: rotational trial / Boltzmann working sets ---- */
-    struct
-    {
-        lInt naRotTrial[MAX_VALENCY][MAX_ROTSTATES];
-        lLDub ldaBoltzFac[MAX_ROTSTATES - 1];
-        lLDub ldaBoltzNorm[MAX_VALENCY];
-        lLDub ldaBoltzFacNorm[MAX_AA][MAX_AA];
-    };
+    EnergyScratch scratch;
 } EnergyTables;
+
+/// Cycle-local MC accept counts (cleared between cycles).
+typedef struct McCycleScratch
+{
+    lLong naMCAccepMat[2][MAX_MV];
+} McCycleScratch;
 
 /// MC temperatures, frequencies, step counts, acceptance matrix, RNG seed.
 typedef struct McControl
@@ -168,9 +178,16 @@ typedef struct McControl
     lInt nTotCycleNum;
     lInt nRNG_Seed;
 
-    /* ---- cycle buffer: cleared in Reset_Global_Arrays ---- */
-    lLong naMCAccepMat[2][MAX_MV];
+    McCycleScratch cycle;
 } McControl;
+
+/// Cycle-local trajectory accumulation (experimental traj mode).
+typedef struct ReportsCycleScratch
+{
+    lInt* naTOTTRAJ_Arr;
+    lLong nTraj_FramesPerCycle;
+    lInt nTrajCurFrame;
+} ReportsCycleScratch;
 
 /// Report filenames / prefixes and trajectory buffers.
 typedef struct Reports
@@ -185,11 +202,37 @@ typedef struct Reports
     lLong naReportFreqs[MAX_REPORT];
     lLong nTrajMode;
 
-    /* ---- cycle buffer: experimental traj accumulation ---- */
-    lInt* naTOTTRAJ_Arr;
-    lLong nTraj_FramesPerCycle;
-    lInt nTrajCurFrame;
+    ReportsCycleScratch cycle;
 } Reports;
+
+/// Analysis working sets cleared between cycles (not ldaTOT* accumulators).
+typedef struct AnalysisCycleScratch
+{
+    lInt** naClusterMatrix;
+    lInt* naList;
+    lLong* laClusHistList;
+    lInt* naChainCheckList;
+    lLDub* ldaMOLCLUS_Arr;
+    lLDub* ldaRDF_Arr;
+    lLDub* ldaRadDen_Arr;
+    float faGyrTensor[7];
+    float faSysGyrRad;
+    lInt nTotClusCounter;
+    lInt nLargestClusterRightNow;
+    lInt nTotRDFCounter;
+    lInt nTotRadDenCounter;
+    lInt nTotGyrRadCounter;
+} AnalysisCycleScratch;
+
+/// Durable cross-cycle analysis accumulators.
+typedef struct AnalysisTotals
+{
+    lLDub** ldaTOTCLUS_Arr;
+    lLDub* ldaTOTMOLCLUS_Arr;
+    lLDub* ldaTOTRDF_Arr;
+    lLDub* ldaTOTRadDen_Arr;
+    lLDub** ldaTOTRg_Arr;
+} AnalysisTotals;
 
 /// Cluster, RDF / radial density, and gyration analysis state.
 typedef struct AnalysisState
@@ -202,34 +245,8 @@ typedef struct AnalysisState
     lInt nRadDen_TotComps;
     lInt nRadDen_CompShift;
 
-    /* ---- scratch / cycle working sets (cleared by Reset_Global_Arrays) ---- */
-    struct
-    {
-        lInt** naClusterMatrix;
-        lInt* naList;
-        lLong* laClusHistList;
-        lInt* naChainCheckList;
-        lLDub* ldaMOLCLUS_Arr;
-        lLDub* ldaRDF_Arr;
-        lLDub* ldaRadDen_Arr;
-        float faGyrTensor[7];
-        float faSysGyrRad;
-        lInt nTotClusCounter;
-        lInt nLargestClusterRightNow;
-        lInt nTotRDFCounter;
-        lInt nTotRadDenCounter;
-        lInt nTotGyrRadCounter;
-    };
-
-    /* ---- durable accumulators across cycles (ldaTOT*) ---- */
-    struct
-    {
-        lLDub** ldaTOTCLUS_Arr;
-        lLDub* ldaTOTMOLCLUS_Arr;
-        lLDub* ldaTOTRDF_Arr;
-        lLDub* ldaTOTRadDen_Arr;
-        lLDub** ldaTOTRg_Arr;
-    };
+    AnalysisCycleScratch cycle;
+    AnalysisTotals totals;
 } AnalysisState;
 
 /*

@@ -17,6 +17,10 @@ void Global_Array_Initialization_AtStart(const SimulationConfig* cfg);
 
 void Reset_Counters(void);
 
+void Reset_AnalysisCycleScratch(void);
+
+void Reset_McCycleScratch(void);
+
 void Reset_Global_Arrays(void);
 
 void Initial_Conditions_Simple(const SimulationConfig* cfg);

@@ -132,8 +132,8 @@ int Move_Local(int beadID, float MyTemp)
         &newEn,
         &old_ovlp_num,
         &old_cont_num,
-        g_system.naOldOvlpNeighs,
-        g_system.naOldContNeighs);
+        g_system.scratch.naOldOvlpNeighs,
+        g_system.scratch.naOldContNeighs);
 
     int bondList[MAX_BONDS + 1];
     int bondNum = g_system.bSystemHasTopo ? OP_GetTopoBonds(beadID, bondList) : 0;
@@ -156,8 +156,8 @@ int Move_Local(int beadID, float MyTemp)
         &oldEn,
         &new_ovlp_num,
         &new_cont_num,
-        g_system.naNewOvlpNeighs,
-        g_system.naNewContNeighs);
+        g_system.scratch.naNewOvlpNeighs,
+        g_system.scratch.naNewContNeighs);
 
     newEn += bondNum ? Energy_Topo_Angle_ForList(bondNum, bondList) : 0.;
 
@@ -296,8 +296,8 @@ int Move_Snake(int chainID, float MyTemp)
             &newEn,
             &old_ovlp_num,
             &old_cont_num,
-            g_system.naOldOvlpNeighs,
-            g_system.naOldContNeighs);
+            g_system.scratch.naOldOvlpNeighs,
+            g_system.scratch.naOldContNeighs);
         resi = g_system.bead_info[i][BEAD_TYPE];
         BSum += MC_RosenbluthSampling_ForChains_AtOld(
             i,
@@ -347,8 +347,8 @@ int Move_Snake(int chainID, float MyTemp)
             &oldEn,
             &new_ovlp_num,
             &new_cont_num,
-            g_system.naNewOvlpNeighs,
-            g_system.naNewContNeighs);
+            g_system.scratch.naNewOvlpNeighs,
+            g_system.scratch.naNewContNeighs);
         resi = g_system.bead_info[i][BEAD_TYPE];
         FSum += MC_RosenbluthSampling_ForChains_AtNew(i, resi, &yTemp, &newEn, new_ovlp_num);
         if (yTemp != -1)
@@ -435,8 +435,8 @@ int Move_Trans(int chainID, float MyTemp)
             &newEn,
             &old_ovlp_num,
             &old_cont_num,
-            g_system.naOldOvlpNeighs,
-            g_system.naOldContNeighs);
+            g_system.scratch.naOldOvlpNeighs,
+            g_system.scratch.naOldContNeighs);
         resi = g_system.bead_info[i][BEAD_TYPE];
         BSum += MC_RosenbluthSampling_ForChains_AtOld(i, resi, &oldEn, old_ovlp_num);
     }
@@ -461,8 +461,8 @@ int Move_Trans(int chainID, float MyTemp)
             &oldEn,
             &new_ovlp_num,
             &new_cont_num,
-            g_system.naNewOvlpNeighs,
-            g_system.naNewContNeighs);
+            g_system.scratch.naNewOvlpNeighs,
+            g_system.scratch.naNewContNeighs);
         resi = g_system.bead_info[i][BEAD_TYPE];
         FSum += MC_RosenbluthSampling_ForChains_AtNew(i, resi, &yTemp, &newEn, new_ovlp_num);
         if (yTemp != -1)
@@ -574,8 +574,8 @@ int Move_Clus_Network(float MyTemp)
                     &newEn,
                     &old_ovlp_num,
                     &old_cont_num,
-                    g_system.naOldOvlpNeighs,
-                    g_system.naOldContNeighs);
+                    g_system.scratch.naOldOvlpNeighs,
+                    g_system.scratch.naOldContNeighs);
             }
         }
     }
@@ -614,8 +614,8 @@ int Move_Clus_Network(float MyTemp)
                     &oldEn,
                     &new_ovlp_num,
                     &new_cont_num,
-                    g_system.naNewOvlpNeighs,
-                    g_system.naNewContNeighs);
+                    g_system.scratch.naNewOvlpNeighs,
+                    g_system.scratch.naNewContNeighs);
             }
         }
     }
@@ -687,7 +687,7 @@ int Move_SmallClus_Network(int chainID, float MyTemp)
     LatPos_gen_rand_wRad(r_Disp, g_system.naBoxSize[0] / 2);
     for (i = 0; i < ClusSize; i++)
     {
-        // printf("%d\n", g_analysis.naList[i]);
+        // printf("%d\n", g_analysis.cycle.naList[i]);
         yTemp = Check_ChainDisp(clusList[i], r_Disp); // Checking for steric clash
         if (yTemp == 0)
         {
@@ -734,8 +734,8 @@ int Move_SmallClus_Network(int chainID, float MyTemp)
                     &newEn,
                     &old_ovlp_num,
                     &old_cont_num,
-                    g_system.naOldOvlpNeighs,
-                    g_system.naOldContNeighs);
+                    g_system.scratch.naOldOvlpNeighs,
+                    g_system.scratch.naOldContNeighs);
             }
         }
     }
@@ -774,8 +774,8 @@ int Move_SmallClus_Network(int chainID, float MyTemp)
                     &oldEn,
                     &new_ovlp_num,
                     &new_cont_num,
-                    g_system.naNewOvlpNeighs,
-                    g_system.naNewContNeighs);
+                    g_system.scratch.naNewOvlpNeighs,
+                    g_system.scratch.naNewContNeighs);
             }
         }
     }
@@ -1028,8 +1028,8 @@ int Move_CoLocal(int thisBeadID, float MyTemp)
         &newEn,
         &ovlp_num,
         &cont_num,
-        g_system.naOldOvlpNeighs,
-        g_system.naOldContNeighs);
+        g_system.scratch.naOldOvlpNeighs,
+        g_system.scratch.naOldContNeighs);
     Energy_Iso_ForCoLocal(
         otherBeadID,
         thisBeadID,
@@ -1038,8 +1038,8 @@ int Move_CoLocal(int thisBeadID, float MyTemp)
         &newEn,
         &ovlp_num,
         &cont_num,
-        g_system.naOldOvlpNeighs,
-        g_system.naOldContNeighs);
+        g_system.scratch.naOldOvlpNeighs,
+        g_system.scratch.naOldContNeighs);
 
     int bondList[2 * (MAX_BONDS + 1)];
     int bond_tmpList[MAX_BONDS + 1];
@@ -1079,8 +1079,8 @@ int Move_CoLocal(int thisBeadID, float MyTemp)
         &oldEn,
         &ovlp_num,
         &cont_num,
-        g_system.naOldOvlpNeighs,
-        g_system.naOldContNeighs);
+        g_system.scratch.naOldOvlpNeighs,
+        g_system.scratch.naOldContNeighs);
     Energy_Iso_ForCoLocal(
         otherBeadID,
         thisBeadID,
@@ -1089,8 +1089,8 @@ int Move_CoLocal(int thisBeadID, float MyTemp)
         &oldEn,
         &ovlp_num,
         &cont_num,
-        g_system.naOldOvlpNeighs,
-        g_system.naOldContNeighs);
+        g_system.scratch.naOldOvlpNeighs,
+        g_system.scratch.naOldContNeighs);
 
     newEn += bondNum ? Energy_Topo_Angle_ForList(bondNum, bondList) : 0.;
 
@@ -1204,8 +1204,8 @@ int Move_MultiLocal(int beadID, float MyTemp)
             &newEn,
             &old_ovlp_num,
             &old_cont_num,
-            g_system.naOldOvlpNeighs,
-            g_system.naOldContNeighs);
+            g_system.scratch.naOldOvlpNeighs,
+            g_system.scratch.naOldContNeighs);
         BSum += MC_RosenbluthSampling_ForLists_AtOld(i, beadNum, beadsList, &oldEn, old_ovlp_num);
     }
 
@@ -1255,8 +1255,8 @@ int Move_MultiLocal(int beadID, float MyTemp)
             &oldEn,
             &new_ovlp_num,
             &new_cont_num,
-            g_system.naNewOvlpNeighs,
-            g_system.naNewContNeighs);
+            g_system.scratch.naNewOvlpNeighs,
+            g_system.scratch.naNewContNeighs);
         FSum += MC_RosenbluthSampling_ForLists_AtNew(i, beadNum, beadsList, &yTemp, &newEn, new_ovlp_num);
         if (yTemp != -1)
         { // An appropriate partner has been selected. Form
@@ -1391,7 +1391,7 @@ int Move_Pivot(int chainID, float MyTemp)
         // Use anchorbead as origin, and check what happens after the rotation
         // to every bead
         OP_Rotation(PivotM, tmpBead, anchorPos);
-        yTemp = Check_MoveBeadTo(g_system.naTempR);
+        yTemp = Check_MoveBeadTo(g_system.scratch.naTempR);
         if (yTemp == 0)
         {
             break;
@@ -1429,8 +1429,8 @@ int Move_Pivot(int chainID, float MyTemp)
             &newEn,
             &old_ovlp_num,
             &old_cont_num,
-            g_system.naOldOvlpNeighs,
-            g_system.naOldContNeighs);
+            g_system.scratch.naOldOvlpNeighs,
+            g_system.scratch.naOldContNeighs);
         resi = g_system.bead_info[tmpBead][BEAD_TYPE];
         BSum += MC_RosenbluthSampling_ForRange_AtOld(tmpBead, resi, smBead, lgBead, &oldEn, old_ovlp_num);
     }
@@ -1442,7 +1442,7 @@ int Move_Pivot(int chainID, float MyTemp)
     {
         tmpBead = beadsList[i];
         OP_Rotation(PivotM, tmpBead, anchorPos);
-        OP_System_MoveBeadTo(tmpBead, g_system.naTempR);
+        OP_System_MoveBeadTo(tmpBead, g_system.scratch.naTempR);
     }
 
     OP_Beads_BreakBondsInList(beadNum, beadsList);
@@ -1472,8 +1472,8 @@ int Move_Pivot(int chainID, float MyTemp)
             &oldEn,
             &new_ovlp_num,
             &new_cont_num,
-            g_system.naNewOvlpNeighs,
-            g_system.naNewContNeighs);
+            g_system.scratch.naNewOvlpNeighs,
+            g_system.scratch.naNewContNeighs);
         FSum += MC_RosenbluthSampling_ForRange_AtNew(tmpBead, resi, smBead, lgBead, &yTemp, &newEn, new_ovlp_num);
         if (yTemp != -1)
         {
@@ -1573,7 +1573,7 @@ int Move_BranchedRot(int chainID, float MyTemp)
         // Use anchorbead as origin, and check what happens after the rotation
         // to every bead
         OP_Rotation(PivotM, tmpBead, anchorPos);
-        yTemp = Check_MoveBeadTo(g_system.naTempR);
+        yTemp = Check_MoveBeadTo(g_system.scratch.naTempR);
         if (yTemp == 0)
         {
             break;
@@ -1611,8 +1611,8 @@ int Move_BranchedRot(int chainID, float MyTemp)
             &newEn,
             &old_ovlp_num,
             &old_cont_num,
-            g_system.naOldOvlpNeighs,
-            g_system.naOldContNeighs);
+            g_system.scratch.naOldOvlpNeighs,
+            g_system.scratch.naOldContNeighs);
         resi = g_system.bead_info[tmpBead][BEAD_TYPE];
         BSum += MC_RosenbluthSampling_ForRange_AtOld(tmpBead, resi, smBead, lgBead, &oldEn, old_ovlp_num);
     }
@@ -1621,7 +1621,7 @@ int Move_BranchedRot(int chainID, float MyTemp)
     {
         tmpBead = beadsList[i];
         OP_Rotation(PivotM, tmpBead, anchorPos);
-        OP_System_MoveBeadTo(tmpBead, g_system.naTempR);
+        OP_System_MoveBeadTo(tmpBead, g_system.scratch.naTempR);
     }
 
     OP_Beads_BreakBondsInList(beadNum, beadsList);
@@ -1651,8 +1651,8 @@ int Move_BranchedRot(int chainID, float MyTemp)
             &oldEn,
             &new_ovlp_num,
             &new_cont_num,
-            g_system.naNewOvlpNeighs,
-            g_system.naNewContNeighs);
+            g_system.scratch.naNewOvlpNeighs,
+            g_system.scratch.naNewContNeighs);
         FSum += MC_RosenbluthSampling_ForRange_AtNew(tmpBead, resi, smBead, lgBead, &yTemp, &newEn, new_ovlp_num);
         if (yTemp != -1)
         {
@@ -1765,8 +1765,8 @@ int Move_SmallClus_Proximity(const int chainID, const float myTemp)
                     &newEn,
                     &old_ovlp_num,
                     &old_cont_num,
-                    g_system.naOldOvlpNeighs,
-                    g_system.naOldContNeighs);
+                    g_system.scratch.naOldOvlpNeighs,
+                    g_system.scratch.naOldContNeighs);
             }
         }
     }
@@ -1820,8 +1820,8 @@ int Move_SmallClus_Proximity(const int chainID, const float myTemp)
                     &oldEn,
                     &new_ovlp_num,
                     &new_cont_num,
-                    g_system.naNewOvlpNeighs,
-                    g_system.naNewContNeighs);
+                    g_system.scratch.naNewOvlpNeighs,
+                    g_system.scratch.naNewContNeighs);
             }
         }
     }
@@ -1931,8 +1931,8 @@ int Move_Clus_Proximity(const float myTemp)
                     &newEn,
                     &old_ovlp_num,
                     &old_cont_num,
-                    g_system.naOldOvlpNeighs,
-                    g_system.naOldContNeighs);
+                    g_system.scratch.naOldOvlpNeighs,
+                    g_system.scratch.naOldContNeighs);
             }
         }
     }
@@ -1985,8 +1985,8 @@ int Move_Clus_Proximity(const float myTemp)
                     &oldEn,
                     &new_ovlp_num,
                     &new_cont_num,
-                    g_system.naNewOvlpNeighs,
-                    g_system.naNewContNeighs);
+                    g_system.scratch.naNewOvlpNeighs,
+                    g_system.scratch.naNewContNeighs);
             }
         }
     }

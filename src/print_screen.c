@@ -227,10 +227,10 @@ void ScreenIO_Print_AcceptanceRatios(void)
     puts("Acceptance Ratios    |");
     for (i = 1; i < MAX_MV; i++)
     {
-        nMoveSum = g_mc.naMCAccepMat[0][i] + g_mc.naMCAccepMat[1][i];
+        nMoveSum = g_mc.cycle.naMCAccepMat[0][i] + g_mc.cycle.naMCAccepMat[1][i];
         if (nMoveSum)
         {
-            fAccRatio = 100.f * (float)g_mc.naMCAccepMat[1][i] / (float)nMoveSum;
+            fAccRatio = 100.f * (float)g_mc.cycle.naMCAccepMat[1][i] / (float)nMoveSum;
             printf("%-12s: %-7.2f|\n", MoveName[i], fAccRatio);
         }
         else
@@ -249,11 +249,11 @@ void ScreenIO_Print_Log_Thermalization(const long nGen)
     printf("Step     : %8.3e\n", (float)nGen);
     printf("MC Temp  : %8.3e\n", g_mc.fCuTemp);
 
-    if (g_analysis.nTotClusCounter > 0)
+    if (g_analysis.cycle.nTotClusCounter > 0)
     {
         printf(
             "Perc Phi : %8.3f\n",
-            ((float)g_analysis.nLargestClusterRightNow) / ((float)g_analysis.nTotClusCounter) /
+            ((float)g_analysis.cycle.nLargestClusterRightNow) / ((float)g_analysis.cycle.nTotClusCounter) /
                 (float)g_system.tot_chains);
     }
 
@@ -270,11 +270,11 @@ void ScreenIO_Print_Log_FullRun(const long nGen, const int run_cycle)
     printf("Step     : %8.3e\n", (float)nGen);
     printf("MC Temp  : %8.3e\n", g_mc.fCuTemp);
 
-    if (g_analysis.nTotClusCounter > 0)
+    if (g_analysis.cycle.nTotClusCounter > 0)
     {
         printf(
             "Perc Phi : %8.3f\n",
-            ((float)g_analysis.nLargestClusterRightNow) / ((float)g_analysis.nTotClusCounter) /
+            ((float)g_analysis.cycle.nLargestClusterRightNow) / ((float)g_analysis.cycle.nTotClusCounter) /
                 (float)g_system.tot_chains);
     }
 
