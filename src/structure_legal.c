@@ -1,4 +1,4 @@
-#include "structure.h"
+#include "structure_internal.h"
 
 /*
  * Move-facing legality / linker-constraint helpers.

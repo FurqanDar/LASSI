@@ -1,4 +1,4 @@
-#include "structure.h"
+#include "structure_internal.h"
 
 /* print.h is I/O-layer; forward-declare only the crash/sanity printers we call
  * so structure does not take a hard include edge upward into I/O (Phase 3.1). */

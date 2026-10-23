@@ -1,4 +1,11 @@
-#include "structure.h"
+#include "structure_internal.h"
+
+/* File-local helpers (not in structure.h). */
+static int BeadListOP_Filter_DbPvtLinkerConBck(const int beadNum, int* beadList, const int thisBead);
+static int ClusListOP_AddChainID(const int clusSize, int* clusList, const int chainID);
+static int ClusListOP_AddIfUniqueChainID(const int clusSize, int* clusList, const int chainID);
+static int
+ListOP_IndicesForVal_Int(const int nVal, int* const naOutList, const int nListSize, const int* const naInputList);
 
 /// BeadIDListOP_GetChainIDs: Given beadList of size beadNum, we record the chainIDs of every bead
 /// into chainList. Make sure chainList is as big as beadList. \param beadNum \param beadList \param
@@ -129,7 +136,7 @@ int BeadListOP_Filter_DbPvtLinkerConFwd(const int beadNum, int* beadList, const 
 /// \param beadNum
 /// \param beadList
 /// \param thisBead
-int BeadListOP_Filter_DbPvtLinkerConBck(const int beadNum, int* beadList, const int thisBead)
+static int BeadListOP_Filter_DbPvtLinkerConBck(const int beadNum, int* beadList, const int thisBead)
 {
     int newSize = 0;
     int i, tmpBead;
@@ -304,7 +311,7 @@ void ChainListOP_GetChainTypes(int* const naTypesList, const int* const naChainI
 /// \param clusList
 /// \param chainID
 /// \return
-int ClusListOP_AddChainID(const int clusSize, int* clusList, const int chainID)
+static int ClusListOP_AddChainID(const int clusSize, int* clusList, const int chainID)
 {
     int i;
     for (i = 0; i < clusSize; i++)
@@ -325,7 +332,7 @@ int ClusListOP_AddChainID(const int clusSize, int* clusList, const int chainID)
 /// \param clusList
 /// \param chainID
 /// \return clusSize+1 if the chain was added, clusSize if not.
-int ClusListOP_AddIfUniqueChainID(const int clusSize, int* clusList, const int chainID)
+static int ClusListOP_AddIfUniqueChainID(const int clusSize, int* clusList, const int chainID)
 {
     int i;
     for (i = 0; i < clusSize; i++)
@@ -366,7 +373,8 @@ int ListOP_GetMaxVal_Int(const int nListSize, const int* const naList)
 /// \param nListSize
 /// \param naInputList
 /// \return
-int ListOP_IndicesForVal_Int(const int nVal, int* const naOutList, const int nListSize, const int* const naInputList)
+static int
+ListOP_IndicesForVal_Int(const int nVal, int* const naOutList, const int nListSize, const int* const naInputList)
 {
     int i;
     int nNumberOfInds = 0;
