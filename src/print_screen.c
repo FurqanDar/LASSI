@@ -1,12 +1,22 @@
-#include "print.h"
+#include "print_internal.h"
 #include "structure.h"
+
+/* File-local helpers (not in print.h / print_internal.h). */
+static void PrintToScreen_EnergyMatrix(char* strTitle, int nSeqEn, float fArray[MAX_AA][MAX_AA][MAX_E], int param);
+static void Print_LogToScreen(long nGen, const int run_it);
+static void PrintToScreen_AllEnergyMatrices(void);
+static void PrintToScreen_MCMoveFreqs(void);
+static void ScreenIOUtil_PrintTemperatures(void);
+static void ScreenIO_Print_SystemEnergy(void);
+static void ScreenIO_Print_AcceptanceRatios(void);
+static void ScreenIO_PrintStdErr_BeadPosition(const int beadID);
 
 /// PrintToScreen_EnergyMatrix - fancy function to print symmetric matrices with labels
 /// \param strTitle
 /// \param nSeqEn
 /// \param fArray
 /// \param param
-void PrintToScreen_EnergyMatrix(char* strTitle, int nSeqEn, float fArray[MAX_AA][MAX_AA][MAX_E], int param)
+static void PrintToScreen_EnergyMatrix(char* strTitle, int nSeqEn, float fArray[MAX_AA][MAX_AA][MAX_E], int param)
 {
     const int nLen = nSeqEn;
     const int outLen = (nLen + 3) * 5;
@@ -40,13 +50,13 @@ void PrintToScreen_EnergyMatrix(char* strTitle, int nSeqEn, float fArray[MAX_AA]
 
 /// Print_LogToScreen - prints current status of the run. Overall move
 /// acceptance ratios, and energies. \param nGen \param run_it
-void Print_LogToScreen(long nGen, const int run_it)
+static void Print_LogToScreen(long nGen, const int run_it)
 {
     ScreenIO_Print_Log_FullRun(nGen, run_it);
 }
 
 /// PrintToScreen_AllEnergyMatrices
-void PrintToScreen_AllEnergyMatrices(void)
+static void PrintToScreen_AllEnergyMatrices(void)
 {
     const char lBrace[] = "<======      ";
     const char rBrace[] = "      ======>";
@@ -65,7 +75,7 @@ void PrintToScreen_AllEnergyMatrices(void)
 }
 
 /// PrintToScreen_MCMoveFreqs
-void PrintToScreen_MCMoveFreqs(void)
+static void PrintToScreen_MCMoveFreqs(void)
 {
     const char* MoveName[MAX_MV];
     MoveName[MV_PIVOT] = "Pivot           ";
@@ -108,7 +118,7 @@ void PrintToScreen_MCMoveFreqs(void)
     }
 }
 
-void ScreenIOUtil_PrintTemperatures(void)
+static void ScreenIOUtil_PrintTemperatures(void)
 {
     printf("Thermalizing Temperature       = %.2f\n", g_mc.fPreKT);
 
@@ -177,7 +187,7 @@ void ScreenIO_Print_KeyFile(void)
 }
 
 /// ScreenIO_Print_SystemEnergy
-void ScreenIO_Print_SystemEnergy(void)
+static void ScreenIO_Print_SystemEnergy(void)
 {
     int i;
 
@@ -198,7 +208,7 @@ void ScreenIO_Print_SystemEnergy(void)
 }
 
 /// void ScreenIO_Print_AcceptanceRatios
-void ScreenIO_Print_AcceptanceRatios(void)
+static void ScreenIO_Print_AcceptanceRatios(void)
 {
     const char* MoveName[MAX_MV];
     MoveName[MV_PIVOT] = "Pivot       ";
@@ -285,7 +295,7 @@ void ScreenIO_Print_Log_FullRun(const long nGen, const int run_cycle)
 
 /// ScreenIO_PrintStdErr_BeadPosition. Prints the beadID and it's position to STDERR.
 /// \param beadID
-void ScreenIO_PrintStdErr_BeadPosition(const int beadID)
+static void ScreenIO_PrintStdErr_BeadPosition(const int beadID)
 {
     const int x = g_system.bead_info[beadID][POS_X];
     const int y = g_system.bead_info[beadID][POS_Y];

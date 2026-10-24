@@ -38,16 +38,18 @@ is implied by this split.
 | `structure_neighbor.c` | `NeighborSearch_*` |
 | `structure_lists.c` | Bead/chain/list helper ops |
 
-## Analysis / I/O
+## Analysis / I/O (`print.h` / `print_internal.h`)
 
 | Files | Role |
 |-------|------|
 | `cluster.c` / `cluster.h` | Cluster finding and analysis |
 | `cluster_mc.h` | Move-facing cluster queries (see architecture.md) |
 | `analysis.c` | RDF, radial density, COM, gyration (public entrypoints still in `structure.h`) |
+| `print.h` | Public screen/file orchestration + sanity-fail printers |
+| `print_internal.h` | Family-only cross-TU log/traj/energy/MC-file helpers (print*.c only) |
 | `print.c` | `DataPrinting_*` / `DataAnalysis_*` orchestration |
 | `print_screen.c` | Screen / log / sanity-fail messages |
-| `print_fileio.c` | Trajectories, energy/MC files, restarts, `CopyData_*` |
+| `print_fileio.c` | Trajectories, energy/MC files, restarts, `CopyData_*` (file-local) |
 
 ## Other
 

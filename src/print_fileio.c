@@ -1,5 +1,42 @@
-#include "print.h"
+#include "print_internal.h"
 #include "structure.h"
+
+/* File-local helpers (not in print.h / print_internal.h). */
+static long TrajArr_Index(const int beadID, const int nFrameNumber, const int beadProp);
+static void Write_ClusterDist(char* filename, long nGen);
+static void Write_GyrTen(char* filename, long nGen);
+static void FileIOUtil_WriteHeader_ForMCMove(const char* fileName);
+static void FileIOUtil_WriteHeader_ForRDF(const char* strFileName);
+static void FileIOUtil_WriteHeader_ForCOMDen(const char* strFileName);
+static void FileIOUtil_WriteHeader_ForGyrRad(const char* strFileName);
+static void FileIOUtil_WriteHeader_ForCLUS(const char* strFileName);
+static void FileIOUtil_WriteHeader_ForMolClus(const char* strFileName);
+static void FileIOUtil_WriteHeader_ForEnergy(const char* fileName);
+static void FileIOUtil_Traj_Txt_AppendFrame_ToFile(const char* filename, const long nGen);
+static void TrajUtil_SubselectDataFromBeadInfo(int** restrict sub_beads, int** restrict input_beads);
+static void FileIOUtil_Traj_Bin_AppendFrame_ToFile(const char* filename, const long nGen);
+static void Save_Trajectory(const long nGen, const long curFrame);
+static void Write_Saved_Trajectory(char* filename, const int run_it);
+static void Write_RDF_ComponentWise(char* filename, long nGen);
+static void FileIO_WriteTo_TopFile(const char* filename);
+static void Write_SysProp(char* filename);
+static void FileIO_WriteTo_RDFFile_TotFromGLB(const int run_it);
+static void FileIO_WriteTo_COMDenFile_TotFromGLB(const int run_it);
+static void FileIO_WriteTo_ClusFile_TotFromGLB(const int run_it);
+static void FileIO_WriteTo_MolClusFile_TotFromGLB(const int run_it);
+static void FileIO_WriteTo_GyrRadFile_TotFromGLB(const int run_it);
+static void FileIO_Write_TotalSysProp_TotFromGLB(const int run_it);
+static void FileIOUtil_CreateFile_Overwrite(const char* fileName);
+static void FileIOUtil_CreateFile_Binary_Overwrite(const char* fileName);
+static void CopyData_All(const int run_it);
+static void CopyData_RDF(const int run_it);
+static void CopyData_COMDen(const int run_it);
+static void CopyData_Clus(const int run_it);
+static void FileIOUtil_AppendTo_GyrRadFile_ForRun(const int run_it);
+static void FileIOUtil_AppendTo_ClusFile_ForRun(const int run_it);
+static void FileIOUtil_AppendTo_MolClusFile_ForRun(const int run_it);
+static void FileIOUtil_AppendTo_RDFFile_ForRun(const int run_it);
+static void FileIOUtil_AppendTo_COMDenFile_ForRun(const int run_it);
 
 /* initialize.h is main/parse-layer; forward-declare the one allocator we use
  * so I/O does not take a hard include edge upward (Phase 3.1). */
@@ -10,7 +47,7 @@ int** Create2DInt(const size_t xDim, const size_t yDim, const char* ArrName);
 /// \param nFrameNumber
 /// \param beadProp
 /// \return
-long TrajArr_Index(const int beadID, const int nFrameNumber, const int beadProp)
+static long TrajArr_Index(const int beadID, const int nFrameNumber, const int beadProp)
 {
     return beadProp + BEADINFO_MAX * (beadID + g_system.tot_beads * nFrameNumber);
 }
@@ -20,7 +57,7 @@ long TrajArr_Index(const int beadID, const int nFrameNumber, const int beadProp)
 /// Stopped using it because the IO load was slowing things down at our cluster
 /// Would be a good way to gather proper statistics on clusters as the runs went
 /// on \param filename \param nGen
-void Write_ClusterDist(char* filename, long nGen)
+static void Write_ClusterDist(char* filename, long nGen)
 {
     FILE* fp;
     int i;
@@ -55,7 +92,7 @@ void Write_ClusterDist(char* filename, long nGen)
 /// this run. Stopped using it because the IO load was slowing things down at
 /// our cluster Would be a good way to gather proper statistics on the shapes
 /// and such as the runs went on \param filename \param nGen
-void Write_GyrTen(char* filename, long nGen)
+static void Write_GyrTen(char* filename, long nGen)
 {
     FILE* fp;
     int i;
@@ -91,7 +128,7 @@ void Write_GyrTen(char* filename, long nGen)
 
 /// FileIOUtil_WriteHeader_ForMCMove - write the header for the MC move acceptance file.
 /// \param fileName
-void FileIOUtil_WriteHeader_ForMCMove(const char* fileName)
+static void FileIOUtil_WriteHeader_ForMCMove(const char* fileName)
 {
     FILE* fp = fopen(fileName, "a");
     fprintf(fp, "#Steps, and Temp, are followed by (rej, acc) for each MC Move.\n");
@@ -139,7 +176,7 @@ void FileIO_WriteTo_MCMoveFile(const char* filename, const long nGen, float cons
     fclose(fp);
 }
 
-void FileIOUtil_WriteHeader_ForRDF(const char* strFileName)
+static void FileIOUtil_WriteHeader_ForRDF(const char* strFileName)
 {
     FILE* fp = fopen(strFileName, "w");
 
@@ -151,7 +188,7 @@ void FileIOUtil_WriteHeader_ForRDF(const char* strFileName)
     fclose(fp);
 }
 
-void FileIOUtil_WriteHeader_ForCOMDen(const char* strFileName)
+static void FileIOUtil_WriteHeader_ForCOMDen(const char* strFileName)
 {
     FILE* fp = fopen(strFileName, "w");
 
@@ -160,7 +197,7 @@ void FileIOUtil_WriteHeader_ForCOMDen(const char* strFileName)
     fclose(fp);
 }
 
-void FileIOUtil_WriteHeader_ForGyrRad(const char* strFileName)
+static void FileIOUtil_WriteHeader_ForGyrRad(const char* strFileName)
 {
     FILE* fp = fopen(strFileName, "w");
 
@@ -169,7 +206,7 @@ void FileIOUtil_WriteHeader_ForGyrRad(const char* strFileName)
     fclose(fp);
 }
 
-void FileIOUtil_WriteHeader_ForCLUS(const char* strFileName)
+static void FileIOUtil_WriteHeader_ForCLUS(const char* strFileName)
 {
     FILE* fp = fopen(strFileName, "w");
 
@@ -178,7 +215,7 @@ void FileIOUtil_WriteHeader_ForCLUS(const char* strFileName)
     fclose(fp);
 }
 
-void FileIOUtil_WriteHeader_ForMolClus(const char* strFileName)
+static void FileIOUtil_WriteHeader_ForMolClus(const char* strFileName)
 {
     FILE* fp = fopen(strFileName, "w");
 
@@ -193,7 +230,7 @@ void FileIOUtil_WriteHeader_ForMolClus(const char* strFileName)
 
 /// FileIOUtil_WriteHeader_ForEnergy - write the header for the energy file.
 /// \param fileName
-void FileIOUtil_WriteHeader_ForEnergy(const char* fileName)
+static void FileIOUtil_WriteHeader_ForEnergy(const char* fileName)
 {
     FILE* fp = fopen(fileName, "a+");
     fprintf(
@@ -260,7 +297,7 @@ void FileIO_Trajectory_AppendFrame(const char* fileNameStr, const int run_it, co
 /// Appends to the file for this run.
 /// \param filename
 /// \param nGen
-void FileIOUtil_Traj_Txt_AppendFrame_ToFile(const char* filename, const long nGen)
+static void FileIOUtil_Traj_Txt_AppendFrame_ToFile(const char* filename, const long nGen)
 {
     // Writes the trajectory in LAMMPS format. To be viewed with VMD (hopefully). Read the LAMMPS
     // dump documentation for the actual format of the file
@@ -303,7 +340,7 @@ void FileIOUtil_Traj_Txt_AppendFrame_ToFile(const char* filename, const long nGe
 /// TrajUtil_SubselectDataFromBeadInfo - Assuming that sub_beads is a 2D array with enough space
 /// (nAtoms * 4), we extract POS_X, POS_Y, POS_Z, and BEAD_FACE from each bead. \param sub_beads
 /// \param input_beads
-void TrajUtil_SubselectDataFromBeadInfo(int** restrict sub_beads, int** restrict input_beads)
+static void TrajUtil_SubselectDataFromBeadInfo(int** restrict sub_beads, int** restrict input_beads)
 {
     int i;
 
@@ -319,7 +356,7 @@ void TrajUtil_SubselectDataFromBeadInfo(int** restrict sub_beads, int** restrict
 /// FileIOUtil_Traj_Bin_AppendFrame_ToFile - Appends the current frame in binary format. The format
 /// is flat, and for every bead, in order of beadID, we write X, Y, Z, bP \param filename \param
 /// nGen
-void FileIOUtil_Traj_Bin_AppendFrame_ToFile(const char* filename, const long nGen)
+static void FileIOUtil_Traj_Bin_AppendFrame_ToFile(const char* filename, const long nGen)
 {
     const int nCrds = 4;
 
@@ -342,7 +379,7 @@ void FileIOUtil_Traj_Bin_AppendFrame_ToFile(const char* filename, const long nGe
 /// Save_Trajectory -  saves the current position onto the total array
 /// \param nGen
 /// \param curFrame
-void Save_Trajectory(const long nGen, const long curFrame)
+static void Save_Trajectory(const long nGen, const long curFrame)
 {
     int i, j;
     long ar_idx;
@@ -360,7 +397,7 @@ void Save_Trajectory(const long nGen, const long curFrame)
 /// system. This funcion writes all the stored frames for this temperature cycle
 /// \param filename
 /// \param nGen
-void Write_Saved_Trajectory(char* filename, const int run_it)
+static void Write_Saved_Trajectory(char* filename, const int run_it)
 {
     // Writes the trajectory in LAMMPS format. To be viewed with VMD
     // (Hopefully). Read the LAMMPS dump documentation for the actual formate of
@@ -429,7 +466,7 @@ void Write_Saved_Trajectory(char* filename, const int run_it)
 /// TODO: update this to work with the new indexing
 /// \param filename
 /// \param nGen
-void Write_RDF_ComponentWise(char* filename, long nGen)
+static void Write_RDF_ComponentWise(char* filename, long nGen)
 {
     FILE* fp;
     if (nGen == -1)
@@ -464,7 +501,7 @@ void Write_RDF_ComponentWise(char* filename, long nGen)
 /// topological information for the system Only writes the topology once at the
 /// beginning of the runs.
 /// \param filename
-void FileIO_WriteTo_TopFile(const char* filename)
+static void FileIO_WriteTo_TopFile(const char* filename)
 {
     /*
     Writes a topology file for VMD. Since the trajectory is saved in the LAMMPS
@@ -556,7 +593,7 @@ void FileIO_WriteTo_TopFile(const char* filename)
 
 /// Write_SysProp - writes the RDF, CLUS and GyrTen avg rrays to a file. OLD implementation that
 /// should not be used yet Also, TODO: update this to work with the new indexing \param filename
-void Write_SysProp(char* filename)
+static void Write_SysProp(char* filename)
 {
     FILE* fp;
     int i, j;
@@ -593,7 +630,7 @@ void Write_SysProp(char* filename)
 
 /// FileIO_WriteTo_RDFFile_TotFromGLB - writes the RDFTot file.
 /// \param run_it Number of temperature cycles.
-void FileIO_WriteTo_RDFFile_TotFromGLB(const int run_it)
+static void FileIO_WriteTo_RDFFile_TotFromGLB(const int run_it)
 {
     FILE* fp;
     int i, j, k;
@@ -620,7 +657,7 @@ void FileIO_WriteTo_RDFFile_TotFromGLB(const int run_it)
 
 /// FileIO_WriteTo_COMDenFile_TotFromGLB - writes the COMDenTot file.
 /// \param run_it Number of temperature cycles.
-void FileIO_WriteTo_COMDenFile_TotFromGLB(const int run_it)
+static void FileIO_WriteTo_COMDenFile_TotFromGLB(const int run_it)
 {
     FILE* fp;
     int i, j, k;
@@ -647,7 +684,7 @@ void FileIO_WriteTo_COMDenFile_TotFromGLB(const int run_it)
 
 /// FileIO_WriteTo_ClusFile_TotFromGLB - writes the CLUS file.
 /// \param run_it Number of temperature cycles.
-void FileIO_WriteTo_ClusFile_TotFromGLB(const int run_it)
+static void FileIO_WriteTo_ClusFile_TotFromGLB(const int run_it)
 {
     FILE* fp;
     int i, j, k;
@@ -674,7 +711,7 @@ void FileIO_WriteTo_ClusFile_TotFromGLB(const int run_it)
 
 /// FileIO_WriteTo_MolClus - writes the MolClus file
 /// \param run_it Number of temperature cycles.
-void FileIO_WriteTo_MolClusFile_TotFromGLB(const int run_it)
+static void FileIO_WriteTo_MolClusFile_TotFromGLB(const int run_it)
 {
     FILE* fp;
     int i, j, k;
@@ -705,7 +742,7 @@ void FileIO_WriteTo_MolClusFile_TotFromGLB(const int run_it)
 
 /// FileIO_WriteTo_GyrRad - writes the GR file.
 /// \param run_it Number of temperature cycles.
-void FileIO_WriteTo_GyrRadFile_TotFromGLB(const int run_it)
+static void FileIO_WriteTo_GyrRadFile_TotFromGLB(const int run_it)
 {
     FILE* fp;
     int i, j, k;
@@ -731,7 +768,7 @@ void FileIO_WriteTo_GyrRadFile_TotFromGLB(const int run_it)
 /// respective files. These arrays store the data over the course of an ENTIRE
 /// run, or over all the temp cycles.
 /// \param run_it
-void FileIO_Write_TotalSysProp_TotFromGLB(const int run_it)
+static void FileIO_Write_TotalSysProp_TotFromGLB(const int run_it)
 {
     /* This function writes one large file with all the averaged values from
      * each run_cycle. run_it let's the function know how many cycles to write.
@@ -761,7 +798,7 @@ void FileIO_Write_TotalSysProp_TotFromGLB(const int run_it)
 
 /// FileIOUtil_CreateFile_Overwrite - Creates a new overwritten file with the given name.
 /// \param fileName
-void FileIOUtil_CreateFile_Overwrite(const char* fileName)
+static void FileIOUtil_CreateFile_Overwrite(const char* fileName)
 {
     FILE* fp = fopen(fileName, "w+");
     fclose(fp);
@@ -769,7 +806,7 @@ void FileIOUtil_CreateFile_Overwrite(const char* fileName)
 
 /// FileIOUtil_CreateFile_Overwrite - Creates a new overwritten file with the given name.
 /// \param fileName
-void FileIOUtil_CreateFile_Binary_Overwrite(const char* fileName)
+static void FileIOUtil_CreateFile_Binary_Overwrite(const char* fileName)
 {
     FILE* fp = fopen(fileName, "wb");
     fclose(fp);
@@ -943,7 +980,7 @@ void FileIO_WriteRestart_ForThermalization(void)
 /// global data arrays that are printed later. Also note that the averaging, or
 /// dividing by the frequency of acquisitions, occurs here.
 /// \param run_it
-void CopyData_All(const int run_it)
+static void CopyData_All(const int run_it)
 {
     if (g_reports.naReportFreqs[REPORT_RDFTOT])
     {
@@ -961,7 +998,7 @@ void CopyData_All(const int run_it)
 
 /// CopyData_RDF: Copies g_analysis.cycle.ldaRDF_Arr into g_analysis.totals.ldaTOTRDF_Arr
 /// \param run_it: which run cycle we are on. Should be >= 0.
-void CopyData_RDF(const int run_it)
+static void CopyData_RDF(const int run_it)
 {
     int i, j;
     const long double normFactor = 1.0 / (long double)g_analysis.cycle.nTotRDFCounter;
@@ -977,7 +1014,7 @@ void CopyData_RDF(const int run_it)
 
 /// CopyData_RDF: Copies g_analysis.cycle.ldaRadDen_Arr into g_analysis.totals.ldaTOTRadDen_Arr
 /// \param run_it: which run cycle we are on. Should be >= 0.
-void CopyData_COMDen(const int run_it)
+static void CopyData_COMDen(const int run_it)
 {
     int i, j;
     const long double normFactor = 1.0 / (long double)g_analysis.cycle.nTotRadDenCounter;
@@ -994,7 +1031,7 @@ void CopyData_COMDen(const int run_it)
 /// CopyData_Clus - Copies ldMOLClUS_Arr into g_analysis.totals.ldaTOTMOLCLUS_Arr. Also copies
 /// g_analysis.cycle.laClusHistList into g_analysis.totals.ldaTOTCLUS_Arr. And stores the Gyration radius. \param
 /// run_it: which run cycle we are on. Should be >= 0.
-void CopyData_Clus(const int run_it)
+static void CopyData_Clus(const int run_it)
 {
     int i, j;
     const long double normFactor = 1.0 / (long double)g_analysis.cycle.nTotClusCounter;
@@ -1018,7 +1055,7 @@ void CopyData_Clus(const int run_it)
 
 ///
 /// \param run_it
-void FileIOUtil_AppendTo_GyrRadFile_ForRun(const int run_it)
+static void FileIOUtil_AppendTo_GyrRadFile_ForRun(const int run_it)
 {
     FILE* fp;
     char dumFile[512];
@@ -1034,7 +1071,7 @@ void FileIOUtil_AppendTo_GyrRadFile_ForRun(const int run_it)
 
 ///
 /// \param run_it
-void FileIOUtil_AppendTo_ClusFile_ForRun(const int run_it)
+static void FileIOUtil_AppendTo_ClusFile_ForRun(const int run_it)
 {
     FILE* fp;
     int i;
@@ -1057,7 +1094,7 @@ void FileIOUtil_AppendTo_ClusFile_ForRun(const int run_it)
 
 ///
 /// \param run_it
-void FileIOUtil_AppendTo_MolClusFile_ForRun(const int run_it)
+static void FileIOUtil_AppendTo_MolClusFile_ForRun(const int run_it)
 {
     FILE* fp;
     int i, j;
@@ -1082,7 +1119,7 @@ void FileIOUtil_AppendTo_MolClusFile_ForRun(const int run_it)
 
 ///
 /// \param run_it
-void FileIOUtil_AppendTo_RDFFile_ForRun(const int run_it)
+static void FileIOUtil_AppendTo_RDFFile_ForRun(const int run_it)
 {
     FILE* fp;
     int i, j;
@@ -1106,7 +1143,7 @@ void FileIOUtil_AppendTo_RDFFile_ForRun(const int run_it)
 
 ///
 /// \param run_it
-void FileIOUtil_AppendTo_COMDenFile_ForRun(const int run_it)
+static void FileIOUtil_AppendTo_COMDenFile_ForRun(const int run_it)
 {
     FILE* fp;
     int i, j;
