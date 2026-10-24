@@ -53,7 +53,9 @@ is implied by this split.
 
 | Files | Role |
 |-------|------|
-| `energy.c` / `energy.h` | Energy evaluation (system/chain totals, Iso For* move deltas) |
+| `energy.h` | Public API: system total, bias/topo, Iso For* move deltas, pure FromCoupling cores |
+| `energy_internal.h` | Family-only iso/aniso wrappers (energy*.c only) |
+| `energy.c` | Totals, bias/topo, Iso For* move deltas; file-local neigh-list / isotropic helpers |
 | `energy_iso.c` | Isotropic OVLP/CONT/fSol pair kernels + empty-site solvation |
 | `energy_aniso.c` | Anisotropic SC-SC bond kernels |
 

@@ -1,4 +1,4 @@
-#include "energy.h"
+#include "energy_internal.h"
 
 /*
  * Isotropic pair / solvation energy kernels (Phase 5.3).

@@ -1,5 +1,4 @@
 #include "cluster.h"
-#include "energy.h"
 #include "global.h"
 #include "initialize.h"
 #include "mcmove.h"

@@ -1,5 +1,47 @@
-#include "energy.h"
+#include "energy_internal.h"
 #include "structure.h"
+
+/* File-local helpers (not in energy.h / energy_internal.h). */
+static float Energy_Topo_Angle_with(int const beadID, int const backBead);
+static float Energy_OfOvlp_wNeighList(int const beadID, const int* neighList, int const neighNum);
+static float Energy_OfCont_wNeighList(int const beadID, const int* neighList, int const neighNum);
+static float Energy_ofPairs_wNeighList(int const beadID, const int* neighList, int const neighNum);
+static float Energy_ofSol_wNeighList(const int* neighList, int const neighNum);
+static float Energy_OfOvlp_wNeighList_ForChains(int const beadID, const int* neighList, int const neighNum);
+static float Energy_OfCont_wNeighList_ForChains(int const beadID, const int* neighList, int const neighNum);
+static float Energy_OfOvlp_wNeighList_ForRange(
+    int const beadID,
+    const int loBead,
+    const int hiBead,
+    const int* neighList,
+    int const neighNum);
+static float Energy_OfCont_wNeighList_ForRange(
+    int const beadID,
+    const int loBead,
+    const int hiBead,
+    const int* neighList,
+    int const neighNum);
+static float Energy_OfOvlp_wNeighList_ForLists(
+    const int beadID,
+    const int listSize,
+    const int beadList[MAX_BONDS + 1],
+    const int* neighList,
+    const int neighNum);
+static float Energy_OfCont_wNeighList_ForLists(
+    const int beadID,
+    const int listSize,
+    const int beadList[MAX_BONDS + 1],
+    const int* neighList,
+    const int neighNum);
+static float Energy_Isotropic_Old(const int beadID);
+static float Energy_Isotropic(const int beadID);
+static float Energy_Isotropic_Self(const int beadID);
+static float Energy_Isotropic_For_Chain(const int beadID);
+static float Energy_Isotropic_Contiguous_Range(const int beadID, const int smallest_bead, const int largest_bead);
+static float Energy_Isotropic_With_List(const int beadID, const int* bead_list, const int list_size);
+static float Energy_Of_Chain(const int chainID);
+static float Energy_Of_Chain_Self(const int chainID);
+static float Energy_Of_Chain_OLD(const int chainID);
 
 /// Energy_BiasingPotential calculates the biasing potential used in the
 /// thermalization/equilibration The function calculates (T_current - T_final)
@@ -118,7 +160,7 @@ float Energy_Topo_Angle(int const beadID)
     return E_stiff;
 }
 
-float Energy_Topo_Angle_with(int const beadID, int const backBead)
+static float Energy_Topo_Angle_with(int const beadID, int const backBead)
 {
     const int resi = g_system.bead_info[beadID][BEAD_TYPE];
     const float E_stiff_const = g_energy.faEnergy[resi][resi][E_STIFF];
@@ -160,7 +202,7 @@ float Energy_Topo_Angle_with(int const beadID, int const backBead)
 /// \param neighList
 /// \param neighNum
 /// \return
-float Energy_OfOvlp_wNeighList(int const beadID, const int* neighList, int const neighNum)
+static float Energy_OfOvlp_wNeighList(int const beadID, const int* neighList, int const neighNum)
 {
     float totEn = 0.f;
     int i;
@@ -185,7 +227,7 @@ float Energy_OfOvlp_wNeighList(int const beadID, const int* neighList, int const
 /// \param neighList
 /// \param neighNum
 /// \return
-float Energy_OfCont_wNeighList(int const beadID, const int* neighList, int const neighNum)
+static float Energy_OfCont_wNeighList(int const beadID, const int* neighList, int const neighNum)
 {
     float totEn = 0.f;
     int i;
@@ -209,7 +251,7 @@ float Energy_OfCont_wNeighList(int const beadID, const int* neighList, int const
 /// energies. This function _only_ calculate the pairwise energies so the
 /// solvation energy has to be handled somewhere else. \param beadID \param
 /// neighList \param neighNum \return
-float Energy_ofPairs_wNeighList(int const beadID, const int* neighList, int const neighNum)
+static float Energy_ofPairs_wNeighList(int const beadID, const int* neighList, int const neighNum)
 {
     float totEn = 0.f;
     int i;
@@ -231,7 +273,7 @@ float Energy_ofPairs_wNeighList(int const beadID, const int* neighList, int cons
 /// Energy_ofSol_wNeighList: Given the neighbor list, we calculate the total
 /// solvation energy at the lattice-site where beadID is, but if the site was
 /// empty. \param neighList \param neighNum \return
-float Energy_ofSol_wNeighList(const int* neighList, int const neighNum)
+static float Energy_ofSol_wNeighList(const int* neighList, int const neighNum)
 {
     float totEn = 0.f;
     int i;
@@ -252,7 +294,7 @@ float Energy_ofSol_wNeighList(const int* neighList, int const neighNum)
 /// the energies, taking care of intra-chain double-counting. This function
 /// _only_ calculates the Ovlp energies! \param beadID \param neighList \param
 /// neighNum \return
-float Energy_OfOvlp_wNeighList_ForChains(int const beadID, const int* neighList, int const neighNum)
+static float Energy_OfOvlp_wNeighList_ForChains(int const beadID, const int* neighList, int const neighNum)
 {
     float totEn = 0.f;
     int i;
@@ -288,7 +330,7 @@ float Energy_OfOvlp_wNeighList_ForChains(int const beadID, const int* neighList,
 /// \param neighList
 /// \param neighNum
 /// \return
-float Energy_OfCont_wNeighList_ForChains(int const beadID, const int* neighList, int const neighNum)
+static float Energy_OfCont_wNeighList_ForChains(int const beadID, const int* neighList, int const neighNum)
 {
     float totEn = 0.f;
     int i;
@@ -321,7 +363,7 @@ float Energy_OfCont_wNeighList_ForChains(int const beadID, const int* neighList,
 /// the energies, taking care of intra-range double-counting. Note that the
 /// range is [loBead, hiBead]. This function _only_ calculates the Ovlp
 /// energies! \param beadID \param neighList \param neighNum \return
-float Energy_OfOvlp_wNeighList_ForRange(
+static float Energy_OfOvlp_wNeighList_ForRange(
     int const beadID,
     const int loBead,
     const int hiBead,
@@ -357,7 +399,7 @@ float Energy_OfOvlp_wNeighList_ForRange(
 /// the energies, taking care of intra-range double-counting. Note that the
 /// range is [loBead, hiBead]. This function _only_ calculates the Cont
 /// energies! \param beadID \param neighList \param neighNum \return
-float Energy_OfCont_wNeighList_ForRange(
+static float Energy_OfCont_wNeighList_ForRange(
     int const beadID,
     const int loBead,
     const int hiBead,
@@ -394,7 +436,7 @@ float Energy_OfCont_wNeighList_ForRange(
 /// energies! \param beadID \param listSize \param beadList \param neighList
 /// \param neighNum
 /// \return
-float Energy_OfOvlp_wNeighList_ForLists(
+static float Energy_OfOvlp_wNeighList_ForLists(
     const int beadID,
     const int listSize,
     const int beadList[MAX_BONDS + 1],
@@ -431,7 +473,7 @@ float Energy_OfOvlp_wNeighList_ForLists(
 /// energies! \param beadID \param listSize \param beadList \param neighList
 /// \param neighNum
 /// \return
-float Energy_OfCont_wNeighList_ForLists(
+static float Energy_OfCont_wNeighList_ForLists(
     const int beadID,
     const int listSize,
     const int beadList[MAX_BONDS + 1],
@@ -467,7 +509,7 @@ float Energy_OfCont_wNeighList_ForLists(
 /// where $epislon$ represents the overlap cost for total overlap, which is
 /// forbidden explicitly in LASSI, so we have $epislon/2$,$epislon/4$ and
 /// $epislon/8$ with increasing distance. \param beadID \return
-float Energy_Isotropic_Old(const int beadID)
+static float Energy_Isotropic_Old(const int beadID)
 {                      // Calculate Contact and Overlap energy of bead beadID
     float totEn = 0.f; // Storing total overlap energy
     int i, j;          // Indecies
@@ -551,7 +593,7 @@ float Energy_Isotropic_Old(const int beadID)
 /// distance.
 /// \param beadID
 /// \return
-float Energy_Isotropic(const int beadID)
+static float Energy_Isotropic(const int beadID)
 {                      // Calculate Contact and Overlap energy of bead beadID
     float totEn = 0.0; // Storing total overlap energy
     int i, j;          // Indecies
@@ -611,7 +653,7 @@ float Energy_Isotropic(const int beadID)
 /// Energy_Isotropic_Self - returns the bond energy for beadID only if it is
 /// interacting with a bead within the same molecule. Note that it does not
 /// account for double counting \param beadID \return
-float Energy_Isotropic_Self(const int beadID)
+static float Energy_Isotropic_Self(const int beadID)
 { // Calculate Contact and Overlap energy of beadID but
   // only intra-molecular
     // interactions
@@ -683,7 +725,7 @@ float Energy_Isotropic_Self(const int beadID)
 /// This should only be used when calculating the energy of an entire chain!
 /// \param beadID
 /// \return
-float Energy_Isotropic_For_Chain(const int beadID)
+static float Energy_Isotropic_For_Chain(const int beadID)
 { // Calculate Contact and Overlap energy of beadID
     // Takes care of intra-molecular double counting
     float totEn = 0.0; // Storing total overlap energy
@@ -759,7 +801,7 @@ float Energy_Isotropic_For_Chain(const int beadID)
 /// largest_bead], and that we will loop over every bead in this range. So if
 /// the interactor is within this range, we divide by 2 to account for double
 /// counting. \param beadID \return
-float Energy_Isotropic_Contiguous_Range(const int beadID, const int smallest_bead, const int largest_bead)
+static float Energy_Isotropic_Contiguous_Range(const int beadID, const int smallest_bead, const int largest_bead)
 { // Calculate Contact and Overlap energy of beadID
     // Takes care of intra-molecular double counting
     // If the bead is between smallest_bead and largest_bead, we divide by two.
@@ -847,7 +889,7 @@ float Energy_Isotropic_Contiguous_Range(const int beadID, const int smallest_bea
 /// that the last bead is at list_size-1. This also assumes that we will loop
 /// over the entire list So if the interactor is within this list, we divide by
 /// 2 to account for double counting. \param beadID \return
-float Energy_Isotropic_With_List(const int beadID, const int* bead_list, const int list_size)
+static float Energy_Isotropic_With_List(const int beadID, const int* bead_list, const int list_size)
 { // Calculate Contact and Overlap energy of beadID
     // Takes care of intra-molecular double counting
     float totEn = 0.0; // Storing total overlap energy
@@ -1000,7 +1042,7 @@ void Energy_Total_System(void)
 /// double-counting intra interactions \param chainID - ID of the molecule to
 /// calculate the energy. \return The total aniso + isotropic energy of this
 /// chain.
-float Energy_Of_Chain(const int chainID)
+static float Energy_Of_Chain(const int chainID)
 { // Calculates the energy of the given chain.
     float totEn = 0.0;
     int i; // Looping index
@@ -1017,7 +1059,7 @@ float Energy_Of_Chain(const int chainID)
 /// Energy_Of_Chain_Self - only calculates the intra-molecular energy of this
 /// molecule \param chainID - ID of the molecule to calculate the energy.
 /// \return The total aniso + isotropic energy of this chain.
-float Energy_Of_Chain_Self(const int chainID)
+static float Energy_Of_Chain_Self(const int chainID)
 { // Calculates only intra-molecular interactions
     float totEn = 0.0;
     int i; // Looping index
@@ -1038,7 +1080,7 @@ float Energy_Of_Chain_Self(const int chainID)
 /// counting within the same chain. As such, this function should be used in
 /// both the old and new energy calculations so that the energy difference is
 /// still correct.
-float Energy_Of_Chain_OLD(const int chainID)
+static float Energy_Of_Chain_OLD(const int chainID)
 { // Calculates the energy of the given chain
     float totEn = 0.0;
     int i; // Looping index
