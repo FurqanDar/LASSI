@@ -1,12 +1,15 @@
-#include "print.h"
+#include "print_internal.h"
 #include "cluster.h"
 #include "energy.h"
 #include "structure.h"
 
+/* File-local helpers (not in print.h / print_internal.h). */
+static char ForPrinting_GetReportState(const long nGen, const long thisReport);
+
 /// ForPrinting_GetReportState. Calculates if the current step is a multiple of the reporting
 /// frequency for this particular report. Convenient wrapper around some modulo arithmetic. \param
 /// nGen \param thisReport \return
-char ForPrinting_GetReportState(const long nGen, const long thisReport)
+static char ForPrinting_GetReportState(const long nGen, const long thisReport)
 {
     char dum_log = (char)((nGen % thisReport) == 0);
     dum_log = dum_log ? 1 : 0;
