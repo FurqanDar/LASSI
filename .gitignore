@@ -1,5 +1,7 @@
 # Characterization harness scratch directory
 tests/characterization/.work/
+# Perf bench scratch directory
+tests/bench/.work/
 tests/unit/test_lattice_index
 tests/unit/test_linker_legal
 tests/unit/test_energy_iso

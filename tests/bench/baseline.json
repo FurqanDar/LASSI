@@ -1,0 +1,23 @@
+{
+  "deck": "bench_diblock",
+  "median_seconds": 23.333989,
+  "runs": 3,
+  "run_seconds": [
+    23.378674,
+    23.234912,
+    23.333989
+  ],
+  "threshold_pct_default": 15.0,
+  "seed": 20241024,
+  "n_steps": 10000000,
+  "preeq_steps": 1000000,
+  "mc_cycle_num": 1,
+  "recorded_at_utc": "2026-10-24T19:12:32Z",
+  "host": "cursor",
+  "uname": "Linux 6.12.94+ x86_64",
+  "compiler": "gcc (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0",
+  "build_flags": "gcc -march=x86-64 -O3 -std=gnu11 ... -lm -fcommon (src/compile.sh)",
+  "lassi_sha256": "340a078de9c286b984be6f877503ecfb9f35ccea2fcdeabe07919185496839fe",
+  "metric": "wall_clock_median_seconds",
+  "notes": "Wall-clock median of N timed runs of decks/bench_diblock with src/compile.sh (-O3). Trajectory/energy writers disabled. Hardware-bound; compare locally or via optional CI. Cycle counts via perf are local-optional and not recorded here."
+}

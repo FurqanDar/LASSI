@@ -49,3 +49,17 @@ checked-in baselines. GitHub Actions runs `make unit-lattice`, `unit-legal`,
 `unit-energy`, `unit-energy-aniso`, then `make characterization` on every push
 and pull request to `master` / `main`. See
 [`tests/characterization/README.md`](tests/characterization/README.md).
+
+## Performance bench
+
+Deterministic wall-clock bench (larger than smoke, still short) under
+`tests/bench/`:
+
+```bash
+make bench              # median of N Release-ish runs
+make bench-compare      # fail if median regresses beyond threshold vs baseline
+```
+
+Checked-in baseline: [`tests/bench/baseline.json`](tests/bench/baseline.json).
+Default threshold 15%. Optional / manual CI only (`workflow_dispatch`); not
+required on push/PR. See [`tests/bench/README.md`](tests/bench/README.md).
