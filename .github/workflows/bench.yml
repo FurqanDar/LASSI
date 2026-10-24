@@ -1,0 +1,27 @@
+name: Bench (optional)
+
+# Manual only — wall-clock is noisy on shared runners; not required on push/PR.
+# Characterization remains the behavior gate.
+on:
+  workflow_dispatch:
+    inputs:
+      runs:
+        description: "Number of timed runs (BENCH_RUNS)"
+        required: false
+        default: "3"
+      threshold_pct:
+        description: "Allowed regression percent vs baseline (BENCH_THRESHOLD_PCT)"
+        required: false
+        default: "15"
+
+jobs:
+  bench-compare:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Run bench compare vs checked-in baseline
+        env:
+          BENCH_RUNS: ${{ inputs.runs }}
+          BENCH_THRESHOLD_PCT: ${{ inputs.threshold_pct }}
+        run: make bench-compare

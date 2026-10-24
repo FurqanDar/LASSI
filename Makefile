@@ -1,6 +1,8 @@
 # Thin top-level targets. The simulation itself still builds via src/compile.sh.
 
-.PHONY: lassi characterization characterization-update clean-characterization unit-lattice unit-legal unit-energy unit-energy-aniso
+.PHONY: lassi characterization characterization-update clean-characterization \
+	bench bench-compare bench-update clean-bench \
+	unit-lattice unit-legal unit-energy unit-energy-aniso
 
 lassi:
 	cd src && bash compile.sh
@@ -13,6 +15,20 @@ characterization-update: lassi
 
 clean-characterization:
 	rm -rf tests/characterization/.work
+
+# Wall-clock perf bench (Release-ish via src/compile.sh). See tests/bench/README.md.
+# Not required CI; optional workflow_dispatch in .github/workflows/bench.yml.
+bench: lassi
+	LASSI_BIN="$(CURDIR)/src/lassi" bash tests/bench/run_bench.sh
+
+bench-compare: lassi
+	LASSI_BIN="$(CURDIR)/src/lassi" bash tests/bench/run_bench.sh --compare
+
+bench-update: lassi
+	LASSI_BIN="$(CURDIR)/src/lassi" bash tests/bench/run_bench.sh --update-baseline
+
+clean-bench:
+	rm -rf tests/bench/.work
 
 # Pure lattice-index / min-image distance helpers (Phase 5.1); no decks.
 unit-lattice:
