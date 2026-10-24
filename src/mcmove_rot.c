@@ -1,5 +1,4 @@
 #include "mcmove_internal.h"
-#include "energy.h"
 #include "structure.h"
 
 /* File-local rotation kernels and unused/legacy helpers. */

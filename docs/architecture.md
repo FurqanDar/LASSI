@@ -11,7 +11,7 @@ In practice:
 | Layer | Modules | May include |
 |-------|---------|-------------|
 | Lattice / structure | `structure*.c`, `structure.h` (public), `structure_internal.h` (family-only) | `global.h` only (plus peer structure units via `structure_internal.h`) |
-| Energy | `energy.c`, `energy.h` | structure, `global.h` |
+| Energy | `energy*.c`, `energy.h` (public), `energy_internal.h` (family-only) | structure, `global.h` (plus peer energy units via `energy_internal.h`) |
 | Moves | `mcmove*.c`, `mcmove.h` (public), `mcmove_internal.h` (family-only) | energy, structure, `cluster_mc.h` (move-facing cluster queries only), `global.h` |
 | Analysis / I/O | `cluster.*`, `analysis.c`, `print*.c`, `print.h` | moves (if needed), energy, structure, `global.h` |
 | Main / parse | `main.c`, `parsekey.*`, `initialize.*` | any layer above |

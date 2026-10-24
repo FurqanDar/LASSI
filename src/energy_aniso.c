@@ -1,5 +1,11 @@
-#include "energy.h"
+#include "energy_internal.h"
 #include "structure.h"
+
+/* File-local helpers (not in energy.h / energy_internal.h). */
+static float Energy_Anisotropic_For_Range(const int beadID, const int smBead, const int lgBead);
+static float Energy_Anisotropic_Contiguous_Range(const int beadID, const int smallest_bead, const int largest_bead);
+static float Energy_Anisotropic_With_List(const int beadID, const int* bead_list, const int list_size);
+static float Energy_Anisotropic_For_List(const int beadID, const int listSize, const int beadList[MAX_BONDS + 1]);
 
 /*
  * Anisotropic SC-SC bond energy helpers (Phase 5.4).
@@ -94,7 +100,7 @@ float Energy_Anisotropic_For_Chain(const int beadID)
 /// largest_bead], and that we will loop over every bead in this range. So if
 /// the bead partner is within this range, we divide by 2 to account for double
 /// counting. \param beadID \param smBead \param lgBead \return
-float Energy_Anisotropic_For_Range(const int beadID, const int smBead, const int lgBead)
+static float Energy_Anisotropic_For_Range(const int beadID, const int smBead, const int lgBead)
 {
     float totEn = 0.f;
     const int bP = g_system.bead_info[beadID][BEAD_FACE];
@@ -119,7 +125,7 @@ float Energy_Anisotropic_For_Range(const int beadID, const int smBead, const int
 /// [smallest_bead, largest_bead], and that we will loop over every bead in this
 /// range. So if the bead partner is within this range, we divide by 2 to
 /// account for double counting. \param beadID \return
-float Energy_Anisotropic_Contiguous_Range(const int beadID, const int smallest_bead, const int largest_bead)
+static float Energy_Anisotropic_Contiguous_Range(const int beadID, const int smallest_bead, const int largest_bead)
 {
     float totEn = 0.0; // Storing total overlap energy
     int bP = g_system.bead_info[beadID][BEAD_FACE];
@@ -153,7 +159,7 @@ float Energy_Anisotropic_Contiguous_Range(const int beadID, const int smallest_b
 /// list_size, but that the last bead is at list_size-1. This also assumes that
 /// we will loop over the entire list So if the bead partner is within this
 /// list, we divide by 2 to account for double counting. \param beadID \return
-float Energy_Anisotropic_With_List(const int beadID, const int* bead_list, const int list_size)
+static float Energy_Anisotropic_With_List(const int beadID, const int* bead_list, const int list_size)
 {
     float totEn = 0.0; // Storing total overlap energy
     int bP = g_system.bead_info[beadID][BEAD_FACE];
@@ -183,7 +189,7 @@ float Energy_Anisotropic_With_List(const int beadID, const int* bead_list, const
     return totEn;
 }
 
-float Energy_Anisotropic_For_List(const int beadID, const int listSize, const int beadList[MAX_BONDS + 1])
+static float Energy_Anisotropic_For_List(const int beadID, const int listSize, const int beadList[MAX_BONDS + 1])
 {
     const int bP = g_system.bead_info[beadID][BEAD_FACE];
     const int resi = g_system.bead_info[beadID][BEAD_TYPE];
